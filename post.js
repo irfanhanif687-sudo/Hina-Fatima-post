@@ -3,39 +3,40 @@ const axios = require('axios');
 const PAGE_ID = process.env.FB_PAGE_ID;
 const TOKEN = process.env.FB_TOKEN;
 
-// 1. Funny Comments ki List (Tum apne hisaab se aur add kar sakte ho)
+// Funny Comments ki list
 const funnyComments = [
-    "Yeh scene dekh ke meri hasi nahi ruk rahi 😂",
+    "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
     "Kya acting hai waise! 🔥",
-    "Aaj kal ke dramas mein bas rona hi rona hai 😭",
-    "Ye character mujhe bilkul pasand nahi aaya 🤦‍♂️",
-    "Pakistani dramas > Indian dramas (Kabhi kabhi) 😉",
     "Ammi ne pakka yeh scene nahi dekhna chahiye tha 🤣",
+    "Is drama ne toh hadd kar di hai yaar 😭",
     "Background music toh kamaal ka tha 🎵",
-    "Guys, is drama ka naam kya hai?",
+    "Guys, yeh kaunsa drama hai? 😅",
+    "Mujhe toh bas yeh jodi pasand hai ❤️",
+    "Yeh dialogue delivery toh kamaal ki hai! 👏",
     "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅",
-    "Mujhe toh bas yeh jodi pasand hai ❤️"
+    "Koi batao yeh actress kaun hai? 🤔"
 ];
 
-// 2. Image URL (Abhi ke liye ek high-quality random image use kar rahe hain)
-// Baad mein tum yahan apni drama pics ke links dal sakte ho
-const imageUrl = "https://picsum.photos/1080/1080";
-
 async function publishPost() {
-    // Random comment select karo
-    const randomComment = funnyComments[Math.floor(Math.random() * funnyComments.length)];
-    console.log("Aaj ka comment:", randomComment);
-
     try {
-        // Step 1: Pehle image upload karo (Facebook ko image URL chahiye hota hai post karne ke liye)
-        // Note: Graph API mein direct URL se post karne ke liye 'link' use hota hai ya 'source' se image upload hoti hai.
-        // Aasaan tareeqa yeh hai ke hum direct 'link' mein image ka URL de dein aur caption mein comment.
+        // 1. Internet se ek random funny/portrait image uthao
+        // Hum 'thispersondoesnotexist.com' use kar rahe hain jo random face deta hai, 
+        // ya Unsplash ka random portrait source use kar sakte hain.
+        // Yahan humne direct source use kiya hai jo har call pe nayi image deta hai:
+        const randomPic = "https://source.unsplash.com/random/1080x1080/?portrait,woman,expressions";
+
+        // 2. Random funny comment select karo
+        const randomComment = funnyComments[Math.floor(Math.random() * funnyComments.length)];
         
+        console.log("Image URL:", randomPic);
+        console.log("Comment:", randomComment);
+
+        // 3. Facebook par post karo
         const response = await axios.post(
             `https://graph.facebook.com/v20.0/${PAGE_ID}/photos`,
             {
-                url: imageUrl,          // Image ka link
-                caption: randomComment, // Neeche likha hua comment
+                url: randomPic,         // Image ka direct link
+                caption: randomComment, // Funny Comment
                 access_token: TOKEN
             }
         );
