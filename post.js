@@ -17,25 +17,32 @@ const funnyComments = [
     "Koi batao yeh actress kaun hai? 🤔"
 ];
 
+// ✅ RELIABLE IMAGE SOURCE
+// Yeh link hamesha kaam karega kyunke yeh ek fixed image hai
+const dramaPics = [
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop"
+];
+
 async function publishPost() {
     try {
-        // 1. Internet se ek random funny/portrait image uthao
-        // Hum 'thispersondoesnotexist.com' use kar rahe hain jo random face deta hai, 
-        // ya Unsplash ka random portrait source use kar sakte hain.
-        // Yahan humne direct source use kiya hai jo har call pe nayi image deta hai:
-        const randomPic = "https://source.unsplash.com/random/1080x1080/?portrait,woman,expressions";
+        // 1. Random picture select karo
+        const randomPic = dramaPics[Math.floor(Math.random() * dramaPics.length)];
 
         // 2. Random funny comment select karo
         const randomComment = funnyComments[Math.floor(Math.random() * funnyComments.length)];
         
-        console.log("Image URL:", randomPic);
-        console.log("Comment:", randomComment);
+        console.log("Posting Picture:", randomPic);
+        console.log("With Comment:", randomComment);
 
         // 3. Facebook par post karo
         const response = await axios.post(
             `https://graph.facebook.com/v20.0/${PAGE_ID}/photos`,
             {
-                url: randomPic,         // Image ka direct link
+                url: randomPic,         // Valid image link
                 caption: randomComment, // Funny Comment
                 access_token: TOKEN
             }
