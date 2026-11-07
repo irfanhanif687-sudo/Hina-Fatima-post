@@ -3,28 +3,31 @@ const axios = require('axios');
 const PAGE_ID = process.env.FB_PAGE_ID;
 const TOKEN = process.env.FB_TOKEN;
 
-// Comments categories
+// Funny Comments ki Categories
 const comments = {
     makeup: [
         "Iska makeup toh kamaal ka hai 💄✨",
         "Itna highlighter lagaya hai ke face chamak raha hai ✨",
         "Contour kahan se seekha hai waise? 🤔",
         "Lipstick ka shade toh ekdum perfect hai 💋",
-        "Naya look, nayi vibe 💅"
+        "Naya look, nayi vibe 💅",
+        "Ye dress aur makeup ekdum match kar raha hai! 🔥"
     ],
     expression: [
         "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
         "Kya acting hai waise! 🔥",
         "Iska expression toh ekdum 'Ammi ne daant di hai' wala hai 🤣",
         "Aankhon se hi sab keh diya isne 👀❤️",
-        "Yeh look dekh ke toh mera din ban gaya 😍"
+        "Yeh look dekh ke toh mera din ban gaya 😍",
+        "Iske expressions toh award jeetne wale hain! 🏆"
     ],
     cute: [
         "Kya cute lag rahi hai yaar! ❤️",
         "Aaj kal ki actresses toh ek se badh kar ek hain ✨",
         "Yeh style toh sabki favourite hai 💃",
         "Iska smile toh dil le gaya 😊",
-        "Ekdum natural beauty hai yaar 🌸"
+        "Ekdum natural beauty hai yaar 🌸",
+        "Mashallah, kitni pyari lag rahi hain! 🥰"
     ],
     general: [
         "Guys, yeh kaunsa drama hai? 😅",
@@ -32,30 +35,29 @@ const comments = {
         "Pakistani dramas > Indian dramas (Kabhi kabhi) 😉",
         "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅",
         "Background music toh kamaal ka tha 🎵",
-        "Aaj kal ke dramas mein bas rona hi rona hai 😭"
+        "Aaj kal ke dramas mein bas rona hi rona hai 😭",
+        "Isko dekh ke toh drama dekhne ka dil kar gaya 📺"
     ]
 };
 
-// 12 High-Quality HD Pictures (Drama actress style)
-const hdPics = [
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1080&auto=format&fit=crop"
+// ASLI PAKISTANI DRAMA ACTRESSES KI HD PICTURES (Wikipedia se direct links)
+const dramaActressPics = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Sajal_Aly_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Sajal_Aly_at_Hum_Style_Awards_%28cropped%29.jpg", // Sajal Aly
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Mahira_Khan_at_Lux_Style_Awards_%282%29_%28cropped%29.jpg/800px-Mahira_Khan_at_Lux_Style_Awards_%282%29_%28cropped%29.jpg", // Mahira Khan
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Ayeza_Khan_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Ayeza_Khan_at_Hum_Style_Awards_%28cropped%29.jpg", // Ayeza Khan
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Hania_Aamir_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Hania_Aamir_at_Hum_Style_Awards_%28cropped%29.jpg", // Hania Aamir
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Yumna_Zaidi_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Yumna_Zaidi_at_Hum_Style_Awards_%28cropped%29.jpg", // Yumna Zaidi
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Iqra_Aziz_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Iqra_Aziz_at_Hum_Style_Awards_%28cropped%29.jpg", // Iqra Aziz
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Mawra_Hocane_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Mawra_Hocane_at_Hum_Style_Awards_%28cropped%29.jpg", // Mawra Hocane
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Saba_Qamar_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Saba_Qamar_at_Hum_Style_Awards_%28cropped%29.jpg", // Saba Qamar
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Mehwish_Hayat_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Mehwish_Hayat_at_Hum_Style_Awards_%28cropped%29.jpg", // Mehwish Hayat
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Sanam_Saeed_at_Hum_Style_Awards_%28cropped%29.jpg/800px-Sanam_Saeed_at_Hum_Style_Awards_%28cropped%29.jpg"  // Sanam Saeed
 ];
 
 async function publishPost() {
     try {
         // 1. Random HD picture uthao
-        const randomPic = hdPics[Math.floor(Math.random() * hdPics.length)];
+        const randomPic = dramaActressPics[Math.floor(Math.random() * dramaActressPics.length)];
 
         // 2. Random category aur comment uthao
         const categories = Object.keys(comments);
@@ -63,7 +65,7 @@ async function publishPost() {
         const categoryComments = comments[randomCategory];
         const randomComment = categoryComments[Math.floor(Math.random() * categoryComments.length)];
         
-        console.log("Posting HD Picture:", randomPic);
+        console.log("Posting Actress Picture:", randomPic);
         console.log("With Comment:", randomComment);
 
         // 3. Facebook par post karo
