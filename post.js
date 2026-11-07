@@ -3,47 +3,71 @@ const axios = require('axios');
 const PAGE_ID = process.env.FB_PAGE_ID;
 const TOKEN = process.env.FB_TOKEN;
 
-// Funny Comments ki list
-const funnyComments = [
-    "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
-    "Kya acting hai waise! 🔥",
-    "Ammi ne pakka yeh scene nahi dekhna chahiye tha 🤣",
-    "Is drama ne toh hadd kar di hai yaar 😭",
-    "Background music toh kamaal ka tha 🎵",
-    "Guys, yeh kaunsa drama hai? 😅",
-    "Mujhe toh bas yeh jodi pasand hai ❤️",
-    "Yeh dialogue delivery toh kamaal ki hai! 👏",
-    "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅",
-    "Koi batao yeh actress kaun hai? 🤔"
-];
+// Comments ki Categories (Vibe ke hisaab se)
+const comments = {
+    makeup: [
+        "Iska makeup se zyada toh meri behen ka makeup acha hai 💄😂",
+        "Itna highlighter lagaya hai ke face chamak raha hai ✨",
+        "Contour kahan se seekha hai waise? 🤔",
+        "Lipstick ka shade toh kamaal ka hai 💋",
+        "Naye drama ki nayi actress, naya makeup look 💅"
+    ],
+    expression: [
+        "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
+        "Kya acting hai waise! 🔥",
+        "Iska expression toh ekdum 'Ammi ne daant di hai' wala hai 🤣",
+        "Bhai yeh actress toh har drama mein same acting karti hai 🤦‍♂️",
+        "Aankhon se hi sab keh diya isne 👀❤️",
+        "Yeh look dekh ke toh mera din ban gaya 😍"
+    ],
+    cute: [
+        "Kya cute lag rahi hai yaar! ❤️",
+        "Mujhe toh bas yeh jodi pasand hai 🥰",
+        "Aaj kal ki actresses toh ek se badh kar ek hain ✨",
+        "Yeh style toh sabki favourite hai 💃",
+        "Iska smile toh dil le gaya 😊"
+    ],
+    general: [
+        "Guys, yeh kaunsa drama hai? 😅",
+        "Koi batao yeh actress kaun hai? 🤔",
+        "Pakistani dramas > Indian dramas (Kabhi kabhi) 😉",
+        "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅",
+        "Background music toh kamaal ka tha 🎵",
+        "Aaj kal ke dramas mein bas rona hi rona hai 😭"
+    ]
+};
 
-// ✅ RELIABLE IMAGE SOURCE
-// Yeh link hamesha kaam karega kyunke yeh ek fixed image hai
-const dramaPics = [
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop"
-];
+// Picture generate karne ka function
+async function getImageAndComment() {
+    // 1. Ek random portrait uthao (0 se 99 tak)
+    const randomId = Math.floor(Math.random() * 100); 
+    const imageUrl = `https://randomuser.me/api/portraits/women/${randomId}.jpg`;
+
+    // 2. Random category chuno
+    const categories = Object.keys(comments);
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    
+    // 3. Us category se ek comment uthao
+    const categoryComments = comments[randomCategory];
+    const randomComment = categoryComments[Math.floor(Math.random() * categoryComments.length)];
+
+    return { imageUrl, randomComment };
+}
 
 async function publishPost() {
     try {
-        // 1. Random picture select karo
-        const randomPic = dramaPics[Math.floor(Math.random() * dramaPics.length)];
-
-        // 2. Random funny comment select karo
-        const randomComment = funnyComments[Math.floor(Math.random() * funnyComments.length)];
+        // Picture aur uske mutabiq comment nikalo
+        const { imageUrl, randomComment } = await getImageAndComment();
         
-        console.log("Posting Picture:", randomPic);
+        console.log("Posting Picture:", imageUrl);
         console.log("With Comment:", randomComment);
 
-        // 3. Facebook par post karo
+        // Facebook par post karo
         const response = await axios.post(
             `https://graph.facebook.com/v20.0/${PAGE_ID}/photos`,
             {
-                url: randomPic,         // Valid image link
-                caption: randomComment, // Funny Comment
+                url: imageUrl,         
+                caption: randomComment, 
                 access_token: TOKEN
             }
         );
