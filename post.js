@@ -3,13 +3,14 @@ const axios = require('axios');
 const PAGE_ID = process.env.FB_PAGE_ID;
 const TOKEN = process.env.FB_TOKEN;
 
-// Yahan apna content set karo. 
-// Filhal test ke liye text post hai:
+// Yahan apni post ka content likho
 const postContent = {
-    message: "Assalam o Alaikum dosto! Yeh mera pehla auto-post hai GitHub se. 😂 #PakistaniDrama #Funny"
+    message: "Assalam o Alaikum! Yeh mera auto-post test hai. 😂 #PakistaniDrama"
 };
 
 async function publishPost() {
+    console.log("Post karni ki koshish kar rahe hain...");
+    
     try {
         const response = await axios.post(
             `https://graph.facebook.com/v20.0/${PAGE_ID}/feed`,
@@ -18,9 +19,15 @@ async function publishPost() {
                 params: { access_token: TOKEN }
             }
         );
-        console.log("Post successful! Post ID:", response.data.id);
+        console.log("✅ Post Successful! Post ID:", response.data.id);
     } catch (error) {
-        console.error("Error aagaya bhai:", error.response ? error.response.data : error.message);
+        // Agar error aaye toh yahan detail mein print hoga
+        console.error("❌ Facebook API Error:");
+        if (error.response) {
+            console.error(JSON.stringify(error.response.data, null, 2));
+        } else {
+            console.error(error.message);
+        }
         process.exit(1);
     }
 }
