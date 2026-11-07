@@ -5,7 +5,7 @@ const TOKEN = process.env.FB_TOKEN;
 
 // Yahan apni post ka content likho
 const postContent = {
-    message: "Assalam o Alaikum! Yeh mera auto-post test hai. 😂 #PakistaniDrama"
+    message: "Assalam o Alaikum! Yeh mera pehla automatic post hai. 😂 #PakistaniDrama"
 };
 
 async function publishPost() {
@@ -21,7 +21,6 @@ async function publishPost() {
         );
         console.log("✅ Post Successful! Post ID:", response.data.id);
     } catch (error) {
-        // Agar error aaye toh yahan detail mein print hoga
         console.error("❌ Facebook API Error:");
         if (error.response) {
             console.error(JSON.stringify(error.response.data, null, 2));
