@@ -47,14 +47,20 @@ def generate_unique_ai_image():
     sty = random.choice(styles)
     
     prompt = f"A beautiful South Asian woman, {exp}, {out}, {sty}"
-    print(f"Generating AI Image for: {prompt}")
+    print(f"Generating Image for: {prompt}")
     
     unique_seed = random.randint(1, 9999999)
     image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=1080&height=1080&nologo=true&seed={unique_seed}"
     
     response = requests.get(image_url)
     response.raise_for_status()
-    return Image.open(io.BytesIO(response.content)).convert("RGB")
+    img = Image.open(io.BytesIO(response.content)).convert("RGB")
+    
+    # ✅ Watermark Hatane ke liye Picture ko thora sa Crop karo (Neeche se 50 pixel cut)
+    width, height = img.size
+    img = img.crop((0, 0, width, height - 50)) 
+    
+    return img
 
 def add_funny_text(image):
     draw = ImageDraw.Draw(image)
@@ -67,7 +73,7 @@ def add_funny_text(image):
 
     bbox = draw.textbbox((0, 0), line, font=font)
     x = (image.width - (bbox[2] - bbox[0])) / 2
-    y = image.height - 120
+    y = image.height - 100
     
     for adj in range(-3, 4):
         draw.text((x+adj, y), line, font=font, fill="black")
@@ -78,12 +84,13 @@ def add_funny_text(image):
     return image
 
 def post_to_facebook(image):
-    image_path = "unique_ai_meme.jpg"
+    image_path = "unique_meme.jpg"
     image.save(image_path, format="JPEG")
 
     fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
+    # ✅ Caption badal diya gaya hai (AI ka word hata diya)
     payload = {
-        "caption": "AI ne banaya hai! 😂🔥 Follow for more! #PakistaniDrama #Funny",
+        "caption": "Drama lovers kahan hain? 😂🔥 Follow for more! #PakistaniDrama #Funny",
         "access_token": TOKEN
     }
 
@@ -96,7 +103,7 @@ def post_to_facebook(image):
 
 if __name__ == "__main__":
     try:
-        print("Starting Unlimited AI Meme Generation...")
+        print("Starting Meme Generation...")
         ai_image = generate_unique_ai_image()
         final_image = add_funny_text(ai_image)
         print("Posting to Facebook...")
