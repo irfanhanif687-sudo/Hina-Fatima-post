@@ -9,26 +9,30 @@ from PIL import Image, ImageDraw, ImageFont
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# AI Prompts (Photorealistic Real Photo Style)
+# AI Prompts (Expressions)
 expressions = [
     "making a funny goofy face", "looking extremely shocked", 
     "crying in a dramatic funny way", "judging the camera", 
     "sassy attitude pose", "laughing out loud", 
     "confused expression", "angry dramatic look"
 ]
+
+# AI Prompts (Outfits)
 outfits = [
     "wearing a traditional Pakistani shalwar kameez", 
     "in a glamorous Indian TV actress saree", 
     "wearing a modern stylish dress", 
     "in a heavily embroidered bridal dress"
 ]
+
+# ✅ AI Prompts (Hyper-Realistic Photography Style)
 styles = [
-    "raw photo, photorealistic, shot on DSLR 35mm lens, 8k resolution, ultra-detailed face, natural skin texture, realistic lighting",
-    "highly detailed real photography, realistic human face, professional portrait photo, sharp focus",
-    "real life photography, cinematic natural lighting, no digital art, no anime, highly realistic"
+    "ultra-realistic portrait, shot on Sony A7R IV, 85mm lens, f/1.8, visible skin pores, natural skin texture, unretouched, highly detailed eyes, cinematic natural lighting, award-winning photography",
+    "raw unedited photo, realistic facial features, natural lighting, DSLR camera, sharp focus, detailed skin texture, no plastic look, real life photography",
+    "photorealistic, 8k resolution, highly detailed face, natural imperfections, realistic shadows, macro photography, authentic portrait"
 ]
 
-# Unlimited Funny Lines (Emojis hata diye hain taake font ka masla na ho)
+# Funny Lines
 funny_lines = [
     "Ammi ne pakka yeh scene nahi dekhna chahiye tha",
     "Kya acting hai waise!", "Yeh expression dekh ke toh meri hasi nahi ruk rahi",
@@ -47,11 +51,12 @@ def generate_unique_ai_image():
     out = random.choice(outfits)
     sty = random.choice(styles)
     
-    # ✅ PROMPT FIX: Asli Photo jaisa banane ke liye strong instructions
-    prompt = f"Raw photo, photorealistic portrait of a real Pakistani TV actress, {exp}, {out}, {sty}, extremely realistic, not a cartoon, not an illustration, absolutely no digital art"
+    # ✅ PROMPT UPDATE: Realism ko maximum karne ke liye negative aur positive dono words add kiye hain
+    prompt = f"Extremely raw, unedited, hyper-realistic photograph of a real South Asian drama actress, {exp}, {out}, {sty}, 100% real human, absolute realism, not a cartoon, not an illustration, no AI look, no smooth plastic skin"
     print(f"Generating Image for: {prompt}")
     
     unique_seed = random.randint(1, 9999999)
+    # Model=flux use kar rahe hain jo sab se realistic hai
     image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=1080&height=1080&nologo=true&seed={unique_seed}&model=flux"
     
     response = requests.get(image_url)
@@ -90,6 +95,7 @@ def add_funny_text(image):
     x = (image.width - (bbox[2] - bbox[0])) / 2
     y = image.height - 120
     
+    # Text draw karo
     for adj in range(-3, 4):
         draw.text((x+adj, y), line_text, font=font, fill="black")
         draw.text((x, y+adj), line_text, font=font, fill="black")
