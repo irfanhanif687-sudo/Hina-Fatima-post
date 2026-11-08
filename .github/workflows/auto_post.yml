@@ -1,8 +1,8 @@
-name: Facebook Auto Post
+name: Facebook Auto Post (Unlimited AI)
 on:
   schedule:
-    - cron: '0 * * * *'  # Har 1 ghante baad chalega
-  workflow_dispatch:      # Manual test ke liye
+    - cron: '0 * * * *'  # Har 1 ghante baad
+  workflow_dispatch:
 
 jobs:
   post:
@@ -11,16 +11,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          node-version: '20'
+          python-version: '3.10'
 
-      - name: Install Axios
-        run: npm install axios
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests Pillow
 
       - name: Run Auto Post Script
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_TOKEN: ${{ secrets.FB_TOKEN }}
-        run: node post.js
+        run: python post.py
