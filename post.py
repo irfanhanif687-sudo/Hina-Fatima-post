@@ -2,6 +2,7 @@ import os
 import random
 import requests
 import io
+import re
 from PIL import Image, ImageDraw, ImageFont
 
 # GitHub Secrets se IDs uthana
@@ -29,16 +30,16 @@ styles = [
 
 # Unlimited Funny Lines
 funny_lines = [
-    "Ammi ne pakka yeh scene nahi dekhna chahiye tha 🤣",
-    "Kya acting hai waise! 🔥", "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
-    "Guys, yeh kaunsa drama hai? 😅", "Mujhe toh bas yeh jodi pasand hai ❤️",
-    "Koi batao yeh actress kaun hai? 🤔", "Aaj kal ke dramas mein bas rona hi rona hai 😭",
-    "Iska makeup toh kamaal ka hai 💄✨", "Itna highlighter lagaya hai ke face chamak raha hai ✨",
-    "Contour kahan se seekha hai waise? 🤔", "Lipstick ka shade toh ekdum perfect hai 💋",
-    "Naya look, nayi vibe 💅", "Iska expression toh ekdum 'Ammi ne daant di hai' wala hai 🤣",
-    "Aankhon se hi sab keh diya isne 👀❤️", "Mashallah, kitni pyari lag rahi hain! 🥰",
-    "Bhai yeh actress toh har drama mein same acting karti hai 🤦‍♂️",
-    "Is drama ne toh hadd kar di hai yaar 😭", "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅"
+    "Ammi ne pakka yeh scene nahi dekhna chahiye tha",
+    "Kya acting hai waise!", "Yeh expression dekh ke toh meri hasi nahi ruk rahi",
+    "Guys, yeh kaunsa drama hai?", "Mujhe toh bas yeh jodi pasand hai",
+    "Koi batao yeh actress kaun hai?", "Aaj kal ke dramas mein bas rona hi rona hai",
+    "Iska makeup toh kamaal ka hai", "Itna highlighter lagaya hai ke face chamak raha hai",
+    "Contour kahan se seekha hai waise?", "Lipstick ka shade toh ekdum perfect hai",
+    "Naya look, nayi vibe", "Iska expression toh ekdum 'Ammi ne daant di hai' wala hai",
+    "Aankhon se hi sab keh diya isne", "Mashallah, kitni pyari lag rahi hain!",
+    "Bhai yeh actress toh har drama mein same acting karti hai",
+    "Is drama ne toh hadd kar di hai yaar", "Ek episode dekh ke hi pata chal gaya ending kya hogi"
 ]
 
 def generate_unique_ai_image():
@@ -56,7 +57,7 @@ def generate_unique_ai_image():
     response.raise_for_status()
     img = Image.open(io.BytesIO(response.content)).convert("RGB")
     
-    # ✅ Watermark Hatane ke liye Picture ko thora sa Crop karo (Neeche se 50 pixel cut)
+    # Watermark Hatane ke liye Crop
     width, height = img.size
     img = img.crop((0, 0, width, height - 50)) 
     
@@ -66,21 +67,36 @@ def add_funny_text(image):
     draw = ImageDraw.Draw(image)
     line = random.choice(funny_lines)
     
-    try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 65)
-    except:
-        font = ImageFont.load_default()
+    # Text ko emoji se saaf karo taake font masla na kare
+    line_text = re.sub(r'[^\w\s\?\.,!]', '', line)
 
-    bbox = draw.textbbox((0, 0), line, font=font)
+    # ✅ Auto-Fit Text Logic: Font size ko chota karo jab tak text picture mein fit na ho jaye
+    font_size = 70
+    max_width = image.width - 40 # 20 pixel ka margin dono taraf
+    while font_size > 10:
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+            break
+        bbox = draw.textbbox((0, 0), line_text, font=font)
+        text_width = bbox[2] - bbox[0]
+        if text_width <= max_width:
+            break
+        font_size -= 2
+
+    # Center align karo
+    bbox = draw.textbbox((0, 0), line_text, font=font)
     x = (image.width - (bbox[2] - bbox[0])) / 2
-    y = image.height - 100
+    y = image.height - 120
     
+    # Text draw karo (outline ke saath)
     for adj in range(-3, 4):
-        draw.text((x+adj, y), line, font=font, fill="black")
-        draw.text((x, y+adj), line, font=font, fill="black")
-    draw.text((x, y), line, font=font, fill="white")
+        draw.text((x+adj, y), line_text, font=font, fill="black")
+        draw.text((x, y+adj), line_text, font=font, fill="black")
+    draw.text((x, y), line_text, font=font, fill="white")
     
-    print(f"Added Comment: {line}")
+    print(f"Added Comment: {line_text}")
     return image
 
 def post_to_facebook(image):
@@ -88,7 +104,6 @@ def post_to_facebook(image):
     image.save(image_path, format="JPEG")
 
     fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-    # ✅ Caption badal diya gaya hai (AI ka word hata diya)
     payload = {
         "caption": "Drama lovers kahan hain? 😂🔥 Follow for more! #PakistaniDrama #Funny",
         "access_token": TOKEN
