@@ -1,69 +1,118 @@
-const axios = require('axios');
+import os
+import random
+import requests
+import io
+from PIL import Image, ImageDraw, ImageFont
 
-const PAGE_ID = process.env.FB_PAGE_ID;
-const TOKEN = process.env.FB_TOKEN;
+# GitHub Secrets se IDs uthana
+PAGE_ID = os.environ.get('FB_PAGE_ID')
+TOKEN = os.environ.get('FB_TOKEN')
 
-// Funny Comments
-const funnyComments = [
-    "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
-    "Kya acting hai waise! 🔥",
+# AI Prompts ke hisse (Inko mix karke hazaron nayi pictures banengi)
+expressions = [
+    "making a funny goofy face", "looking extremely shocked", 
+    "crying in a dramatic funny way", "judging the camera", 
+    "sassy attitude pose", "laughing out loud", 
+    "confused expression", "angry dramatic look"
+]
+outfits = [
+    "wearing a traditional Pakistani shalwar kameez", 
+    "in a glamorous Indian TV actress saree", 
+    "wearing a modern stylish dress", 
+    "in a heavily embroidered bridal dress"
+]
+styles = [
+    "high quality cinematic lighting, realistic", 
+    "meme style, high resolution, 4k", 
+    "portrait photography, detailed face"
+]
+
+# Unlimited Funny Lines
+funny_lines = [
     "Ammi ne pakka yeh scene nahi dekhna chahiye tha 🤣",
-    "Is drama ne toh hadd kar di hai yaar 😭",
-    "Background music toh kamaal ka tha 🎵",
-    "Guys, yeh kaunsa drama hai? 😅",
-    "Mujhe toh bas yeh jodi pasand hai ❤️",
-    "Yeh dialogue delivery toh kamaal ki hai! 👏",
-    "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅",
-    "Koi batao yeh actress kaun hai? 🤔",
-    "Iska makeup toh kamaal ka hai 💄✨",
-    "Aankhon se hi sab keh diya isne 👀❤️",
-    "Mashallah, kitni pyari lag rahi hain! 🥰",
-    "Ekdum natural beauty hai yaar 🌸"
-];
+    "Kya acting hai waise! 🔥", "Yeh expression dekh ke toh meri hasi nahi ruk rahi 😂😂",
+    "Guys, yeh kaunsa drama hai? 😅", "Mujhe toh bas yeh jodi pasand hai ❤️",
+    "Koi batao yeh actress kaun hai? 🤔", "Aaj kal ke dramas mein bas rona hi rona hai 😭",
+    "Iska makeup toh kamaal ka hai 💄✨", "Itna highlighter lagaya hai ke face chamak raha hai ✨",
+    "Contour kahan se seekha hai waise? 🤔", "Lipstick ka shade toh ekdum perfect hai 💋",
+    "Naya look, nayi vibe 💅", "Kya acting hai waise! 🔥",
+    "Iska expression toh ekdum 'Ammi ne daant di hai' wala hai 🤣",
+    "Aankhon se hi sab keh diya isne 👀❤️", "Mashallah, kitni pyari lag rahi hain! 🥰",
+    "Bhai yeh actress toh har drama mein same acting karti hai 🤦‍♂️",
+    "Is drama ne toh hadd kar di hai yaar 😭", "Ek episode dekh ke hi pata chal gaya ending kya hogi 😅"
+]
 
-// ✅ ASLI PAKISTANI ACTRESSES KI DIRECT HD IMAGE LINKS (Wikimedia Original Files)
-const dramaActressPics = [
-    "https://upload.wikimedia.org/wikipedia/commons/3/3e/Mahira_Khan.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/2/2c/Hania_Aamir.png",
-    "https://upload.wikimedia.org/wikipedia/commons/a/ae/Yumna_Zaidi.png",
-    "https://upload.wikimedia.org/wikipedia/commons/c/ce/Saba_Qamar_%28cropped%29.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/c/c5/Mehwish_Hayat.PNG",
-    "https://upload.wikimedia.org/wikipedia/commons/1/15/Pakistani_Actress_Sanam_Saeed.jpg"
-];
+def generate_unique_ai_image():
+    # 1. Random combination banayo (Har baar naya prompt banega)
+    exp = random.choice(expressions)
+    out = random.choice(outfits)
+    sty = random.choice(styles)
+    
+    # Full prompt jo AI ko diya jayega
+    prompt = f"A beautiful South Asian woman, {exp}, {out}, {sty}"
+    print(f"Generating AI Image for: {prompt}")
+    
+    # 2. Random Seed (Yeh ensure karta hai ke picture DUPLICATE na ho)
+    unique_seed = random.randint(1, 9999999)
+    
+    # 3. Pollinations AI (100% Free, No API Key)
+    # Hum seed aur prompt URL mein pass kar rahe hain
+    image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=1080&height=1080&nologo=true&seed={unique_seed}"
+    
+    response = requests.get(image_url)
+    response.raise_for_status()
+    return Image.open(io.BytesIO(response.content)).convert("RGB")
 
-async function publishPost() {
-    try {
-        const randomPic = dramaActressPics[Math.floor(Math.random() * dramaActressPics.length)];
-        const randomComment = funnyComments[Math.floor(Math.random() * funnyComments.length)];
-        
-        console.log("Posting Actress Picture:", randomPic);
-        console.log("With Comment:", randomComment);
+def add_funny_text(image):
+    # 4. Picture ke upar funny line likho
+    draw = ImageDraw.Draw(image)
+    line = random.choice(funny_lines)
+    
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 65)
+    except:
+        font = ImageFont.load_default()
 
-        // ✅ Yahan User-Agent header add kiya gaya hai (Hotlink Protection bypass ke liye)
-        const response = await axios.post(
-            `https://graph.facebook.com/v20.0/${PAGE_ID}/photos`,
-            {
-                url: randomPic,         
-                caption: randomComment, 
-                access_token: TOKEN
-            },
-            {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                }
-            }
-        );
-        
-        console.log("✅ Post Success! ID:", response.data.id);
-    } catch (error) {
-        console.error("❌ Error aagaya:");
-        if (error.response) {
-            console.error(JSON.stringify(error.response.data, null, 2));
-        } else {
-            console.error(error.message);
-        }
-        process.exit(1);
+    # Text ko image ke neeche center mein lagao
+    bbox = draw.textbbox((0, 0), line, font=font)
+    x = (image.width - (bbox[2] - bbox[0])) / 2
+    y = image.height - 120
+    
+    # Black Outline taake text clear parhe
+    for adj in range(-3, 4):
+        draw.text((x+adj, y), line, font=font, fill="black")
+        draw.text((x, y+adj), line, font=font, fill="black")
+    draw.text((x, y), line, font=font, fill="white")
+    
+    print(f"Added Comment: {line}")
+    return image
+
+def post_to_facebook(image):
+    # 5. Facebook par post karo
+    image_path = "unique_ai_meme.jpg"
+    image.save(image_path, format="JPEG")
+
+    fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
+    payload = {
+        "caption": "AI ne banaya hai! 😂🔥 Follow for more! #PakistaniDrama #Funny",
+        "access_token": TOKEN
     }
-}
 
-publishPost();
+    with open(image_path, 'rb') as img_file:
+        files = {'source': img_file}
+        response = requests.post(fb_url, data=payload, files=files)
+
+    response.raise_for_status()
+    print(f"✅ Post Success! ID: {response.json().get('id')}")
+
+if __name__ == "__main__":
+    try:
+        print("Starting Unlimited AI Meme Generation...")
+        ai_image = generate_unique_ai_image()
+        final_image = add_funny_text(ai_image)
+        print("Posting to Facebook...")
+        post_to_facebook(final_image)
+    except Exception as e:
+        print(f"❌ Error aagaya: {e}")
+        if hasattr(e, 'response') and e.response is not None:
+            print(e.response.text)
