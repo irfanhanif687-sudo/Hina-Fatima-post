@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# AI Prompts ke hisse
+# AI Prompts (Photorealistic Real Photo Style)
 expressions = [
     "making a funny goofy face", "looking extremely shocked", 
     "crying in a dramatic funny way", "judging the camera", 
@@ -23,12 +23,12 @@ outfits = [
     "in a heavily embroidered bridal dress"
 ]
 styles = [
-    "high quality cinematic lighting, realistic", 
-    "meme style, high resolution, 4k", 
-    "portrait photography, detailed face"
+    "raw photo, photorealistic, shot on DSLR 35mm lens, 8k resolution, ultra-detailed face, natural skin texture, realistic lighting",
+    "highly detailed real photography, realistic human face, professional portrait photo, sharp focus",
+    "real life photography, cinematic natural lighting, no digital art, no anime, highly realistic"
 ]
 
-# Unlimited Funny Lines
+# Unlimited Funny Lines (Emojis hata diye hain taake font ka masla na ho)
 funny_lines = [
     "Ammi ne pakka yeh scene nahi dekhna chahiye tha",
     "Kya acting hai waise!", "Yeh expression dekh ke toh meri hasi nahi ruk rahi",
@@ -47,11 +47,12 @@ def generate_unique_ai_image():
     out = random.choice(outfits)
     sty = random.choice(styles)
     
-    prompt = f"A beautiful South Asian woman, {exp}, {out}, {sty}"
+    # ✅ PROMPT FIX: Asli Photo jaisa banane ke liye strong instructions
+    prompt = f"Raw photo, photorealistic portrait of a real Pakistani TV actress, {exp}, {out}, {sty}, extremely realistic, not a cartoon, not an illustration, absolutely no digital art"
     print(f"Generating Image for: {prompt}")
     
     unique_seed = random.randint(1, 9999999)
-    image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=1080&height=1080&nologo=true&seed={unique_seed}"
+    image_url = f"https://image.pollinations.ai/prompt/{requests.utils.quote(prompt)}?width=1080&height=1080&nologo=true&seed={unique_seed}&model=flux"
     
     response = requests.get(image_url)
     response.raise_for_status()
@@ -67,12 +68,12 @@ def add_funny_text(image):
     draw = ImageDraw.Draw(image)
     line = random.choice(funny_lines)
     
-    # Text ko emoji se saaf karo taake font masla na kare
+    # Text ko saaf karo
     line_text = re.sub(r'[^\w\s\?\.,!]', '', line)
 
-    # ✅ Auto-Fit Text Logic: Font size ko chota karo jab tak text picture mein fit na ho jaye
+    # Auto-Fit Text Logic
     font_size = 70
-    max_width = image.width - 40 # 20 pixel ka margin dono taraf
+    max_width = image.width - 40
     while font_size > 10:
         try:
             font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
@@ -85,12 +86,10 @@ def add_funny_text(image):
             break
         font_size -= 2
 
-    # Center align karo
     bbox = draw.textbbox((0, 0), line_text, font=font)
     x = (image.width - (bbox[2] - bbox[0])) / 2
     y = image.height - 120
     
-    # Text draw karo (outline ke saath)
     for adj in range(-3, 4):
         draw.text((x+adj, y), line_text, font=font, fill="black")
         draw.text((x, y+adj), line_text, font=font, fill="black")
