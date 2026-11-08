@@ -1,0 +1,28 @@
+name: Facebook Auto Post (Unlimited AI)
+on:
+  schedule:
+    - cron: '0 * * * *'  # Har 1 ghante baad
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests Pillow
+
+      - name: Run Auto Post Script
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_TOKEN: ${{ secrets.FB_TOKEN }}
+        run: python post.py
