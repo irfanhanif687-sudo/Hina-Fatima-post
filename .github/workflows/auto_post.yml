@@ -20,8 +20,13 @@ jobs:
       - name: Install System Fonts (Urdu Support)
         run: |
           sudo apt-get update
-          # ✅ Yeh line Urdu Nastaliq font install karegi
-          sudo apt-get install -y fonts-noto-nastaliq fonts-noto-core
+          # ✅ Sahi package ka naam fonts-noto-core hai
+          sudo apt-get install -y fonts-noto-core
+          
+          # ✅ Backup Plan: Agar system font na mile toh direct download karein
+          mkdir -p ~/.fonts
+          wget -q -O ~/.fonts/NotoNastaliqUrdu-Regular.ttf "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf" || true
+          fc-cache -f -v
 
       - name: Install Python Dependencies
         run: |
