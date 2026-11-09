@@ -8,51 +8,43 @@ from PIL import Image, ImageDraw, ImageFont
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
+# ✅ Aapke Page ka Naam
 PAGE_NAME = "Hina Fatima"
 
-# ✅ High Quality Aesthetic Pictures
-aesthetic_images = [
-    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop"
+# ✅ Romantic & Bold Aesthetic Pictures (Couples, Portraits, Vibe)
+romantic_images = [
+    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop", # Romantic Couple
+    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1080&auto=format&fit=crop", # Couple
+    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop", # Holding hands
+    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop", # Couple
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop", # Bold Girl Portrait
+    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop", # Bold Boy Portrait
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop", # Girl looking back
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop", # Boy in jacket
+    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop", # Girl aesthetic
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop"  # Boy
 ]
 
 # ✅ Roman Urdu (Image ke liye) aur Asli Urdu (Caption ke liye)
 shayari_data = [
     {"roman": "Mohabbat mein haar jana bhi ek jeet hai,\nKe dil ki duniya mein koi shikast nahi hoti.", 
      "urdu": "محبت میں ہار جانا بھی ایک جیت ہے،\nکہ دل کی دنیا میں کوئی شکست نہیں ہوتی۔"},
-     
     {"roman": "Tere bina yeh dil veeran sa lagta hai,\nJaise barish ke bina mausam sookha sa lagta hai.", 
      "urdu": "تیرے بغیر یہ دل ویران سا لگتا ہے،\nجیسے بارش کے بغیر موسم سوکھا سا لگتا ہے۔"},
-     
     {"roman": "Tum se mil kar laga jaise,\nZindagi mukammal ho gayi hai.", 
      "urdu": "تم سے مل کر لگا جیسے،\nزندگی مکمل ہو گئی ہے۔"},
-     
     {"roman": "Hum ne toh dil se chaha tha tujhe,\nPar tu ne toh aankhon se bhi na dekha.", 
      "urdu": "ہم نے تو دل سے چاہا تھا تجھے،\nپر تو نے تو آنکھوں سے بھی نہ دیکھا۔"},
-     
     {"roman": "Dil ki baat labon tak aati nahi,\nKyunke hum tujhe pareshan nahi karna chahte.", 
      "urdu": "دل کی بات لبوں تک لاتی نہیں،\nکیونکہ ہم تجھے پریشان نہیں کرنا چاہتے۔"},
-     
     {"roman": "Teri muskurahat pe sab kuch qurban,\nTu bas muskura de toh jannat mil jaye.", 
      "urdu": "تیری مسکراہٹ پر سب کچھ قربان،\nتو بس مسکرا دے تو جنت مل جائے۔"},
-     
     {"roman": "Mere khwabon mein har raat aata hai tu,\nJaise koi khushbu fiza mein bikharti hai.", 
      "urdu": "میرے خوابوں میں ہر رات آتا ہے تو،\nجیسے کوئی خوشبو فضا میں بکھرتی ہے۔"},
-     
     {"roman": "Tere naam se hi meri subah hoti hai,\nAur teri yaad se hi meri raat dhalti hai.", 
      "urdu": "تیرے نام سے ہی میری صبح ہوتی ہے،\nاور تیری یاد سے ہی میری رات ڈھلتی ہے۔"},
-     
     {"roman": "Mohabbat ki koi zubaan nahi hoti,\nBas ek ehsaas hota hai jo dil samajh leta hai.", 
      "urdu": "محبت کی کوئی زبان نہیں ہوتی،\nبس ایک احساس ہوتا ہے جو دل سمجھ لیتا ہے۔"},
-     
     {"roman": "Agar zindagi mein dobara mile,\nToh shayad tab bhi tujhe hi chahunga.", 
      "urdu": "اگر زندگی میں دوبارہ ملے،\nتو شاید تب بھی تجھے ہی چاہوں گا۔"}
 ]
@@ -60,7 +52,7 @@ shayari_data = [
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
 def process_and_post():
-    image_url = random.choice(aesthetic_images)
+    image_url = random.choice(romantic_images)
     selected_shayari = random.choice(shayari_data)
     
     try:
@@ -78,9 +70,9 @@ def process_and_post():
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
         
-        # 2. Page Name (Left Top Corner)
+        # 2. Page Name (Center Bottom - Attractive Badge)
         try:
-            wm_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
+            wm_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 45)
         except:
             wm_font = ImageFont.load_default()
             
@@ -88,17 +80,29 @@ def process_and_post():
         wm_width = wm_bbox[2] - wm_bbox[0]
         wm_height = wm_bbox[3] - wm_bbox[1]
         
-        wm_x, wm_y, padding = 30, 30, 15
-        draw.rectangle([(wm_x - padding, wm_y - padding), (wm_x + wm_width + padding, wm_y + wm_height + padding)], fill=(0, 0, 0, 180))
+        # ✅ Center Bottom Position
+        wm_x = (img.width - wm_width) / 2
+        wm_y = img.height - wm_height - 60  # Neeche se 60 pixel upar
+        
+        # Attractive Box (Pill Shape)
+        padding_x = 30
+        padding_y = 15
+        draw.rounded_rectangle(
+            [(wm_x - padding_x, wm_y - padding_y), (wm_x + wm_width + padding_x, wm_y + wm_height + padding_y)],
+            radius=20, 
+            fill=(0, 0, 0, 180) # Semi-transparent black
+        )
+        
+        # Name Text
         draw.text((wm_x, wm_y), PAGE_NAME, font=wm_font, fill="white")
         
         # 3. Roman Urdu Text on Image
         roman_text = selected_shayari["roman"]
         
         # 4. Text Auto-Fit
-        font_size = 60 
+        font_size = 65 
         max_width = img.width - 100   
-        max_height = img.height - 300
+        max_height = img.height - 400 # Thora kam kiya taake bottom badge se na takraye
         
         while font_size > 15:
             try:
@@ -115,8 +119,9 @@ def process_and_post():
                 break
             font_size -= 2 
 
+        # Center text (thoda upar shift kiya taake bottom logo ki jagah bache)
         x_center = img.width / 2
-        y_center = img.height / 2
+        y_center = (img.height / 2) - 40 
         
         # 5. Draw Roman Urdu Text (Center with Outline)
         draw.multiline_text(
@@ -126,7 +131,7 @@ def process_and_post():
             fill="white", 
             anchor="mm", 
             align="center",
-            stroke_width=3,
+            stroke_width=4,
             stroke_fill="black"
         )
         
