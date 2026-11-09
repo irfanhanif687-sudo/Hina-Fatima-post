@@ -1,9 +1,9 @@
-name: Facebook Auto Post (Unlimited AI)
+name: Facebook Auto Post (Fault-Free)
 
 on:
   schedule:
-    - cron: '*/35 * * * *'  # ✅ Har 35 minute baad chalega
-  workflow_dispatch:        # Manual test ke liye
+    - cron: '*/35 * * * *'  # ✅ Har 35 minute baad
+  workflow_dispatch:
 
 jobs:
   post:
@@ -20,7 +20,7 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests Pillow
+          pip install requests Pillow duckduckgo-search
 
       - name: Run Auto Post Script
         env:
