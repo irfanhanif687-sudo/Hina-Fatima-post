@@ -4,14 +4,11 @@ import requests
 import io
 import sys
 from PIL import Image, ImageDraw, ImageFont
-import arabic_reshaper
-from bidi.algorithm import get_display
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
 PAGE_NAME = "Hina Fatima"
-FONT_PATH = "urdu_font.ttf"
 
 # ✅ High Quality Aesthetic Pictures
 aesthetic_images = [
@@ -27,60 +24,44 @@ aesthetic_images = [
     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop"
 ]
 
-# ✅ Bold & Romantic Urdu Shayari
-urdu_shayari = [
-    "محبت میں ہار جانا بھی ایک جیت ہے،\nکہ دل کی دنیا میں کوئی شکست نہیں ہوتی۔",
-    "تیرے بغیر یہ دل ویران سا لگتا ہے،\nجیسے بارش کے بغیر موسم سوکھا سا لگتا ہے۔",
-    "تم سے مل کر لگا جیسے،\nزندگی مکمل ہو گئی ہے۔",
-    "ہم نے تو دل سے چاہا تھا تجھے،\nپر تو نے تو آنکھوں سے بھی نہ دیکھا۔",
-    "دل کی بات لبوں تک لاتی نہیں،\nکیونکہ ہم تجھے پریشان نہیں کرنا چاہتے۔",
-    "تیری مسکراہٹ پر سب کچھ قربان،\nتو بس مسکرا دے تو جنت مل جائے۔",
-    "میرے خوابوں میں ہر رات آتا ہے تو،\nجیسے کوئی خوشبو فضا میں بکھرتی ہے۔",
-    "تیرے نام سے ہی میری صبح ہوتی ہے،\nاور تیری یاد سے ہی میری رات ڈھلتی ہے۔",
-    "محبت کی کوئی زبان نہیں ہوتی،\nبس ایک احساس ہوتا ہے جو دل سمجھ لیتا ہے۔",
-    "اگر زندگی میں دوبارہ ملے،\nتو شاید تب بھی تجھے ہی چاہوں گا۔",
-    "تیرے بغیر یہ دل سن سن سا ہے،\nجیسے بغیر بارش کے موسم سونا ہے۔",
-    "میں نے تجھے دل سے چاہا،\nنہ جانے تیری رضا کیا ہے۔"
+# ✅ Roman Urdu (Image ke liye) aur Asli Urdu (Caption ke liye)
+shayari_data = [
+    {"roman": "Mohabbat mein haar jana bhi ek jeet hai,\nKe dil ki duniya mein koi shikast nahi hoti.", 
+     "urdu": "محبت میں ہار جانا بھی ایک جیت ہے،\nکہ دل کی دنیا میں کوئی شکست نہیں ہوتی۔"},
+     
+    {"roman": "Tere bina yeh dil veeran sa lagta hai,\nJaise barish ke bina mausam sookha sa lagta hai.", 
+     "urdu": "تیرے بغیر یہ دل ویران سا لگتا ہے،\nجیسے بارش کے بغیر موسم سوکھا سا لگتا ہے۔"},
+     
+    {"roman": "Tum se mil kar laga jaise,\nZindagi mukammal ho gayi hai.", 
+     "urdu": "تم سے مل کر لگا جیسے،\nزندگی مکمل ہو گئی ہے۔"},
+     
+    {"roman": "Hum ne toh dil se chaha tha tujhe,\nPar tu ne toh aankhon se bhi na dekha.", 
+     "urdu": "ہم نے تو دل سے چاہا تھا تجھے،\nپر تو نے تو آنکھوں سے بھی نہ دیکھا۔"},
+     
+    {"roman": "Dil ki baat labon tak aati nahi,\nKyunke hum tujhe pareshan nahi karna chahte.", 
+     "urdu": "دل کی بات لبوں تک لاتی نہیں،\nکیونکہ ہم تجھے پریشان نہیں کرنا چاہتے۔"},
+     
+    {"roman": "Teri muskurahat pe sab kuch qurban,\nTu bas muskura de toh jannat mil jaye.", 
+     "urdu": "تیری مسکراہٹ پر سب کچھ قربان،\nتو بس مسکرا دے تو جنت مل جائے۔"},
+     
+    {"roman": "Mere khwabon mein har raat aata hai tu,\nJaise koi khushbu fiza mein bikharti hai.", 
+     "urdu": "میرے خوابوں میں ہر رات آتا ہے تو،\nجیسے کوئی خوشبو فضا میں بکھرتی ہے۔"},
+     
+    {"roman": "Tere naam se hi meri subah hoti hai,\nAur teri yaad se hi meri raat dhalti hai.", 
+     "urdu": "تیرے نام سے ہی میری صبح ہوتی ہے،\nاور تیری یاد سے ہی میری رات ڈھلتی ہے۔"},
+     
+    {"roman": "Mohabbat ki koi zubaan nahi hoti,\nBas ek ehsaas hota hai jo dil samajh leta hai.", 
+     "urdu": "محبت کی کوئی زبان نہیں ہوتی،\nبس ایک احساس ہوتا ہے جو دل سمجھ لیتا ہے۔"},
+     
+    {"roman": "Agar zindagi mein dobara mile,\nToh shayad tab bhi tujhe hi chahunga.", 
+     "urdu": "اگر زندگی میں دوبارہ ملے،\nتو شاید تب بھی تجھے ہی چاہوں گا۔"}
 ]
 
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
-def download_font():
-    # ✅ Font download karne ke liye 3 alag alag reliable links
-    urls = [
-        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
-    ]
-    
-    # Agar font pehle se sahi download hai, toh dobara mat download karo
-    if os.path.exists(FONT_PATH) and os.path.getsize(FONT_PATH) > 100000: 
-        return FONT_PATH
-
-    print("Downloading Urdu Font...")
-    for url in urls:
-        try:
-            response = requests.get(url, timeout=15)
-            response.raise_for_status()
-            
-            # ✅ Font Validation: Check karo ke file asli font hai (size > 100KB)
-            if len(response.content) > 100000:
-                with open(FONT_PATH, 'wb') as f:
-                    f.write(response.content)
-                print(f"✅ Font downloaded successfully from {url}")
-                return FONT_PATH
-            else:
-                print(f"⚠️ Downloaded file is too small/corrupt from {url}")
-        except Exception as e:
-            print(f"⚠️ Failed from {url}: {e}")
-            
-    print("❌ CRITICAL ERROR: All font links failed. Cannot proceed.")
-    sys.exit(1) # Stop execution agar font sahi nahi mila
-
 def process_and_post():
-    download_font() # Pehle font pakka karo
-    
     image_url = random.choice(aesthetic_images)
+    selected_shayari = random.choice(shayari_data)
     
     try:
         # 1. Image Download
@@ -111,10 +92,8 @@ def process_and_post():
         draw.rectangle([(wm_x - padding, wm_y - padding), (wm_x + wm_width + padding, wm_y + wm_height + padding)], fill=(0, 0, 0, 180))
         draw.text((wm_x, wm_y), PAGE_NAME, font=wm_font, fill="white")
         
-        # 3. Urdu Shayari Reshaping
-        shairi = random.choice(urdu_shayari)
-        reshaped_text = arabic_reshaper.reshape(shairi)
-        bidi_text = get_display(reshaped_text)
+        # 3. Roman Urdu Text on Image
+        roman_text = selected_shayari["roman"]
         
         # 4. Text Auto-Fit
         font_size = 60 
@@ -122,8 +101,13 @@ def process_and_post():
         max_height = img.height - 300
         
         while font_size > 15:
-            urdu_font = ImageFont.truetype(FONT_PATH, font_size)
-            bbox = draw.multiline_textbbox((0, 0), bidi_text, font=urdu_font, align="center")
+            try:
+                shairi_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+            except:
+                shairi_font = ImageFont.load_default()
+                break
+                
+            bbox = draw.multiline_textbbox((0, 0), roman_text, font=shairi_font, align="center")
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
             
@@ -134,11 +118,11 @@ def process_and_post():
         x_center = img.width / 2
         y_center = img.height / 2
         
-        # 5. Draw Shayari (Center with Outline)
+        # 5. Draw Roman Urdu Text (Center with Outline)
         draw.multiline_text(
             (x_center, y_center), 
-            bidi_text, 
-            font=urdu_font, 
+            roman_text, 
+            font=shairi_font, 
             fill="white", 
             anchor="mm", 
             align="center",
@@ -149,10 +133,13 @@ def process_and_post():
         image_path = "urdu_shairi_post.jpg"
         img.convert("RGB").save(image_path, format="JPEG", quality=100)
 
-        # 6. Facebook Post
+        # 6. Facebook Post (Caption mein asli Urdu jayegi)
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-        caption = f"{shairi}\n\nFollow for more beautiful shayari! ❤️\n\n{HASHTAGS}"
+        
+        urdu_caption = selected_shayari["urdu"]
+        caption = f"{urdu_caption}\n\nFollow for more beautiful shayari! ❤️\n\n{HASHTAGS}"
+        
         payload = {"caption": caption, "access_token": TOKEN}
         
         with open(image_path, 'rb') as img_file:
