@@ -3,7 +3,6 @@ import random
 import requests
 import io
 import sys
-import glob
 from PIL import Image, ImageDraw, ImageFont
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -45,23 +44,29 @@ urdu_shayari = [
 
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
+def download_urdu_font():
+    # ✅ Font download function: Yeh direct Google Fonts se download karega
+    font_path = "NotoNastaliqUrdu-Regular.ttf"
+    if not os.path.exists(font_path):
+        print("Downloading Urdu Font...")
+        url = "https://github.com/google/fonts/raw/main/ofl/notonastaliqurdu/NotoNastaliqUrdu-Regular.ttf"
+        try:
+            r = requests.get(url)
+            r.raise_for_status()
+            with open(font_path, 'wb') as f:
+                f.write(r.content)
+            print("✅ Font downloaded successfully.")
+        except Exception as e:
+            print(f"❌ Font download failed: {e}")
+    return font_path
+
 def get_urdu_font(font_size):
-    # 1. Pehle system ke installed fonts mein dhoondo
-    search_paths = [
-        '/usr/share/fonts/truetype/noto/NotoNastaliqUrdu*',
-        '/usr/share/fonts/truetype/noto/NotoNaskhArabic*',
-        os.path.expanduser('~/.fonts/NotoNastaliqUrdu*')
-    ]
-    
-    for path_pattern in search_paths:
-        font_paths = glob.glob(path_pattern)
-        if font_paths:
-            print(f"Using font: {font_paths[0]}")
-            return ImageFont.truetype(font_paths[0], font_size)
-            
-    # 2. Agar kuch na mile toh default font (jo boxes dega, par crash nahi hoga)
-    print("⚠️ Urdu font not found, using default.")
-    return ImageFont.load_default()
+    font_path = download_urdu_font()
+    try:
+        return ImageFont.truetype(font_path, font_size)
+    except Exception as e:
+        print(f"⚠️ Error loading font: {e}")
+        return ImageFont.load_default()
 
 def process_and_post():
     image_url = random.choice(aesthetic_images)
