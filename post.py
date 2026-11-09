@@ -47,31 +47,26 @@ HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #L
 def download_font():
     font_path = "urdu_font.ttf"
     
-    # 3 Backup Links
-    urls = [
-        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
-    ]
+    # ✅ Official Google GitHub Repo se direct link
+    url = "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf"
     
     if not os.path.exists(font_path) or os.path.getsize(font_path) < 50000:
         print("Downloading Urdu Font (This might take a few seconds)...")
-        for url in urls:
-            try:
-                response = requests.get(url, timeout=15)
-                response.raise_for_status()
-                # Check if downloaded file is a valid font (more than 50KB)
-                if len(response.content) > 50000:
-                    with open(font_path, 'wb') as f:
-                        f.write(response.content)
-                    print(f"✅ Font downloaded successfully from {url}")
-                    return font_path
-            except Exception as e:
-                print(f"⚠️ Failed from {url}: {e}")
-                
-        print("❌ All font links failed.")
-        sys.exit(1)
-        
+        try:
+            response = requests.get(url, timeout=20)
+            response.raise_for_status()
+            if len(response.content) > 50000:
+                with open(font_path, 'wb') as f:
+                    f.write(response.content)
+                print("✅ Font downloaded successfully.")
+                return font_path
+            else:
+                print("❌ Downloaded file is too small.")
+                sys.exit(1)
+        except Exception as e:
+            print(f"❌ Font download failed: {e}")
+            sys.exit(1)
+            
     return font_path
 
 def process_and_post():
@@ -85,7 +80,8 @@ def process_and_post():
             img_response = requests.get(image_url, headers=headers, timeout=10)
             img_response.raise_for_status()
             img = Image.open(io.BytesIO(img_response.content)).convert("RGBA")
-        except Exception:
+        except Exception as e:
+            print(f"⚠️ Image download failed, using black background: {e}")
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
         # Dark overlay
@@ -163,4 +159,5 @@ def process_and_post():
         sys.exit(1)
 
 if __name__ == "__main__":
+    # ✅ Typo Fixed Here
     process_and_post()
