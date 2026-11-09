@@ -3,7 +3,8 @@ import random
 import requests
 import io
 import sys
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+import glob
+from PIL import Image, ImageDraw, ImageFont
 import arabic_reshaper
 from bidi.algorithm import get_display
 
@@ -12,21 +13,21 @@ TOKEN = os.environ.get('FB_TOKEN')
 
 PAGE_NAME = "Hina Fatima"
 
-# ✅ Desi & Romantic Aesthetic Pictures (Unsplash)
+# ✅ High Quality Aesthetic Desi Pictures
 aesthetic_images = [
-    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop", # Couple
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop", # Couple
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop", # Girl
-    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop", # Boy
-    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop", # Couple
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop", # Girl
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop", # Boy
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop", # Girl
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop", # Girl
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop"  # Boy
+    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop"
 ]
 
-# ✅ Deep Romantic Urdu Shayari
+# ✅ Bold & Romantic Urdu Shayari
 urdu_shayari = [
     "محبت میں ہار جانا بھی ایک جیت ہے،\nکہ دل کی دنیا میں کوئی شکست نہیں ہوتی۔",
     "تیرے بغیر یہ دل ویران سا لگتا ہے،\nجیسے بارش کے بغیر موسم سوکھا سا لگتا ہے۔",
@@ -44,20 +45,22 @@ urdu_shayari = [
 
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
-def download_urdu_font():
-    # Noto Nastaliq Urdu Font download karna (Agar pehle se nahi hai)
-    font_url = "https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf"
-    font_path = "NotoNastaliqUrdu-Regular.ttf"
-    if not os.path.exists(font_path):
-        print("Downloading Urdu Font...")
-        r = requests.get(font_url)
-        with open(font_path, 'wb') as f:
-            f.write(r.content)
-    return font_path
+def get_urdu_font(font_size):
+    # System mein installed Noto Nastaliq font ko dhoondhna
+    font_paths = glob.glob('/usr/share/fonts/truetype/noto/NotoNastaliqUrdu*')
+    if font_paths:
+        return ImageFont.truetype(font_paths[0], font_size)
+    
+    # Fallback agar Nastaliq na mile (Naskh font)
+    fallback_paths = glob.glob('/usr/share/fonts/truetype/noto/NotoNaskhArabic*')
+    if fallback_paths:
+        return ImageFont.truetype(fallback_paths[0], font_size)
+        
+    # Last resort
+    return ImageFont.load_default()
 
 def process_and_post():
     image_url = random.choice(aesthetic_images)
-    font_path = download_urdu_font()
     
     try:
         # 1. Image Download
@@ -69,14 +72,12 @@ def process_and_post():
         except Exception:
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
-        # Thora dark overlay taake safaid urdu text chamke
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 130))
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
         
         # 2. Page Name (Left Top Corner)
         try:
-            # Page name English mein acha lagta hai
             wm_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 40)
         except:
             wm_font = ImageFont.load_default()
@@ -89,26 +90,18 @@ def process_and_post():
         draw.rectangle([(wm_x - padding, wm_y - padding), (wm_x + wm_width + padding, wm_y + wm_height + padding)], fill=(0, 0, 0, 180))
         draw.text((wm_x, wm_y), PAGE_NAME, font=wm_font, fill="white")
         
-        # 3. Urdu Shayari Process karna (Reshaping & Bidi)
+        # 3. Urdu Shayari Reshaping
         shairi = random.choice(urdu_shayari)
-        
-        # Urdu ko sahi shape aur RTL direction mein convert karna
         reshaped_text = arabic_reshaper.reshape(shairi)
         bidi_text = get_display(reshaped_text)
         
         # 4. Text Auto-Fit
-        font_size = 65
+        font_size = 75 # Start bada rakha hai
         max_width = img.width - 100   
         max_height = img.height - 300
         
         while font_size > 20:
-            try:
-                urdu_font = ImageFont.truetype(font_path, font_size)
-            except:
-                urdu_font = ImageFont.load_default()
-                break
-            
-            # Text ki boundaries check karo
+            urdu_font = get_urdu_font(font_size)
             bbox = draw.multiline_textbbox((0, 0), bidi_text, font=urdu_font, align="center")
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
@@ -120,7 +113,7 @@ def process_and_post():
         x_center = img.width / 2
         y_center = img.height / 2
         
-        # 5. Shayari Draw karo (Perfect Center with Stroke)
+        # 5. Draw Shayari (Center with Outline)
         draw.multiline_text(
             (x_center, y_center), 
             bidi_text, 
@@ -138,7 +131,6 @@ def process_and_post():
         # 6. Facebook Post
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-        # Caption mein bhi wohi shayari dalo
         caption = f"{shairi}\n\nFollow for more beautiful shayari! ❤️\n\n{HASHTAGS}"
         payload = {"caption": caption, "access_token": TOKEN}
         
