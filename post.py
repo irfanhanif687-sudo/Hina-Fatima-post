@@ -5,67 +5,57 @@ import requests
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# Subreddits list
+# Memes lene ke liye subreddits (Yeh proxy API inko block nahi karegi)
 subreddits = ["pakistanimemes", "indianmemes", "bollywoodmemes", "pakistanidrama"]
 
-def get_unlimited_meme():
+def get_unlimited_real_meme():
     sub = random.choice(subreddits)
-    url = f"https://www.reddit.com/r/{sub}/hot.json?limit=100"
     
-    # ✅ FIX 1: Reddit ko lagta hai koi bot hai agar proper browser header na ho
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
+    # ✅ Magic Proxy API jo bina block hue Reddit se meme uthata hai
+    url = f"https://meme-api.com/gimme/{sub}"
+    print(f"Fetching real meme from r/{sub} via Meme-API...")
     
-    print(f"Fetching memes from r/{sub}...")
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    
     try:
         response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
+        data = response.json()
+        
+        # Agar meme NSFW (gandi) hai toh skip karo
+        if data.get('nsfw', False):
+            print("❌ NSFW meme mila, skip kar rahe hain.")
+            return None
+            
+        meme_url = data.get('url')
+        if meme_url:
+            print(f"Found Real Meme: {meme_url}")
+            return meme_url
+        return None
     except Exception as e:
-        print(f"❌ Reddit API Error: {e}")
+        print(f"❌ API Error: {e}")
         return None
-        
-    posts = response.json()['data']['children']
-    
-    valid_images = []
-    for post in posts:
-        # Agar post hide ya remove ho chuki hai toh skip karo
-        if post['data'].get('hidden') or post['data'].get('removed'):
-            continue
-            
-        img_url = post['data']['url']
-        # ✅ FIX 2: Sirf direct image links uthao (videos ya imgur pages nahi)
-        if img_url.lower().endswith(('.jpg', '.jpeg', '.png')):
-            valid_images.append(img_url)
-            
-    if not valid_images:
-        print("❌ Is waqt koi valid image nahi mili is subreddit mein.")
-        return None
-        
-    selected_meme_url = random.choice(valid_images)
-    print(f"Selected Meme URL: {selected_meme_url}")
-    return selected_meme_url
 
 def post_to_facebook(meme_url):
     if not meme_url:
-        print("❌ Skip: Koi valid meme nahi mila.")
+        print("❌ Koi meme nahi mila.")
         return
         
     try:
-        # Image Download
-        print("Downloading image...")
+        # 1. Meme download karo
+        print("Downloading meme...")
         img_response = requests.get(meme_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
         img_response.raise_for_status()
         
         if len(img_response.content) < 1000:
-            print("❌ Image file kharab hai (size bohat choti hai).")
+            print("❌ Image file kharab hai.")
             return
             
-        image_path = "reddit_meme.jpg"
+        image_path = "real_meme.jpg"
         with open(image_path, 'wb') as f:
             f.write(img_response.content)
             
-        # Facebook Upload
+        # 2. Facebook par upload karo
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
         payload = {
@@ -86,7 +76,7 @@ def post_to_facebook(meme_url):
             print(e.response.text)
 
 if __name__ == "__main__":
-    print("Starting Unlimited Reddit Meme Generation...")
-    meme_url = get_unlimited_meme()
+    print("Starting Unlimited Real Meme Generation...")
+    meme_url = get_unlimited_real_meme()
     if meme_url:
         post_to_facebook(meme_url)
