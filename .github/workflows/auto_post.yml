@@ -20,8 +20,8 @@ jobs:
       - name: Install System Libraries for Urdu
         run: |
           sudo apt-get update
-          # ✅ Yeh libraries Urdu text ko sahi se jodne aur render karne ke liye zaroori hain
-          sudo apt-get install -y libfribidi0 libraqm-dev
+          # ✅ Urdu text ko jodne ke liye yeh libraries lazmi hain
+          sudo apt-get install -y libfribidi0 libraqm-dev libfreetype6-dev
 
       - name: Install Python Dependencies
         run: |
