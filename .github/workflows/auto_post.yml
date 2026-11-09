@@ -2,8 +2,8 @@ name: Facebook Auto Post (Unlimited AI)
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Har 1 ghante baad chalega
-  workflow_dispatch:      # Manual test ke liye
+    - cron: '*/35 * * * *'  # ✅ Har 35 minute baad chalega
+  workflow_dispatch:        # Manual test ke liye
 
 jobs:
   post:
