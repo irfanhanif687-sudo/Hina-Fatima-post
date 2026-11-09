@@ -4,14 +4,9 @@ import requests
 import io
 import re
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
-from duckduckgo_search import DDGS
 
-# GitHub Secrets se IDs uthana
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
-
-# ✅ Backup Image (Agar internet search fail ho jaye toh yeh use hogi)
-FALLBACK_IMAGE_URL = "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop"
 
 # Funny Lines
 funny_lines = [
@@ -24,68 +19,73 @@ funny_lines = [
     "Aaj kal ke dramas mein bas rona hi rona hai",
     "Iska makeup toh kamaal ka hai", 
     "Iska expression toh ekdum Ammi ne daant di hai wala hai",
-    "Mashallah, kitni pyari lag rahi hain!",
-    "Bhai yeh actress toh har drama mein same acting karti hai",
-    "Is drama ne toh hadd kar di hai yaar", 
-    "Ek episode dekh ke hi pata chal gaya ending kya hogi"
+    "Mashallah, kitni pyari lag rahi hain!"
 ]
 
+# 35+ Viral Hashtags
 HASHTAGS = """
 #PakistaniDrama #IndianDrama #Meme #FunnyMemes #Trending #Viral #HaniaAamir 
 #WahajAli #JaanNisar #KabhiMainKabhiTum #SajalAly #AyezaKhan #YumnaZaidi 
 #Bollywood #Lollywood #TikTokPakistan #Entertainment #DramaSerial #DramaQueen 
 #Fun #Laugh #Comedy #MemePage #DramaMeme #ViralMemes #ExplorePage #FYP 
-#ForYouPage #Relatable #DesiMemes #DramaLovers #PakistanZindabad 
 """
 
-def get_real_image():
-    # Browser ki tarah DuckDuckGo se search karo
-    print("Browsing DuckDuckGo for real Pakistani drama pictures...")
-    try:
-        results = DDGS().images(
-            keywords="pakistani drama funny scene",
-            region="wt-wt",
-            safesearch="moderate",
-            max_results=10
-        )
-        
-        valid_urls = [res['image'] for res in results if res.get('image') and res['image'].lower().endswith(('.jpg', '.png', '.jpeg'))]
-        
-        if valid_urls:
-            selected_url = random.choice(valid_urls)
-            print(f"Found Real Picture: {selected_url}")
-            return selected_url
-    except Exception as e:
-        print(f"❌ Search failed: {e}")
+def get_desi_meme():
+    # ✅ Yeh API kabhi block nahi hoti aur direct Pakistani/Desi memes deti hai
+    subreddits = ["pakistanimemes", "desimemes", "chutyapa", "pakistan"]
+    sub = random.choice(subreddits)
+    url = f"https://meme-api.com/gimme/{sub}"
     
-    print("⚠️ Using Backup Image to prevent failure...")
-    return FALLBACK_IMAGE_URL
+    print(f"Fetching direct meme from r/{sub}...")
+    try:
+        response = requests.get(url, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data.get('nsfw', False):
+            return None
+            
+        meme_url = data.get('url')
+        if meme_url and meme_url.lower().endswith(('.jpg', '.jpeg', '.png')):
+            print(f"Found Meme: {meme_url}")
+            return meme_url
+        return None
+    except Exception as e:
+        print(f"❌ API Error: {e}")
+        return None
 
 def process_and_post():
-    image_url = get_real_image()
-    
+    image_url = get_desi_meme()
+    if not image_url:
+        print("❌ Meme nahi mila, agli baar try karega.")
+        return
+        
     try:
-        # Image Download karo (Browser headers ke sath)
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        # 1. Image Download
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
         img_response = requests.get(image_url, headers=headers, timeout=15)
         img_response.raise_for_status()
         
-        # Verify karo ke file sahi image hai
         img = Image.open(io.BytesIO(img_response.content)).convert("RGB")
         
+        # ✅ MODIFY STEP: Crop Edges (Instagram/Reddit watermark hatane ke liye)
+        width, height = img.size
+        left = width * 0.05
+        top = height * 0.05
+        right = width * 0.95
+        bottom = height * 0.90 # Neeche se zyada kaat rahe hain taake UI hat jaye
+        
+        img = img.crop((left, top, right, bottom))
+
         # Quality Enhance
         enhancer = ImageEnhance.Sharpness(img)
         img = enhancer.enhance(1.2)
-        
-        # Kinaron se crop karo watermark hatane ke liye
-        width, height = img.size
-        img = img.crop((5, 5, width - 5, height - 5))
 
         draw = ImageDraw.Draw(img)
         line = random.choice(funny_lines)
         line_text = re.sub(r'[^\w\s\?\.,!]', '', line).strip()
 
-        # Auto-Fit Text
+        # Text Auto-Fit
         font_size = 75
         max_width = img.width - 40
         while font_size > 10:
@@ -103,18 +103,16 @@ def process_and_post():
         x = (img.width - (bbox[2] - bbox[0])) / 2
         y = img.height - 120
         
-        # Text Outline (Black background for white text)
+        # Text Outline
         for adj in range(-3, 4):
             draw.text((x+adj, y), line_text, font=font, fill="black")
             draw.text((x, y+adj), line_text, font=font, fill="black")
         draw.text((x, y), line_text, font=font, fill="white")
         
-        print(f"Added Comment: {line_text}")
-        
-        image_path = "final_drama_meme.jpg"
+        image_path = "desi_meme.jpg"
         img.save(image_path, format="JPEG", quality=100)
 
-        # Facebook par Post
+        # Post to Facebook
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
         caption = f"Tag your drama lover friend! 😂🔥\n\nAapko yeh meme kaisa laga? Comment below! 👇\n\n{HASHTAGS}"
@@ -132,5 +130,5 @@ def process_and_post():
         print(f"❌ Error aagaya: {e}")
 
 if __name__ == "__main__":
-    print("Starting Real Web Search Meme System...")
+    print("Starting No-Block Meme System...")
     process_and_post()
