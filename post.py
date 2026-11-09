@@ -2,24 +2,22 @@ import os
 import random
 import requests
 import io
-import re
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from PIL import Image, ImageEnhance
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# Funny Lines
-funny_lines = [
-    "Ammi ne pakka yeh scene nahi dekhna chahiye tha",
-    "Kya acting hai waise!", 
-    "Yeh expression dekh ke toh meri hasi nahi ruk rahi",
-    "Guys, yeh kaunsa drama hai?", 
-    "Mujhe toh bas yeh jodi pasand hai",
-    "Koi batao yeh actress kaun hai?", 
-    "Aaj kal ke dramas mein bas rona hi rona hai",
-    "Iska makeup toh kamaal ka hai", 
-    "Iska expression toh ekdum Ammi ne daant di hai wala hai",
-    "Mashallah, kitni pyari lag rahi hain!"
+# Funny Captions (Yeh picture ke neeche Facebook par likhi jayengi)
+captions = [
+    "Ammi ne pakka yeh scene nahi dekhna chahiye tha 😂",
+    "Kya acting hai waise! 🔥",
+    "Yeh expression dekh ke toh meri hasi nahi ruk rahi 🤣",
+    "Guys, yeh kaunsa drama hai? 😅",
+    "Koi batao yeh actress kaun hai? 🤔",
+    "Iska makeup toh kamaal ka hai 💄✨",
+    "Bhai yeh actress toh har drama mein same acting karti hai 🤦‍♂️",
+    "Ek episode dekh ke hi pata chal gaya ending kya hogi 😭",
+    "Tag your drama lover friend! 👇"
 ]
 
 # 35+ Viral Hashtags
@@ -31,12 +29,11 @@ HASHTAGS = """
 """
 
 def get_desi_meme():
-    # ✅ Yeh API kabhi block nahi hoti aur direct Pakistani/Desi memes deti hai
-    subreddits = ["pakistanimemes", "desimemes", "chutyapa", "pakistan"]
+    subreddits = ["pakistanimemes", "desimemes", "chutyapa"]
     sub = random.choice(subreddits)
     url = f"https://meme-api.com/gimme/{sub}"
     
-    print(f"Fetching direct meme from r/{sub}...")
+    print(f"Fetching meme from r/{sub}...")
     try:
         response = requests.get(url, timeout=15)
         response.raise_for_status()
@@ -68,12 +65,14 @@ def process_and_post():
         
         img = Image.open(io.BytesIO(img_response.content)).convert("RGB")
         
-        # ✅ MODIFY STEP: Crop Edges (Instagram/Reddit watermark hatane ke liye)
+        # ✅ MODIFY STEP: Aggressive Cropping (Purane page ka UI hatane ke liye)
         width, height = img.size
+        
+        # Hum kinaron se 8% hissa kaat rahe hain (taake purana watermark/UI hat jaye)
         left = width * 0.05
         top = height * 0.05
         right = width * 0.95
-        bottom = height * 0.90 # Neeche se zyada kaat rahe hain taake UI hat jaye
+        bottom = height * 0.88 # Neeche se zyada kaat rahe hain taake "Muhammad Ali" wala hissa hat jaye
         
         img = img.crop((left, top, right, bottom))
 
@@ -81,41 +80,15 @@ def process_and_post():
         enhancer = ImageEnhance.Sharpness(img)
         img = enhancer.enhance(1.2)
 
-        draw = ImageDraw.Draw(img)
-        line = random.choice(funny_lines)
-        line_text = re.sub(r'[^\w\s\?\.,!]', '', line).strip()
-
-        # Text Auto-Fit
-        font_size = 75
-        max_width = img.width - 40
-        while font_size > 10:
-            try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
-            except:
-                font = ImageFont.load_default()
-                break
-            bbox = draw.textbbox((0, 0), line_text, font=font)
-            if (bbox[2] - bbox[0]) <= max_width:
-                break
-            font_size -= 2
-
-        bbox = draw.textbbox((0, 0), line_text, font=font)
-        x = (img.width - (bbox[2] - bbox[0])) / 2
-        y = img.height - 120
-        
-        # Text Outline
-        for adj in range(-3, 4):
-            draw.text((x+adj, y), line_text, font=font, fill="black")
-            draw.text((x, y+adj), line_text, font=font, fill="black")
-        draw.text((x, y), line_text, font=font, fill="white")
-        
-        image_path = "desi_meme.jpg"
+        image_path = "clean_meme.jpg"
         img.save(image_path, format="JPEG", quality=100)
 
-        # Post to Facebook
+        # 2. Post to Facebook
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-        caption = f"Tag your drama lover friend! 😂🔥\n\nAapko yeh meme kaisa laga? Comment below! 👇\n\n{HASHTAGS}"
+        
+        random_caption = random.choice(captions)
+        caption = f"{random_caption}\n\nFollow for more! 👇\n{HASHTAGS}"
         
         payload = {"caption": caption, "access_token": TOKEN}
         
@@ -130,5 +103,5 @@ def process_and_post():
         print(f"❌ Error aagaya: {e}")
 
 if __name__ == "__main__":
-    print("Starting No-Block Meme System...")
+    print("Starting Copy, Crop & Post System...")
     process_and_post()
