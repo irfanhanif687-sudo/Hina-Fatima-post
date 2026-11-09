@@ -9,27 +9,44 @@ from PIL import Image, ImageDraw, ImageFont
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# ✅ Aapke Page ka Naam (Watermark ke liye)
 PAGE_NAME = "Hina Fatima"
 
-# ✅ Unlimited High-Quality Aesthetic Pictures (Unsplash - Direct HD)
-male_images = [
+# ✅ 30+ Romantic Male/Female Aesthetic Pictures (High Quality)
+romantic_images = [
+    # Romantic Couples / Aesthetic
+    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=1080&auto=format&fit=crop"
-]
-
-female_images = [
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1502378735452-bc7d86632805?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1515023115689-589c33041d3c?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1521146764736-56c929d59c83?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=1080&auto=format&fit=crop"
 ]
 
-# ✅ 50+ Unlimited Shairis
+# ✅ 50+ Unlimited Shairis (Romantic & Sad)
 shairi_list = [
     "Tumhari yaad mein hum roz mara karte hain,\nTumhe bhoolane ki koshish mein khud ko hi bhula dete hain.",
     "Kuch is tarah se teri zindagi mein shamil hoon,\nKe khud ko dhoondhne nikloon toh tujh mein nikal aata hoon.",
@@ -60,17 +77,36 @@ shairi_list = [
     "Mujhe dard bhi teri hi yaad dilata hai,\nAur sukoon bhi teri hi yaad se milta hai.",
     "Agar zindagi mein dobara milo,\nToh shayad tab bhi tumhe hi chahunga.",
     "Woh kehte hain ke main badal gaya hoon,\nPar sach toh yeh hai ke main unke liye hi ruk gaya hoon.",
-    "Tere bina jo guzri hai raatein,\nUn raaton ka koi hisaab nahi."
+    "Tere bina jo guzri hai raatein,\nUn raaton ka koi hisaab nahi.",
+    "Meri zindagi ki kitab mein,\nTum ek aisa safha ho jo hamesha yaad rahega.",
+    "Kuch rishtay naam ke nahi hote,\nBas ehsaas hote hain jo dil mein rehte hain.",
+    "Tumse shikayat nahi hai koi,\nBas apne naseeb se gila hai.",
+    "Jo dil mein basa hai,\nWoh nazar se door kaise ho sakta hai.",
+    "Mujhe teri aadat hai,\nTere bina kya guzara hoga.",
+    "Har mod par tumhara intezar karte hain,\nShayad kisi mod par tumse pyar ho jaye.",
+    "Teri muskurahat pe sab kuch qurban,\nTu bas muskura de toh jannat mil jaye.",
+    "Dil ke armaan aansuon mein beh gaye,\nHum wafa karte rahe aur woh bewafa kehlaye.",
+    "Kisi ka dil todna aasan hai,\nPar kisi ka dil jodna bohat mushkil hota hai.",
+    "Meri chahat ko tumhari zaroorat samajh lo,\nYeh sirf ek hawas nahi, ibadat hai.",
+    "Zindagi mein har cheez ka waqt hota hai,\nBas mohabbat ka koi waqt nahi hota.",
+    "Tere naam se hi meri subah hoti hai,\nAur teri yaad se hi meri raat dhalti hai.",
+    "Mujhe teri baahon mein sukoon milta hai,\nJaise musafir ko apna ghar mil jaye.",
+    "Kya batayein kis se kitna pyar hai,\nBas itna jaan lo ke tumhari yaad mein din guzar jata hai.",
+    "Aankhon mein teri tasveer liye baitha hoon,\nTere bina bhi tujh mein khoya hua hoon.",
+    "Mera dil tere naam ka ho gaya,\nJaise kisi ne mujhe teri yaadon ka tohfa de diya ho.",
+    "Tumhari baaton mein woh pyar hai,\nJo kisi aur ki baaton mein nahi.",
+    "Mujhe tumhari aadat hai,\nTumse door rehna mujhse ho nahi sakta.",
+    "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
+    "Zindagi mein tum aaye toh kya hua,\nMeri toh zindagi hi badal gayi."
 ]
 
-# ✅ Viral Hashtags
-HASHTAGS = "#Shairi #UrduPoetry #LoveQuotes #SadShayari #Zindagi #DilKiBaat #Aesthetic #Trending #Viral #FYP #HinaFatima #DeepLines #Mohabbat #Dosti"
+HASHTAGS = "#Shairi #UrduPoetry #LoveQuotes #SadShayari #Zindagi #DilKiBaat #Aesthetic #Trending #Viral #FYP #HinaFatima #DeepLines #Mohabbat #Romantic"
 
 def process_and_post():
-    all_images = male_images + female_images
-    image_url = random.choice(all_images)
+    image_url = random.choice(romantic_images)
     
     try:
+        # 1. Download Image with Fallback
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
             img_response = requests.get(image_url, headers=headers, timeout=10)
@@ -83,7 +119,7 @@ def process_and_post():
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
         
-        # 1. Page Name (Top-Right)
+        # 2. Page Name (Top-Right)
         try:
             wm_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 45)
         except:
@@ -93,17 +129,17 @@ def process_and_post():
         wm_x = img.width - (wm_bbox[2] - wm_bbox[0]) - 30
         wm_y = 30
         
-        for adj in range(-2, 3):
-            draw.text((wm_x+adj, wm_y), PAGE_NAME, font=wm_font, fill="black")
-            draw.text((wm_x, wm_y+adj), PAGE_NAME, font=wm_font, fill="black")
-        draw.text((wm_x, wm_y), PAGE_NAME, font=wm_font, fill="white")
+        draw.text((wm_x, wm_y), PAGE_NAME, font=wm_font, fill="white", stroke_width=2, stroke_fill="black")
         
-        # 2. Shairi Text
+        # 3. Shairi Text Auto-Fit Logic
         shairi = random.choice(shairi_list)
-        wrapped_shairi = textwrap.fill(shairi, width=30)
+        wrapped_shairi = textwrap.fill(shairi, width=22)
         
-        font_size = 65
-        while font_size > 20:
+        font_size = 70
+        max_width = img.width - 60   
+        max_height = img.height - 300
+        
+        while font_size > 15:
             try:
                 shairi_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
             except:
@@ -111,25 +147,33 @@ def process_and_post():
                 break
             
             bbox = draw.multiline_textbbox((0, 0), wrapped_shairi, font=shairi_font, align="center")
+            text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
-            if text_height < img.height - 200:
+            
+            if text_width < max_width and text_height < max_height:
                 break
-            font_size -= 2
+            font_size -= 2 
 
-        # ✅ FIX: Perfect Centering (Anchor="mm" ka use kiya hai taake lafz na katen)
         x_center = img.width / 2
         y_center = img.height / 2
         
-        # Text Outline & Main Text
-        for adj in range(-3, 4):
-            draw.multiline_text((x_center+adj, y_center), wrapped_shairi, font=shairi_font, fill="black", anchor="mm", align="center")
-            draw.multiline_text((x_center, y_center+adj), wrapped_shairi, font=shairi_font, fill="black", anchor="mm", align="center")
-        draw.multiline_text((x_center, y_center), wrapped_shairi, font=shairi_font, fill="white", anchor="mm", align="center")
+        # ✅ CLEAN DRAW WITHOUT CUTTING
+        draw.multiline_text(
+            (x_center, y_center), 
+            wrapped_shairi, 
+            font=shairi_font, 
+            fill="white", 
+            anchor="mm", 
+            align="center",
+            stroke_width=4,
+            stroke_fill="black"
+        )
         
         image_path = "shairi_post.jpg"
         img.convert("RGB").save(image_path, format="JPEG", quality=100)
 
-        # 3. Facebook par Post
+        # 4. Post to Facebook
+        print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
         caption = f"{shairi}\n\nFollow for more beautiful shairi! ❤️\n\n{HASHTAGS}"
         payload = {"caption": caption, "access_token": TOKEN}
