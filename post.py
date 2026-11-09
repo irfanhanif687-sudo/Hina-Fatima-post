@@ -11,8 +11,9 @@ PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
 PAGE_NAME = "Hina Fatima"
+FONT_PATH = "urdu_font.ttf"
 
-# ✅ High Quality Aesthetic Desi Pictures
+# ✅ High Quality Aesthetic Pictures
 aesthetic_images = [
     "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
@@ -45,32 +46,40 @@ urdu_shayari = [
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
 def download_font():
-    font_path = "urdu_font.ttf"
+    # ✅ Font download karne ke liye 3 alag alag reliable links
+    urls = [
+        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
+    ]
     
-    # ✅ Official Google GitHub Repo se direct link
-    url = "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf"
-    
-    if not os.path.exists(font_path) or os.path.getsize(font_path) < 50000:
-        print("Downloading Urdu Font (This might take a few seconds)...")
+    # Agar font pehle se sahi download hai, toh dobara mat download karo
+    if os.path.exists(FONT_PATH) and os.path.getsize(FONT_PATH) > 100000: 
+        return FONT_PATH
+
+    print("Downloading Urdu Font...")
+    for url in urls:
         try:
-            response = requests.get(url, timeout=20)
+            response = requests.get(url, timeout=15)
             response.raise_for_status()
-            if len(response.content) > 50000:
-                with open(font_path, 'wb') as f:
-                    f.write(response.content)
-                print("✅ Font downloaded successfully.")
-                return font_path
-            else:
-                print("❌ Downloaded file is too small.")
-                sys.exit(1)
-        except Exception as e:
-            print(f"❌ Font download failed: {e}")
-            sys.exit(1)
             
-    return font_path
+            # ✅ Font Validation: Check karo ke file asli font hai (size > 100KB)
+            if len(response.content) > 100000:
+                with open(FONT_PATH, 'wb') as f:
+                    f.write(response.content)
+                print(f"✅ Font downloaded successfully from {url}")
+                return FONT_PATH
+            else:
+                print(f"⚠️ Downloaded file is too small/corrupt from {url}")
+        except Exception as e:
+            print(f"⚠️ Failed from {url}: {e}")
+            
+    print("❌ CRITICAL ERROR: All font links failed. Cannot proceed.")
+    sys.exit(1) # Stop execution agar font sahi nahi mila
 
 def process_and_post():
-    font_path = download_font()
+    download_font() # Pehle font pakka karo
+    
     image_url = random.choice(aesthetic_images)
     
     try:
@@ -80,11 +89,10 @@ def process_and_post():
             img_response = requests.get(image_url, headers=headers, timeout=10)
             img_response.raise_for_status()
             img = Image.open(io.BytesIO(img_response.content)).convert("RGBA")
-        except Exception as e:
-            print(f"⚠️ Image download failed, using black background: {e}")
+        except Exception:
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
-        # Dark overlay
+        # Dark overlay taake text saaf parha jaye
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 130))
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
@@ -114,7 +122,7 @@ def process_and_post():
         max_height = img.height - 300
         
         while font_size > 15:
-            urdu_font = ImageFont.truetype(font_path, font_size)
+            urdu_font = ImageFont.truetype(FONT_PATH, font_size)
             bbox = draw.multiline_textbbox((0, 0), bidi_text, font=urdu_font, align="center")
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
@@ -159,5 +167,4 @@ def process_and_post():
         sys.exit(1)
 
 if __name__ == "__main__":
-    # ✅ Typo Fixed Here
     process_and_post()
