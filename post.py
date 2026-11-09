@@ -1,53 +1,44 @@
 import os
 import random
 import requests
-import urllib.parse
+import io
+import textwrap
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
-# GitHub Secrets se IDs uthana
+try:
+    from duckduckgo_search import DDGS
+    HAS_DDGS = True
+except ImportError:
+    HAS_DDGS = False
+    print("DDGS library nahi mili, backup mode use hoga.")
+
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
-# ✅ Current Dramas ke Fresh aur Funny Jokes (Roman Urdu)
-current_drama_jokes = [
-    ("Ammi: Shaadi karlo", "Me: Pehle Jaan Nisar ka end dekh loon"),
-    ("Kabhi Main Kabhi Tum", "Mera dil aur dimagh"),
-    ("Drama Hero:", "Drama Heroine:"),
-    ("Log: Dramas fake hote hain", "Me: (Rone lagta hoon)"),
-    ("Ek episode dekhne baitha tha", "Poori raat nikal gayi"),
-    ("Ammi: Phone chhoro", "Me: Bas 5 minute aur"),
-    ("Jaan Nisar ke baad", "Mujhe kisi se pyar nahi hona"),
-    ("Drama Villain", "Hamesha Hero ki shakal"),
-    ("Background music", "Har emotional scene mein"),
-    ("Ek episode ke baad", "100 ads"),
-    ("Mera dimagh", "Drama ke plot holes"),
-    ("Jab drama ka end aata hai", "Aur aapki zindagi khali lagti hai"),
-    ("Ammi ka gussa", "Drama ki villain"),
-    ("Mujhe drama nahi dekhna", "Phir 2 ghante baad: Kya scene tha!"),
-    ("Padosi: Shaadi kab karoge?", "Me: Jab drama ka last episode aayega"),
-    ("Zindagi mein tension", "Drama dekh kar aur badh gayi"),
-    ("Mera favorite character", "Hamesha pehle mar jata hai"),
-    ("Kabhi Main Kabhi Tum ka OST", "Meri ringtone"),
-    ("Ammi: Bahar jao", "Me: Drama ka climax aa raha hai"),
-    ("Drama dekhne ke baad", "Mujhe bhi acting ka shauk ho gaya")
+# Fallback Images (Agar search fail ho jaye)
+FALLBACK_IMAGES = [
+    "https://upload.wikimedia.org/wikipedia/commons/0/0a/Hania_Aamir_at_Hum_Style_Awards_%28cropped%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/f/f5/Sajal_Aly_at_Hum_Style_Awards_%28cropped%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/0/0b/Mahira_Khan_at_Lux_Style_Awards_%282%29_%28cropped%29.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/8/8d/Yumna_Zaidi_at_Hum_Style_Awards_%28cropped%29.jpg"
 ]
 
-# ✅ Famous Meme Templates (No Instagram UI, 100% Clean)
-templates = [
-    "drake",          # Drake wala meme
-    "distracted",     # Distracted Boyfriend
-    "pikachu",        # Surprised Pikachu
-    "gru",            # Gru ka plan
-    "rollsafe",       # Sochne wala aadmi
-    "success",        # Success kid
-    "woman-cat",      # Woman yelling at cat
-    "two-buttons",    # Do buttons wala
-    "buzz",           # Buzz Lightyear
-    "yoda",           # Yoda
-    "spiderman",      # Spiderman
-    "batman"          # Batman
+# Emojis ke bina Funny Lines (Taake font mein error na aaye)
+funny_lines = [
+    "Ammi ne pakka yeh scene nahi dekhna chahiye tha",
+    "Kya acting hai waise!",
+    "Yeh expression dekh ke toh meri hasi nahi ruk rahi",
+    "Guys, yeh kaunsa drama hai?",
+    "Mujhe toh bas yeh jodi pasand hai",
+    "Koi batao yeh actress kaun hai?",
+    "Aaj kal ke dramas mein bas rona hi rona hai",
+    "Iska makeup toh kamaal ka hai",
+    "Iska expression toh ekdum Ammi ne daant di hai wala hai",
+    "Bhai yeh actress toh har drama mein same acting karti hai",
+    "Is drama ne toh hadd kar di hai yaar",
+    "Ek episode dekh ke hi pata chal gaya ending kya hogi"
 ]
 
-# 35+ Viral Hashtags (Reach barhane ke liye)
 HASHTAGS = """
 #PakistaniDrama #IndianDrama #Meme #FunnyMemes #Trending #Viral #HaniaAamir 
 #WahajAli #JaanNisar #KabhiMainKabhiTum #SajalAly #AyezaKhan #YumnaZaidi 
@@ -56,56 +47,103 @@ HASHTAGS = """
 #ForYouPage #Relatable #DesiMemes #DramaLovers #PakistanZindabad 
 """
 
-def post_meme():
-    # 1. Random template aur joke select karo
-    template = random.choice(templates)
-    top_text, bottom_text = random.choice(current_drama_jokes)
-    
-    # 2. Text ko URL-safe banayo
-    safe_top = urllib.parse.quote(top_text, safe='')
-    safe_bottom = urllib.parse.quote(bottom_text, safe='')
-    
-    # 3. Memegen API ka URL banao
-    meme_url = f"https://api.memegen.link/images/{template}/{safe_top}/{safe_bottom}.png"
-    print(f"Generated Meme URL: {meme_url}")
-    
-    # 4. Image ko download karo
+def get_image_from_search():
+    if not HAS_DDGS:
+        return None
+    print("Try 1: Searching internet for latest memes...")
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'} 
-        img_response = requests.get(meme_url, headers=headers, timeout=15)
-        img_response.raise_for_status()
-        
-        if len(img_response.content) < 1000:
-            print("❌ Image file kharab hai.")
-            return
-            
-        image_path = "clean_drama_meme.png"
-        with open(image_path, 'wb') as f:
-            f.write(img_response.content)
-            
+        results = DDGS().images(
+            keywords="latest pakistani drama funny memes",
+            region="wt-wt",
+            safesearch="moderate",
+            max_results=15
+        )
+        valid_urls = [res['image'] for res in results if res.get('image') and res['image'].lower().endswith(('.jpg', '.png', '.jpeg'))]
+        if valid_urls:
+            selected_url = random.choice(valid_urls)
+            print(f"Found: {selected_url}")
+            return selected_url
     except Exception as e:
-        print(f"❌ Image download nahi ho saki: {e}")
-        return
+        print(f"Search failed: {e}")
+    return None
 
-    # 5. Facebook par upload karo
+def process_and_post(image_url=None):
+    img = None
+    
+    # Agar search se URL mila hai toh download karo
+    if image_url:
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            res = requests.get(image_url, headers=headers, timeout=15)
+            res.raise_for_status()
+            img = Image.open(io.BytesIO(res.content)).convert("RGB")
+        except Exception as e:
+            print(f"Download failed: {e}")
+            img = None # Download fail ho toh neeche fallback chalega
+
+    # Fallback 1: Agar search/download fail hua toh Wikipedia se uthao
+    if not img:
+        print("Try 2 (Backup): Downloading fallback actress image...")
+        try:
+            url = random.choice(FALLBACK_IMAGES)
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            res = requests.get(url, headers=headers, timeout=15)
+            res.raise_for_status()
+            img = Image.open(io.BytesIO(res.content)).convert("RGB")
+        except Exception as e:
+            print(f"Fallback download failed: {e}")
+            return # Agar yeh bhi fail ho toh script ruk jayegi
+
+    # Image Process (Crop & Enhance)
+    width, height = img.size
+    img = img.crop((5, 5, width - 5, height - 5)) # Watermark hide
+    enhancer = ImageEnhance.Sharpness(img)
+    img = enhancer.enhance(1.2)
+
+    # Text Add karo
+    draw = ImageDraw.Draw(img)
+    line = random.choice(funny_lines)
+    
+    font_size = 65
+    max_width = img.width - 40
+    while font_size > 10:
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+        except:
+            font = ImageFont.load_default()
+            break
+        bbox = draw.textbbox((0, 0), line, font=font)
+        if (bbox[2] - bbox[0]) <= max_width:
+            break
+        font_size -= 2
+
+    bbox = draw.textbbox((0, 0), line, font=font)
+    x = (img.width - (bbox[2] - bbox[0])) / 2
+    y = img.height - 120
+    
+    for adj in range(-3, 4):
+        draw.text((x+adj, y), line, font=font, fill="black")
+        draw.text((x, y+adj), line, font=font, fill="black")
+    draw.text((x, y), line, font=font, fill="white")
+
+    image_path = "final_meme.jpg"
+    img.save(image_path, format="JPEG", quality=100)
+
+    # Post to Facebook
+    print("Uploading to Facebook...")
     fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-    payload = {
-        "caption": f"Tag your drama lover friend! 😂🔥\n\nAapko yeh meme kaisa laga? Comment below! 👇\n\n{HASHTAGS}",
-        "access_token": TOKEN
-    }
+    caption = f"Tag your drama lover friend! 😂🔥\n\nAapko yeh meme kaisa laga? Comment below! 👇\n\n{HASHTAGS}"
     
     try:
         with open(image_path, 'rb') as img_file:
             files = {'source': img_file}
-            response = requests.post(fb_url, data=payload, files=files, timeout=20)
-            
+            response = requests.post(fb_url, data={"caption": caption, "access_token": TOKEN}, files=files, timeout=20)
         response.raise_for_status()
         print(f"✅ Post Success! ID: {response.json().get('id')}")
     except Exception as e:
         print(f"❌ Facebook Post Error: {e}")
-        if hasattr(e, 'response') and e.response is not None:
-            print(e.response.text)
 
 if __name__ == "__main__":
-    print("Starting Clean & Current Drama Meme Generation...")
-    post_meme()
+    print("Starting Automatic Meme System...")
+    img_url = get_image_from_search()
+    process_and_post(img_url)
