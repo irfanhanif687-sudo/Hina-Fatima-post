@@ -3,7 +3,6 @@ import random
 import requests
 import io
 import sys
-import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -46,25 +45,31 @@ urdu_shayari = [
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
 def download_font():
-    # ✅ 3 Backup Links taake font hamesha download ho
-    urls = [
-        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
-        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
-    ]
     font_path = "urdu_font.ttf"
     
-    if not os.path.exists(font_path):
-        print("Downloading Urdu Font...")
+    # 3 Backup Links
+    urls = [
+        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
+    ]
+    
+    if not os.path.exists(font_path) or os.path.getsize(font_path) < 50000:
+        print("Downloading Urdu Font (This might take a few seconds)...")
         for url in urls:
             try:
-                urllib.request.urlretrieve(url, font_path)
-                print(f"✅ Font downloaded successfully from {url}")
-                return font_path
+                response = requests.get(url, timeout=15)
+                response.raise_for_status()
+                # Check if downloaded file is a valid font (more than 50KB)
+                if len(response.content) > 50000:
+                    with open(font_path, 'wb') as f:
+                        f.write(response.content)
+                    print(f"✅ Font downloaded successfully from {url}")
+                    return font_path
             except Exception as e:
                 print(f"⚠️ Failed from {url}: {e}")
                 
-        print("❌ All font links failed. Cannot proceed.")
+        print("❌ All font links failed.")
         sys.exit(1)
         
     return font_path
