@@ -3,23 +3,22 @@ import random
 import requests
 import io
 import textwrap
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 # GitHub Secrets se IDs uthana
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
 # Unlimited Recent Drama Memes ke liye Subreddits
-subreddits = ["pakistanimemes", "indianmemes", "bollywoodmemes", "pakistanidrama"]
+subreddits = ["pakistanimemes", "indianmemes", "bollywoodmemes", "pakistanidrama", "desimemes"]
 
-# ✅ 35+ Viral Hashtags (Followers aur Reach barhane ke liye)
+# ✅ 35+ Viral Hashtags (Reach aur Followers barhane ke liye)
 HASHTAGS = """
 #PakistaniDrama #IndianDrama #Meme #FunnyMemes #Trending #Viral #HaniaAamir 
 #WahajAli #JaanNisar #KabhiMainKabhiTum #SajalAly #AyezaKhan #YumnaZaidi 
 #Bollywood #Lollywood #TikTokPakistan #Entertainment #DramaSerial #DramaQueen 
 #Fun #Laugh #Comedy #MemePage #DramaMeme #ViralMemes #ExplorePage #FYP 
 #ForYouPage #Relatable #DesiMemes #DramaLovers #PakistanZindabad #IndianTV 
-#PakistaniActress #PakistaniActor #DramaAddict #MemeDaily #InstaGood
 """
 
 def get_high_quality_meme():
@@ -39,10 +38,8 @@ def get_high_quality_meme():
         meme_url = data.get('url')
         title = data.get('title', 'Drama Lovers!')
         
-        # ✅ Safety Check: URL se query params hata kar extension check karo
-        clean_url = meme_url.lower().split('?')[0] if meme_url else ""
-        
         # Sirf valid static images allow karo (GIFs aur videos nahi)
+        clean_url = meme_url.lower().split('?')[0] if meme_url else ""
         if clean_url.endswith(('.jpg', '.jpeg', '.png')):
             print(f"Found Meme: {meme_url}")
             return meme_url, title
@@ -51,7 +48,7 @@ def get_high_quality_meme():
         print(f"❌ API Error: {e}")
         return None, None
 
-def add_caption_to_meme(image_url, title):
+def process_and_enhance_image(image_url, title):
     try:
         # 1. Image download karo
         img_response = requests.get(image_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
@@ -59,20 +56,30 @@ def add_caption_to_meme(image_url, title):
         
         img = Image.open(io.BytesIO(img_response.content)).convert("RGB")
         
-        # ✅ Quality Check: Blur/Choti pictures reject karo
-        if img.width < 600:
-            print("❌ Picture blur hai, skip kar rahe hain.")
+        # ✅ Quality Check: 800px se choti picture reject karo
+        if img.width < 800:
+            print("❌ Picture ki quality kam hai (blur), skip kar rahe hain.")
             return None
             
+        # ✅ Hide Source (Crop Edges): Kinaron se 20 pixel kaat do taake watermark (jaise @username) hat jaye
+        width, height = img.size
+        img = img.crop((20, 20, width - 20, height - 20))
+        
+        # ✅ Quality Enhance: Picture ko thora sharp aur colorful karo
+        enhancer = ImageEnhance.Sharpness(img)
+        img = enhancer.enhance(1.2) 
+        enhancer = ImageEnhance.Color(img)
+        img = enhancer.enhance(1.1) 
+
         draw = ImageDraw.Draw(img)
         
-        # 2. Font set karo (Agar default na mile toh error handle karega)
+        # 2. Font set karo
         try:
             font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 45)
         except:
             font = ImageFont.load_default()
 
-        # ✅ Text Wrap System: Lamba title multi-line ho jayega
+        # ✅ Text Wrap System: Agar title lamba ho toh multi-line ho jayega
         wrapped_title = textwrap.fill(title, width=40)
         
         # Banner ki height calculate karo text ke hisaab se
@@ -80,7 +87,7 @@ def add_caption_to_meme(image_url, title):
         text_height = bbox[3] - bbox[1]
         banner_height = text_height + 40
         
-        # Top par Black Banner banao
+        # Top par Black Banner banao (Isse top ka watermark bhi chup jata hai)
         draw.rectangle([(0, 0), (img.width, banner_height)], fill=(0, 0, 0))
         
         # Text ko center align karo
@@ -90,9 +97,9 @@ def add_caption_to_meme(image_url, title):
         
         draw.multiline_text((x, y), wrapped_title, font=font, fill="white", align="center")
         
-        image_path = "final_meme.jpg"
-        # High Quality Save
-        img.save(image_path, format="JPEG", quality=95)
+        image_path = "premium_meme.jpg"
+        # 100% High Quality par save karo
+        img.save(image_path, format="JPEG", quality=100)
         return image_path
     except Exception as e:
         print(f"❌ Processing Error: {e}")
@@ -101,7 +108,7 @@ def add_caption_to_meme(image_url, title):
 def post_to_facebook(image_path):
     fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
     
-    # ✅ Engagement Hook (Log comment karenge toh reach barhegi)
+    # Engagement Hook (Log comment karenge toh reach barhegi)
     caption = f"Tag your drama lover friend! 😂🔥\n\nAapko yeh meme kaisa laga? Comment below! 👇\n\n{HASHTAGS}"
     
     payload = {
@@ -122,14 +129,14 @@ def post_to_facebook(image_path):
             print(e.response.text)
 
 if __name__ == "__main__":
-    print("Starting Premium Meme Generation for Page Growth...")
+    print("Starting Premium Meme Generation...")
     
     success = False
-    # 5 dafa try karega achi quality ki picture lene ke liye
-    for _ in range(5):
+    # 10 dafa try karega jab tak perfect HD picture na mil jaye
+    for _ in range(10):
         meme_url, title = get_high_quality_meme()
         if meme_url:
-            final_img = add_caption_to_meme(meme_url, title)
+            final_img = process_and_enhance_image(meme_url, title)
             if final_img:
                 print("Posting to Facebook...")
                 post_to_facebook(final_img)
@@ -137,4 +144,4 @@ if __name__ == "__main__":
                 break
     
     if not success:
-        print("❌ 5 koshishon ke baad bhi koi acha meme nahi mila. Agli baar try hoga.")
+        print("❌ 10 koshishon ke baad bhi koi HD meme nahi mila. Agli baar try hoga.")
