@@ -46,17 +46,21 @@ urdu_shayari = [
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
 def get_urdu_font(font_size):
-    # System mein installed Noto Nastaliq font ko dhoondhna
-    font_paths = glob.glob('/usr/share/fonts/truetype/noto/NotoNastaliqUrdu*')
-    if font_paths:
-        return ImageFont.truetype(font_paths[0], font_size)
+    # 1. Pehle system ke installed fonts mein dhoondo
+    search_paths = [
+        '/usr/share/fonts/truetype/noto/NotoNastaliqUrdu*',
+        '/usr/share/fonts/truetype/noto/NotoNaskhArabic*',
+        os.path.expanduser('~/.fonts/NotoNastaliqUrdu*')
+    ]
     
-    # Fallback agar Nastaliq na mile (Naskh font)
-    fallback_paths = glob.glob('/usr/share/fonts/truetype/noto/NotoNaskhArabic*')
-    if fallback_paths:
-        return ImageFont.truetype(fallback_paths[0], font_size)
-        
-    # Last resort
+    for path_pattern in search_paths:
+        font_paths = glob.glob(path_pattern)
+        if font_paths:
+            print(f"Using font: {font_paths[0]}")
+            return ImageFont.truetype(font_paths[0], font_size)
+            
+    # 2. Agar kuch na mile toh default font (jo boxes dega, par crash nahi hoga)
+    print("⚠️ Urdu font not found, using default.")
     return ImageFont.load_default()
 
 def process_and_post():
@@ -96,7 +100,7 @@ def process_and_post():
         bidi_text = get_display(reshaped_text)
         
         # 4. Text Auto-Fit
-        font_size = 75 # Start bada rakha hai
+        font_size = 75 
         max_width = img.width - 100   
         max_height = img.height - 300
         
