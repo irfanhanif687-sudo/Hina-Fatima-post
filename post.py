@@ -3,6 +3,7 @@ import random
 import requests
 import io
 import sys
+import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -44,31 +45,24 @@ urdu_shayari = [
 
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
-def download_urdu_font():
-    # ✅ Font download function: Yeh direct Google Fonts se download karega
-    font_path = "NotoNastaliqUrdu-Regular.ttf"
+def download_font():
+    # ✅ Google ke server se direct font download
+    font_url = "https://github.com/google/fonts/raw/main/ofl/notonastaliqurdu/NotoNastaliqUrdu-Regular.ttf"
+    font_path = "urdu_font.ttf"
+    
     if not os.path.exists(font_path):
         print("Downloading Urdu Font...")
-        url = "https://github.com/google/fonts/raw/main/ofl/notonastaliqurdu/NotoNastaliqUrdu-Regular.ttf"
         try:
-            r = requests.get(url)
-            r.raise_for_status()
-            with open(font_path, 'wb') as f:
-                f.write(r.content)
+            urllib.request.urlretrieve(font_url, font_path)
             print("✅ Font downloaded successfully.")
         except Exception as e:
             print(f"❌ Font download failed: {e}")
+            sys.exit(1) # Agar font nahi mila toh aage na barhe
+            
     return font_path
 
-def get_urdu_font(font_size):
-    font_path = download_urdu_font()
-    try:
-        return ImageFont.truetype(font_path, font_size)
-    except Exception as e:
-        print(f"⚠️ Error loading font: {e}")
-        return ImageFont.load_default()
-
 def process_and_post():
+    font_path = download_font()
     image_url = random.choice(aesthetic_images)
     
     try:
@@ -81,6 +75,7 @@ def process_and_post():
         except Exception:
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
+        # Dark overlay
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 130))
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
@@ -104,13 +99,13 @@ def process_and_post():
         reshaped_text = arabic_reshaper.reshape(shairi)
         bidi_text = get_display(reshaped_text)
         
-        # 4. Text Auto-Fit
-        font_size = 75 
+        # 4. Text Auto-Fit (No textwrap, Direct \n use hoga)
+        font_size = 60 
         max_width = img.width - 100   
         max_height = img.height - 300
         
-        while font_size > 20:
-            urdu_font = get_urdu_font(font_size)
+        while font_size > 15:
+            urdu_font = ImageFont.truetype(font_path, font_size)
             bbox = draw.multiline_textbbox((0, 0), bidi_text, font=urdu_font, align="center")
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
