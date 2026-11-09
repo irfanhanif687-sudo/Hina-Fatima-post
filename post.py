@@ -46,19 +46,27 @@ urdu_shayari = [
 HASHTAGS = "#UrduShayari #UrduPoetry #UrduQuotes #SadShayari #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima"
 
 def download_font():
-    # ✅ Google ke server se direct font download
-    font_url = "https://github.com/google/fonts/raw/main/ofl/notonastaliqurdu/NotoNastaliqUrdu-Regular.ttf"
+    # ✅ 3 Backup Links taake font hamesha download ho
+    urls = [
+        "https://raw.githubusercontent.com/googlefonts/noto-fonts/main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://cdn.jsdelivr.net/gh/googlefonts/noto-fonts@main/hinted/ttf/NotoNastaliqUrdu/NotoNastaliqUrdu-Regular.ttf",
+        "https://github.com/notofonts/nastaliq/releases/download/NotoNastaliqUrdu-v3.009/NotoNastaliqUrdu-Regular.ttf"
+    ]
     font_path = "urdu_font.ttf"
     
     if not os.path.exists(font_path):
         print("Downloading Urdu Font...")
-        try:
-            urllib.request.urlretrieve(font_url, font_path)
-            print("✅ Font downloaded successfully.")
-        except Exception as e:
-            print(f"❌ Font download failed: {e}")
-            sys.exit(1) # Agar font nahi mila toh aage na barhe
-            
+        for url in urls:
+            try:
+                urllib.request.urlretrieve(url, font_path)
+                print(f"✅ Font downloaded successfully from {url}")
+                return font_path
+            except Exception as e:
+                print(f"⚠️ Failed from {url}: {e}")
+                
+        print("❌ All font links failed. Cannot proceed.")
+        sys.exit(1)
+        
     return font_path
 
 def process_and_post():
@@ -99,7 +107,7 @@ def process_and_post():
         reshaped_text = arabic_reshaper.reshape(shairi)
         bidi_text = get_display(reshaped_text)
         
-        # 4. Text Auto-Fit (No textwrap, Direct \n use hoga)
+        # 4. Text Auto-Fit
         font_size = 60 
         max_width = img.width - 100   
         max_height = img.height - 300
