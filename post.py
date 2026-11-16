@@ -9,8 +9,8 @@ PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 
 PAGE_NAME = "Hina Fatima"
+USED_FILE = "used_images.txt"
 
-# ✅ Function to download Premium Font (Poppins)
 def download_font():
     font_url = "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf"
     font_path = "Poppins-Bold.ttf"
@@ -21,7 +21,7 @@ def download_font():
             f.write(r.content)
     return font_path
 
-# ✅ 60+ High-Quality Romantic, Hugs & Cinematic Pictures
+# ✅ 60+ High-Quality Romantic Pictures
 romantic_images = [
     "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
@@ -50,9 +50,8 @@ romantic_images = [
     "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
@@ -76,16 +75,10 @@ romantic_images = [
     "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop"
 ]
 
-# ✅ 60+ Deep, Bold & Romantic Shayari (Aapke diye hue text se)
+# ✅ 60+ Deep, Bold & Romantic Shayari
 shayari_data = [
     {"roman": "Apne haseen honton ko kisi parday mein chhupa liya karo,\nHum gustakh log hain nazron se choom liya karte hain.", "urdu": "اپنے حسین ہونٹوں کو کسی پردے میں چھپا لیا کرو،\nہم گستاخ لوگ ہیں نظروں سے چوم لیا کرتے ہیں۔"},
     {"roman": "Main toad leta agar tu gulab hoti,\nMain jawab banta agar tu sawaal hoti,\nSab jaante hain main nasha nahi karta,\nMain bhi pee leta agar tu sharaab hoti.", "urdu": "میں توڑ لیتا اگر تو گلاب ہوتی،\nمیں جواب بنتا اگر تو سوال ہوتی،\nسب جانتے ہیں میں نشہ نہیں کرتا،\nمیں بھی پی لیتا اگر تو شراب ہوتی۔"},
@@ -163,11 +156,37 @@ shayari_data = [
     {"roman": "Zindagi mein tum aaye toh kya hua,\nMeri toh zindagi hi badal gayi.", "urdu": "زندگی میں تم آئے تو کیا ہوا،\nمیری تو زندگی ہی بدل گئی۔"}
 ]
 
-HASHTAGS = "#UrduShayari #UrduPoetry #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima #Ishq #Mohabbat #CoupleGoals"
+def get_unused_image():
+    used = []
+    if os.path.exists(USED_FILE):
+        with open(USED_FILE, "r") as f:
+            used = f.read().splitlines()
+            
+    # Agar saari pictures use ho gayi hain, toh reset kardo
+    if len(used) >= len(romantic_images):
+        used = []
+        print("All images used. Resetting tracker.")
+        
+    unused = [img for img in romantic_images if img not in used]
+    if not unused:
+        return None
+        
+    selected = random.choice(unused)
+    
+    # Tracker update karo
+    with open(USED_FILE, "w") as f:
+        f.write("\n".join(used + [selected]))
+        
+    return selected
 
 def process_and_post():
     font_path = download_font()
-    image_url = random.choice(romantic_images)
+    image_url = get_unused_image()
+    
+    if not image_url:
+        print("❌ Koi nayi image nahi mili.")
+        sys.exit(1)
+        
     selected_shayari = random.choice(shayari_data)
     
     try:
@@ -180,7 +199,7 @@ def process_and_post():
         except Exception:
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
-        # ✅ Premium Dark Gradient Overlay
+        # Premium Dark Gradient Overlay
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
         draw_overlay = ImageDraw.Draw(overlay)
         for i in range(img.height):
@@ -216,7 +235,7 @@ def process_and_post():
         x_center = img.width / 2
         y_center = (img.height / 2) - 50 
         
-        # 4. Draw Roman Urdu Text (Center with Outline)
+        # 4. Draw Roman Urdu Text
         draw.multiline_text(
             (x_center, y_center), 
             roman_text, 
@@ -228,7 +247,7 @@ def process_and_post():
             stroke_fill="black"
         )
         
-        # ✅ 5. Page Name (Premium Center Bottom Style)
+        # 5. Page Name (Premium Center Bottom Style)
         try:
             wm_font = ImageFont.truetype(font_path, 40)
         except:
