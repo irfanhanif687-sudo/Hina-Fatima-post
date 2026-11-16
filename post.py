@@ -11,6 +11,9 @@ TOKEN = os.environ.get('FB_TOKEN')
 PAGE_NAME = "Hina Fatima"
 USED_FILE = "used_images.txt"
 
+# ✅ HASHTAGS (Yeh line yahan hona zaroori hai)
+HASHTAGS = "#UrduShayari #UrduPoetry #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima #Ishq #Mohabbat #CoupleGoals"
+
 def download_font():
     font_url = "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf"
     font_path = "Poppins-Bold.ttf"
@@ -162,7 +165,6 @@ def get_unused_image():
         with open(USED_FILE, "r") as f:
             used = f.read().splitlines()
             
-    # Agar saari pictures use ho gayi hain, toh reset kardo
     if len(used) >= len(romantic_images):
         used = []
         print("All images used. Resetting tracker.")
@@ -173,7 +175,6 @@ def get_unused_image():
         
     selected = random.choice(unused)
     
-    # Tracker update karo
     with open(USED_FILE, "w") as f:
         f.write("\n".join(used + [selected]))
         
@@ -190,7 +191,6 @@ def process_and_post():
     selected_shayari = random.choice(shayari_data)
     
     try:
-        # 1. Image Download
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
             img_response = requests.get(image_url, headers=headers, timeout=10)
@@ -199,7 +199,6 @@ def process_and_post():
         except Exception:
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255)) 
         
-        # Premium Dark Gradient Overlay
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
         draw_overlay = ImageDraw.Draw(overlay)
         for i in range(img.height):
@@ -209,10 +208,8 @@ def process_and_post():
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
         
-        # 2. Roman Urdu Text on Image
         roman_text = selected_shayari["roman"]
         
-        # 3. Text Auto-Fit
         font_size = 65 
         max_width = img.width - 150   
         max_height = img.height - 400 
@@ -235,7 +232,6 @@ def process_and_post():
         x_center = img.width / 2
         y_center = (img.height / 2) - 50 
         
-        # 4. Draw Roman Urdu Text
         draw.multiline_text(
             (x_center, y_center), 
             roman_text, 
@@ -247,7 +243,6 @@ def process_and_post():
             stroke_fill="black"
         )
         
-        # 5. Page Name (Premium Center Bottom Style)
         try:
             wm_font = ImageFont.truetype(font_path, 40)
         except:
@@ -266,7 +261,6 @@ def process_and_post():
         image_path = "premium_shairi.jpg"
         img.convert("RGB").save(image_path, format="JPEG", quality=100)
 
-        # 6. Facebook Post
         print("Uploading to Facebook...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
         
