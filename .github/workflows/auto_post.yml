@@ -1,9 +1,12 @@
-name: Facebook Auto Post (Roman Urdu & Urdu Caption)
+name: Facebook Auto Post (Premium Shayari)
 
 on:
   schedule:
-    - cron: '*/35 * * * *'  # ✅ Har 35 minute baad post hogi
-  workflow_dispatch:
+    - cron: '*/35 * * * *'  # Backup ke liye
+  workflow_dispatch:        # Main trigger (cron-job.org se)
+
+permissions:
+  contents: write # Zaroori hai taake script used_images.txt update kar sake
 
 jobs:
   post:
@@ -27,3 +30,11 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_TOKEN: ${{ secrets.FB_TOKEN }}
         run: python post.py
+
+      - name: Commit used images state
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add used_images.txt
+          git diff --quiet && git diff --staged --quiet || git commit -m "Update used images [skip ci]"
+          git push
