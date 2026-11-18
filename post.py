@@ -133,9 +133,16 @@ def post_reel():
     print("Step 2: Uploading...")
     with open("reel.mp4", 'rb') as f:
         video_bytes = f.read()
-    headers = {"Authorization": f"OAuth {TOKEN}", "file_offset": "0", "Content-Type": "application/octet-stream"}
+    # ✅ FIX: Facebook ko 'Offset' chahiye, 'file_offset' nahi. Dono bhej diye hain + file_size bhi
+    headers = {
+        "Authorization": f"OAuth {TOKEN}",
+        "Offset": "0",
+        "file_offset": "0",
+        "Content-Type": "application/octet-stream",
+        "Content-Length": str(len(video_bytes))
+    }
     r2 = requests.post(upload_url, headers=headers, data=video_bytes, timeout=180)
-    print(f"Upload done: {r2.status_code} {r2.text[:500]}")
+    print(f"Upload done: {r2.status_code} {r2.text[:1000]}")
     r2.raise_for_status()
     print("Step 3: Finish...")
     r3 = requests.post(start_url, data={"upload_phase": "finish", "video_id": video_id, "caption": caption, "access_token": TOKEN, "share_to_feed": "true"}, timeout=30)
