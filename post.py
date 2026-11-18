@@ -1,4 +1,4 @@
-import os, random, requests, io, sys, json
+import os, random, requests, io, sys, json, glob
 from PIL import Image, ImageDraw, ImageFont
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
@@ -13,9 +13,6 @@ def get_images():
     return [
         "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1080&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1080&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1080&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
     ]
 
 shayari_data = [
@@ -32,13 +29,18 @@ shayari_data = [
 ]
 
 def get_videos():
+    # Pehle Repo ke andar wali videos check karo - YE SABSE PAKKA HAI
+    local = sorted(glob.glob("reel_videos/*.mp4"))
+    if local:
+        return ["local:" + f for f in local]
+    # Agar local nahi hai to test wali Google videos - ye 100% download hoti hain
     if os.path.exists("videos.txt"):
         links = [l.strip() for l in open("videos.txt", encoding='utf-8') if l.strip()]
         if links:
             return links
     return [
-        "https://assets.mixkit.co/videos/preview/mixkit-couple-walking-on-the-beach-at-sunset-1090-large.mp4",
-        "https://assets.mixkit.co/videos/preview/mixkit-couple-in-a-park-1094-large.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     ]
 
 HASHTAGS = "#UrduShayari #RomanticShayari #LoveQuotes #Ishq #Mohabbat #HinaFatima #Viral #FYP #Trending"
@@ -126,16 +128,24 @@ def post_reel():
         avail_sh = list(range(len(shayari_data)))
     sh_idx = random.choice(avail_sh)
     sh = shayari_data[sh_idx]
-    print(f"Downloading Reel: {video_url}")
-    vr = requests.get(video_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=90)
-    open("reel.mp4", 'wb').write(vr.content)
-    size = len(vr.content)
-    print(f"Video size: {size} bytes")
-    if size < 100000:
-        print("Video download fail, skipping this video")
-        used_reels["videos"].append(video_url)
-        save_used("used_reels.json", used_reels)
-        return
+    print(f"Selected Reel: {video_url}")
+    # Local video hai to direct copy karo, warna download karo
+    if video_url.startswith("local:"):
+        import shutil
+        shutil.copy(video_url[6:], "reel.mp4")
+        size = os.path.getsize("reel.mp4")
+        print(f"Local Video size: {size} bytes")
+    else:
+        print(f"Downloading Reel: {video_url}")
+        vr = requests.get(video_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=90)
+        open("reel.mp4", 'wb').write(vr.content)
+        size = len(vr.content)
+        print(f"Video size: {size} bytes")
+        if size < 100000:
+            print("Video download fail, skipping")
+            used_reels["videos"].append(video_url)
+            save_used("used_reels.json", used_reels)
+            return
     caption = f"{sh['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS} #Reels"
     print("Step 1: Start Upload...")
     start_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/video_reels"
