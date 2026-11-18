@@ -18,7 +18,6 @@ def get_images():
         "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
     ]
 
-# Tumhari purani shayari_data yahan paste kar do, me sample me 10 de raha hoon
 shayari_data = [
     {"roman": "Teri baahon mein aake toh jaise,\nSari kayanat mil gayi ho.", "urdu": "تیری بانہوں میں آ کے تو جیسے،\nساری کائنات مل گئی ہو۔"},
     {"roman": "Teri zulfon ki khushbu mein kho jata hoon,\nTere chehre ko dekhta hoon toh kho jata hoon.", "urdu": "تیری زلفوں کی خوشبو میں کھو جاتا ہوں،\nتیرے چہرے کو دیکھتا ہوں تو کھو جاتا ہوں۔"},
@@ -38,11 +37,8 @@ def get_videos():
         if links:
             return links
     return [
-        "https://videos.pexels.com/video-files/2795747/2795747-hd_1080_1920_25fps.mp4",
-        "https://videos.pexels.com/video-files/4822484/4822484-hd_1080_1920_25fps.mp4",
-        "https://videos.pexels.com/video-files/4823009/4823009-hd_1080_1920_25fps.mp4",
-        "https://videos.pexels.com/video-files/5506018/5506018-hd_1080_1920_25fps.mp4",
-        "https://videos.pexels.com/video-files/5532767/5532767-hd_1080_1920_25fps.mp4",
+        "https://assets.mixkit.co/videos/preview/mixkit-couple-walking-on-the-beach-at-sunset-1090-large.mp4",
+        "https://assets.mixkit.co/videos/preview/mixkit-couple-in-a-park-1094-large.mp4",
     ]
 
 HASHTAGS = "#UrduShayari #RomanticShayari #LoveQuotes #Ishq #Mohabbat #HinaFatima #Viral #FYP #Trending"
@@ -131,9 +127,15 @@ def post_reel():
     sh_idx = random.choice(avail_sh)
     sh = shayari_data[sh_idx]
     print(f"Downloading Reel: {video_url}")
-    vr = requests.get(video_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=60)
+    vr = requests.get(video_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=90)
     open("reel.mp4", 'wb').write(vr.content)
-    print(f"Video size: {len(vr.content)} bytes")
+    size = len(vr.content)
+    print(f"Video size: {size} bytes")
+    if size < 100000:
+        print("Video download fail, skipping this video")
+        used_reels["videos"].append(video_url)
+        save_used("used_reels.json", used_reels)
+        return
     caption = f"{sh['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS} #Reels"
     print("Step 1: Start Upload...")
     start_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/video_reels"
@@ -145,8 +147,11 @@ def post_reel():
     upload_url = data["upload_url"]
     print("Step 2: Uploading Video File...")
     with open("reel.mp4", 'rb') as f:
-        r2 = requests.post(upload_url, headers={"Authorization": f"OAuth {TOKEN}"}, data=f.read(), timeout=120)
-    print(f"Upload done: {r2.status_code} {r2.text[:500]}")
+        video_bytes = f.read()
+    headers = {"Authorization": f"OAuth {TOKEN}", "file_offset": "0", "Content-Type": "application/octet-stream"}
+    r2 = requests.post(upload_url, headers=headers, data=video_bytes, timeout=180)
+    print(f"Upload done: {r2.status_code} {r2.text[:800]}")
+    r2.raise_for_status()
     print("Step 3: Finish & Publish...")
     r3 = requests.post(start_url, data={"upload_phase": "finish", "video_id": video_id, "caption": caption, "access_token": TOKEN, "share_to_feed": "true"}, timeout=30)
     print(r3.text)
