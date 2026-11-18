@@ -1,18 +1,6 @@
-name: Auto Post
+name: Reel Only Test
 on:
-  schedule:
-    - cron: '*/30 * * * *'
   workflow_dispatch:
-    inputs:
-      post_type:
-        description: 'Kya post karna hai?'
-        required: true
-        default: 'auto'
-        type: choice
-        options:
-          - auto
-          - photo
-          - reel
 
 permissions:
   contents: write
@@ -32,7 +20,7 @@ jobs:
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_TOKEN: ${{ secrets.FB_TOKEN }}
-          POST_TYPE: ${{ inputs.post_type }}
+          POST_TYPE: reel
       - name: Save used files
         run: |
           git config user.name "AutoBot"
