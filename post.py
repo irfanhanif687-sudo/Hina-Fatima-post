@@ -1,189 +1,166 @@
-import os
-import random
-import requests
-import io
-import sys
-import json
-import time
+import os, random, requests, io, sys, json
 from PIL import Image, ImageDraw, ImageFont
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 PAGE_NAME = "Hina Fatima"
 
-# ===== TUMHARI PURANI LISTS YAHAN WESI HI RAHENGI =====
-# romantic_images = [...]  <-- tumhari wali list, change mat karna
-# shayari_data = [...] <-- tumhari wali list, change mat karna
-# HASHTAGS wali line bhi wesi hi
+# ===== 1. IMAGES - images.txt se aayengi, warna yahan wali list se =====
+# Tumhari purani romantic_images list yahan paste kar do, ya images.txt use karo
+# Me images.txt wala tareeka laga raha hoon taake 5000 pics ho jayein
 
-# --- YAHAN SE NAYA PART START HAI ---
+def get_images():
+    if os.path.exists("images.txt"):
+        links = [l.strip() for l in open("images.txt", encoding='utf-8') if l.strip()]
+        if links:
+            return links
+    # Fallback - agar images.txt nahi hai to ye 10 chalengi
+    return [
+        "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
+    ]
 
-# ✅ Reels ke liye Videos - Real Romantic Videos
-reel_videos = [
-    "https://videos.pexels.com/video-files/2795747/2795747-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/4822484/4822484-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/4823009/4823009-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/5506018/5506018-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/5532767/5532767-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/3205624/3205624-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/4822576/4822576-hd_1080_1920_25fps.mp4",
-    "https://videos.pexels.com/video-files/5532770/5532770-hd_1080_1920_25fps.mp4",
-    # Yahan apni 100 videos ki links add karti jao
+# ===== 2. SHAYARI - Tumhari purani wali yahan paste kar do =====
+# Me sample me 10 de raha hoon, tum apni 40 wali yahan paste kar dena
+shayari_data = [
+    {"roman": "Teri baahon mein aake toh jaise,\nSari kayanat mil gayi ho.", "urdu": "تیری بانہوں میں آ کے تو جیسے،\nساری کائنات مل گئی ہو۔"},
+    {"roman": "Teri zulfon ki khushbu mein kho jata hoon,\nTere chehre ko dekhta hoon toh kho jata hoon.", "urdu": "تیری زلفوں کی خوشبو میں کھو جاتا ہوں،\nتیرے چہرے کو دیکھتا ہوں تو کھو جاتا ہوں۔"},
+    {"roman": "Tere paas aata hoon toh waqt ruk jata hai,\nTujhe dekh kar dil dhadak jata hai.", "urdu": "تیرے پاس آتا ہوں تو وقت رک جاتا ہے،\nتجھے دیکھ کر دل دھڑک جاتا ہے۔"},
+    {"roman": "Ek tera saath chahiye, har khushi se pehle,\nEk teri baahon mein jagah, sari duniya se pehle.", "urdu": "ایک تیرا ساتھ چاہیے، ہر خوشی سے پہلے،\nایک تیری بانہوں میں جگہ، ساری دنیا سے پہلے۔"},
+    {"roman": "Tere ishq ki aag mein jalna acha lagta hai,\nTere liye har dard sehna acha lagta hai.", "urdu": "تیرے عشق کی آگ میں جلنا اچھا لگتا ہے،\nتیرے لیے ہر درد سہنا اچھا لگتا ہے۔"},
+    {"roman": "Tujhe dekh kar aise khoya main,\nJaise koi nasha kar ke soya main.", "urdu": "تجھے دیکھ کر ایسے کھویا میں،\nجیسے کوئی نشہ کر کے سویا میں۔"},
+    {"roman": "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.", "urdu": "تیری بانہوں میں سکون ملتا ہے،\nجیسے کسی کی دعا قبول ہو گئی ہو۔"},
+    {"roman": "Mera dil tere naam ka ho gaya,\nJaise kisi ne mujhe teri yaadon ka tohfa de diya ho.", "urdu": "میرا دل تیرے نام کا ہو گیا،\nجیسے کسی نے مجھے تیری یادوں کا تحفہ دے دیا ہو۔"},
+    {"roman": "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.", "urdu": "تیرے بغیر یہ دل سن سن سا ہے،\nجیسے بغیر بارش کے موسم سونا ہے۔"},
+    {"roman": "Tere pyar mein hum toh aise doobe,\nJaise patthar paani mein doobta hai.", "urdu": "تیرے پیار میں ہم تو ایسے ڈوبے،\nجیسے پتھر پانی میں ڈوبتا ہے۔"},
 ]
 
-# ✅ Used track karne ke liye - Repeat rokne ke liye
-def load_used(filename, default):
-    if os.path.exists(filename):
-        try:
-            return json.load(open(filename, encoding='utf-8'))
-        except:
-            return default
+# ===== 3. REELS VIDEOS =====
+def get_videos():
+    if os.path.exists("videos.txt"):
+        links = [l.strip() for l in open("videos.txt", encoding='utf-8') if l.strip()]
+        if links:
+            return links
+    return [
+        "https://videos.pexels.com/video-files/2795747/2795747-hd_1080_1920_25fps.mp4",
+        "https://videos.pexels.com/video-files/4822484/4822484-hd_1080_1920_25fps.mp4",
+        "https://videos.pexels.com/video-files/4823009/4823009-hd_1080_1920_25fps.mp4",
+        "https://videos.pexels.com/video-files/5506018/5506018-hd_1080_1920_25fps.mp4",
+        "https://videos.pexels.com/video-files/5532767/5532767-hd_1080_1920_25fps.mp4",
+    ]
+
+HASHTAGS = "#UrduShayari #RomanticShayari #LoveQuotes #Ishq #Mohabbat #HinaFatima #Viral #FYP #Trending"
+
+def load_used(fn, default):
+    if os.path.exists(fn):
+        try: return json.load(open(fn, encoding='utf-8'))
+        except: return default
     return default
 
-def save_used(filename, data):
-    json.dump(data, open(filename, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+def save_used(fn, data):
+    json.dump(data, open(fn, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 
 def download_font():
-    font_url = "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf"
-    font_path = "Poppins-Bold.ttf"
-    if not os.path.exists(font_path):
-        print("Downloading Premium Font...")
-        r = requests.get(font_url, timeout=15)
-        r.raise_for_status()
-        open(font_path, 'wb').write(r.content)
-    return font_path
+    p = "Poppins-Bold.ttf"
+    if not os.path.exists(p):
+        r = requests.get("https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf", timeout=15)
+        open(p, 'wb').write(r.content)
+    return p
 
-# ✅ PURANA FUNCTION - Pics Post karne ke liye (Tumhara wala hi hai, bas used.json add kia)
-def process_and_post():
+def post_photo():
     font_path = download_font()
-
-    # Repeat rokne ke liye used.json check karo
     used = load_used("used.json", {"images": [], "shayari": []})
-
-    # Nayi image uthao jo pehle use nahi hui
-    available_images = [u for u in romantic_images if u not in used["images"]]
-    if not available_images:
+    all_images = get_images()
+    avail_img = [u for u in all_images if u not in used["images"]]
+    if not avail_img:
         used["images"] = []
-        available_images = romantic_images
-    image_url = random.choice(available_images)
+        avail_img = all_images
+    image_url = random.choice(avail_img)
 
-    # Nayi shayari uthao
-    available_shayari = [i for i in range(len(shayari_data)) if i not in used["shayari"]]
-    if not available_shayari:
+    avail_sh = [i for i in range(len(shayari_data)) if i not in used["shayari"]]
+    if not avail_sh:
         used["shayari"] = []
-        available_shayari = list(range(len(shayari_data)))
-    shayari_idx = random.choice(available_shayari)
-    selected_shayari = shayari_data[shayari_idx]
+        avail_sh = list(range(len(shayari_data)))
+    sh_idx = random.choice(avail_sh)
+    sh = shayari_data[sh_idx]
 
     try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        img_response = requests.get(image_url, headers=headers, timeout=15)
-        img_response.raise_for_status()
-        img = Image.open(io.BytesIO(img_response.content)).convert("RGBA")
-    except Exception:
-        img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255))
-
-    # Gradient
-    overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    draw_overlay = ImageDraw.Draw(overlay)
-    for i in range(img.height):
-        alpha = int(160 * (i / img.height))
-        draw_overlay.line([(0, i), (img.width, i)], fill=(0, 0, 0, alpha))
+        r = requests.get(image_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
+        img = Image.open(io.BytesIO(r.content)).convert("RGBA")
+    except:
+        img = Image.new('RGBA', (1080, 1350), (20,20,20,255))
+    img = img.resize((1080, 1350))
+    overlay = Image.new('RGBA', img.size, (0,0,0,0))
+    d = ImageDraw.Draw(overlay)
+    for y in range(img.height):
+        if y > img.height*0.35:
+            a = int(175 * ((y - img.height*0.35)/(img.height*0.65)))
+            d.line([(0,y),(img.width,y)], fill=(0,0,0,a))
     img = Image.alpha_composite(img, overlay)
     draw = ImageDraw.Draw(img)
-
-    roman_text = selected_shayari["roman"]
-    font_size = 65
-    max_width = img.width - 150
-    max_height = img.height - 400
-    while font_size > 20:
-        shairi_font = ImageFont.truetype(font_path, font_size)
-        bbox = draw.multiline_textbbox((0, 0), roman_text, font=shairi_font, align="center")
-        if bbox[2]-bbox[0] < max_width and bbox[3]-bbox[1] < max_height:
+    font_size = 62
+    while font_size > 28:
+        f = ImageFont.truetype(font_path, font_size)
+        bbox = draw.multiline_textbbox((0,0), sh["roman"], font=f, align="center", spacing=12)
+        if bbox[2]-bbox[0] < img.width-120 and bbox[3]-bbox[1] < 550:
             break
         font_size -= 2
-
-    draw.multiline_text((img.width/2, (img.height/2)-50), roman_text, font=shairi_font, fill="white", anchor="mm", align="center", stroke_width=4, stroke_fill="black")
-    wm_font = ImageFont.truetype(font_path, 40)
-    draw.text((img.width/2, img.height-80), PAGE_NAME, font=wm_font, fill="white", anchor="mm", stroke_width=2, stroke_fill="black")
-
-    image_path = "premium_shairi.jpg"
-    img.convert("RGB").save(image_path, format="JPEG", quality=92)
-
-    print("Uploading Photo to Facebook...")
+    draw.multiline_text((img.width/2, img.height*0.62), sh["roman"], font=f, fill="white", anchor="mm", align="center", spacing=12, stroke_width=3, stroke_fill=(0,0,0,180))
+    wm = ImageFont.truetype(font_path, 36)
+    draw.text((img.width/2, img.height-70), PAGE_NAME, font=wm, fill=(255,255,255,230), anchor="mm", stroke_width=2, stroke_fill=(0,0,0,150))
+    img.convert("RGB").save("post.jpg", quality=92)
+    caption = f"{sh['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS}"
     fb_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/photos"
-    caption = f"{selected_shayari['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS}"
-    with open(image_path, 'rb') as img_file:
-        fb_response = requests.post(fb_url, data={"caption": caption, "access_token": TOKEN}, files={'source': img_file}, timeout=30)
-    fb_response.raise_for_status()
-    print(f"✅ PHOTO POST SUCCESS! ID: {fb_response.json().get('id')}")
-
-    # Used me save karo
+    with open("post.jpg", 'rb') as file:
+        res = requests.post(fb_url, data={"caption": caption, "access_token": TOKEN}, files={'source': file}, timeout=30)
+    print(res.text)
+    res.raise_for_status()
     used["images"].append(image_url)
-    used["shayari"].append(shayari_idx)
+    used["shayari"].append(sh_idx)
     used["images"] = used["images"][-5000:]
     save_used("used.json", used)
+    print("✅ PHOTO SUCCESS")
 
-# ✅ NAYA FUNCTION - Reels Post karne ke liye
-def process_and_post_reel():
+def post_reel():
     used_reels = load_used("used_reels.json", {"videos": []})
     used = load_used("used.json", {"images": [], "shayari": []})
-
-    # Nayi video uthao
-    available_videos = [v for v in reel_videos if v not in used_reels["videos"]]
-    if not available_videos:
+    all_videos = get_videos()
+    avail_v = [v for v in all_videos if v not in used_reels["videos"]]
+    if not avail_v:
         used_reels["videos"] = []
-        available_videos = reel_videos
-    video_url = random.choice(available_videos)
-
-    # Nayi shayari uthao reels ke liye
-    available_shayari = [i for i in range(len(shayari_data)) if i not in used["shayari"]]
-    if not available_shayari:
+        avail_v = all_videos
+    video_url = random.choice(avail_v)
+    avail_sh = [i for i in range(len(shayari_data)) if i not in used["shayari"]]
+    if not avail_sh:
         used["shayari"] = []
-        available_shayari = list(range(len(shayari_data)))
-    shayari_idx = random.choice(available_shayari)
-    selected_shayari = shayari_data[shayari_idx]
-
-    print(f"Uploading Reel: {video_url}")
-    # Reels me sound video ka apna hi hoga. Agar video silent hai to reel silent hogi.
-    # Trending sound API se nahi lag sakta, isliye 【entity-Pexels¦canonical_name=Pexels】 wali videos ka original sound hi use hoga.
+        avail_sh = list(range(len(shayari_data)))
+    sh_idx = random.choice(avail_sh)
+    sh = shayari_data[sh_idx]
+    print(f"Posting Reel: {video_url}")
+    # NOTE: Reel me video ka apna sound aayega. Trending song API se nahi lagta.
     fb_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/video_reels"
-    caption = f"{selected_shayari['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS} #Reels"
-    payload = {
-        "video_url": video_url,
-        "caption": caption,
-        "access_token": TOKEN,
-        "share_to_feed": "true"
-    }
-    r = requests.post(fb_url, data=payload, timeout=60)
+    caption = f"{sh['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS} #Reels"
+    r = requests.post(fb_url, data={"video_url": video_url, "caption": caption, "access_token": TOKEN, "share_to_feed": "true"}, timeout=60)
     print(r.text)
     r.raise_for_status()
-    print(f"✅ REEL POST SUCCESS! ID: {r.json().get('id')}")
-
     used_reels["videos"].append(video_url)
-    used["shayari"].append(shayari_idx)
+    used["shayari"].append(sh_idx)
     save_used("used_reels.json", used_reels)
     save_used("used.json", used)
+    print("✅ REEL SUCCESS")
 
-# ✅ MAIN - Ab ye decide karega Pic post karni hai ya Reel
 if __name__ == "__main__":
-    # Agar tum chahti ho ke har run pe kabhi pic kabhi reel aaye to ye random hai
-    # 50% chance Pic, 50% chance Reel
-    # Daily 48 ke liye ye best hai - 24 pics + 24 reels = 48 total
-    choice = random.choice(["photo", "reel"])
-    print(f"Today's choice: {choice}")
-
-    # Agar tum manually batana chahti ho to GitHub Actions me POST_TYPE env se bhi kar sakti ho
-    # POST_TYPE=photo ya POST_TYPE=reel
+    # POST_TYPE env se bhi control kar sakte ho, warna random
     manual = os.environ.get('POST_TYPE')
     if manual in ["photo", "reel"]:
         choice = manual
-
-    try:
-        if choice == "reel":
-            process_and_post_reel()
-        else:
-            process_and_post()
-    except Exception as e:
-        print(f"❌ FATAL ERROR: {e}")
-        sys.exit(1)
+    else:
+        choice = random.choice(["photo", "reel"])
+    print(f"Choice: {choice}")
+    if choice == "reel":
+        post_reel()
+    else:
+        post_photo()
