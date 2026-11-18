@@ -5,16 +5,11 @@ PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 PAGE_NAME = "Hina Fatima"
 
-# ===== 1. IMAGES - images.txt se aayengi, warna yahan wali list se =====
-# Tumhari purani romantic_images list yahan paste kar do, ya images.txt use karo
-# Me images.txt wala tareeka laga raha hoon taake 5000 pics ho jayein
-
 def get_images():
     if os.path.exists("images.txt"):
         links = [l.strip() for l in open("images.txt", encoding='utf-8') if l.strip()]
         if links:
             return links
-    # Fallback - agar images.txt nahi hai to ye 10 chalengi
     return [
         "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1080&auto=format&fit=crop",
@@ -23,8 +18,7 @@ def get_images():
         "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
     ]
 
-# ===== 2. SHAYARI - Tumhari purani wali yahan paste kar do =====
-# Me sample me 10 de raha hoon, tum apni 40 wali yahan paste kar dena
+# Tumhari purani shayari_data yahan paste kar do, me sample me 10 de raha hoon
 shayari_data = [
     {"roman": "Teri baahon mein aake toh jaise,\nSari kayanat mil gayi ho.", "urdu": "تیری بانہوں میں آ کے تو جیسے،\nساری کائنات مل گئی ہو۔"},
     {"roman": "Teri zulfon ki khushbu mein kho jata hoon,\nTere chehre ko dekhta hoon toh kho jata hoon.", "urdu": "تیری زلفوں کی خوشبو میں کھو جاتا ہوں،\nتیرے چہرے کو دیکھتا ہوں تو کھو جاتا ہوں۔"},
@@ -38,7 +32,6 @@ shayari_data = [
     {"roman": "Tere pyar mein hum toh aise doobe,\nJaise patthar paani mein doobta hai.", "urdu": "تیرے پیار میں ہم تو ایسے ڈوبے،\nجیسے پتھر پانی میں ڈوبتا ہے۔"},
 ]
 
-# ===== 3. REELS VIDEOS =====
 def get_videos():
     if os.path.exists("videos.txt"):
         links = [l.strip() for l in open("videos.txt", encoding='utf-8') if l.strip()]
@@ -79,14 +72,12 @@ def post_photo():
         used["images"] = []
         avail_img = all_images
     image_url = random.choice(avail_img)
-
     avail_sh = [i for i in range(len(shayari_data)) if i not in used["shayari"]]
     if not avail_sh:
         used["shayari"] = []
         avail_sh = list(range(len(shayari_data)))
     sh_idx = random.choice(avail_sh)
     sh = shayari_data[sh_idx]
-
     try:
         r = requests.get(image_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=15)
         img = Image.open(io.BytesIO(r.content)).convert("RGBA")
@@ -139,13 +130,27 @@ def post_reel():
         avail_sh = list(range(len(shayari_data)))
     sh_idx = random.choice(avail_sh)
     sh = shayari_data[sh_idx]
-    print(f"Posting Reel: {video_url}")
-    # NOTE: Reel me video ka apna sound aayega. Trending song API se nahi lagta.
-    fb_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/video_reels"
+    print(f"Downloading Reel: {video_url}")
+    vr = requests.get(video_url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=60)
+    open("reel.mp4", 'wb').write(vr.content)
+    print(f"Video size: {len(vr.content)} bytes")
     caption = f"{sh['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS} #Reels"
-    r = requests.post(fb_url, data={"video_url": video_url, "caption": caption, "access_token": TOKEN, "share_to_feed": "true"}, timeout=60)
-    print(r.text)
-    r.raise_for_status()
+    print("Step 1: Start Upload...")
+    start_url = f"https://graph.facebook.com/v21.0/{PAGE_ID}/video_reels"
+    r1 = requests.post(start_url, data={"upload_phase": "start", "access_token": TOKEN}, timeout=30)
+    print(r1.text)
+    r1.raise_for_status()
+    data = r1.json()
+    video_id = data["video_id"]
+    upload_url = data["upload_url"]
+    print("Step 2: Uploading Video File...")
+    with open("reel.mp4", 'rb') as f:
+        r2 = requests.post(upload_url, headers={"Authorization": f"OAuth {TOKEN}"}, data=f.read(), timeout=120)
+    print(f"Upload done: {r2.status_code} {r2.text[:500]}")
+    print("Step 3: Finish & Publish...")
+    r3 = requests.post(start_url, data={"upload_phase": "finish", "video_id": video_id, "caption": caption, "access_token": TOKEN, "share_to_feed": "true"}, timeout=30)
+    print(r3.text)
+    r3.raise_for_status()
     used_reels["videos"].append(video_url)
     used["shayari"].append(sh_idx)
     save_used("used_reels.json", used_reels)
@@ -153,7 +158,6 @@ def post_reel():
     print("✅ REEL SUCCESS")
 
 if __name__ == "__main__":
-    # POST_TYPE env se bhi control kar sakte ho, warna random
     manual = os.environ.get('POST_TYPE')
     if manual in ["photo", "reel"]:
         choice = manual
