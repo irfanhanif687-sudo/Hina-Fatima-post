@@ -1,0 +1,44 @@
+name: Auto Post
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      post_type:
+        description: 'Kya post karna hai?'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - photo
+          - reel
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install requests Pillow
+      - run: python post.py
+        env:
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_TOKEN: ${{ secrets.FB_TOKEN }}
+          POST_TYPE: ${{ inputs.post_type }}
+      - name: Save used files
+        run: |
+          git config user.name "AutoBot"
+          git config user.email "bot@bot.com"
+          rm -f post.jpg reel.mp4 Poppins-Bold.ttf
+          git add used.json used_reels.json
+          git commit -m "update used" || echo "no change"
+          git pull --rebase --autostash
+          git push
