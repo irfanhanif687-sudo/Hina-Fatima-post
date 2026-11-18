@@ -1,6 +1,3 @@
-https://assets.mixkit.co/videos/preview/mixkit-couple-walking-on-the-beach-at-sunset-1090-large.mp4
-https://assets.mixkit.co/videos/preview/mixkit-couple-in-a-park-1094-large.mp4
-https://assets.mixkit.co/videos/preview/mixkit-couple-in-love-in-a-field-1093-large.mp4
-https://assets.mixkit.co/videos/preview/mixkit-couple-dancing-at-a-party-1089-large.mp4
-https://assets.mixkit.co/videos/preview/mixkit-woman-and-man-holding-hands-1091-large.mp4
-https://assets.mixkit.co/videos/preview/mixkit-couple-hugging-in-a-park-1092-large.mp4
+https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4
+https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4
+https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4
