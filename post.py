@@ -1,4 +1,4 @@
-import os, random, requests, io, sys, json, subprocess, glob
+import os, random, requests, io, sys, json, subprocess
 from PIL import Image, ImageDraw, ImageFont
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
@@ -14,6 +14,8 @@ def get_images():
         "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1080&auto=format&fit=crop",
         "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1080&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
     ]
 
 shayari_data = [
@@ -112,16 +114,9 @@ def post_reel():
         avail_sh = list(range(len(shayari_data)))
     sh_idx = random.choice(avail_sh)
     sh = shayari_data[sh_idx]
-    # 1. Pehle Photo banao wesi hi jesi Photo post me banti hai
     image_url, used = make_image(sh)
     print(f"Photo ready for Reel: {image_url}")
-    # 2. Ab us Photo se 7 second ki Video banao - Zoom effect ke sath
-    # FFmpeg GitHub me pehle se hota hai, isliye koi download nahi chahiye
-    cmd = [
-        "ffmpeg", "-y", "-loop", "1", "-i", "post.jpg",
-        "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,zoompan=z='min(zoom+0.0015,1.5)':d=210:s=1080x1920:fps=30",
-        "-t", "7", "-pix_fmt", "yuv420p", "-c:v", "libx264", "reel.mp4"
-    ]
+    cmd = ["ffmpeg", "-y", "-loop", "1", "-i", "post.jpg", "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,zoompan=z='min(zoom+0.0015,1.5)':d=210:s=1080x1920:fps=30", "-t", "7", "-pix_fmt", "yuv420p", "-c:v", "libx264", "reel.mp4"]
     print("Making Reel video from photo...")
     subprocess.run(cmd, check=True)
     size = os.path.getsize("reel.mp4")
