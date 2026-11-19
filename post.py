@@ -14,18 +14,13 @@ def download_font():
     font_path = "Poppins-Bold.ttf"
     if not os.path.exists(font_path):
         print("Downloading Font...")
-        try:
-            r = requests.get(font_url, timeout=15)
-            r.raise_for_status()
-            with open(font_path, 'wb') as f:
-                f.write(r.content)
-            print("✅ Font downloaded.")
-        except Exception as e:
-            print(f"❌ Font download failed: {e}")
-            sys.exit(1)
+        r = requests.get(font_url, timeout=15)
+        r.raise_for_status()
+        with open(font_path, 'wb') as f:
+            f.write(r.content)
+        print("✅ Font downloaded.")
     return font_path
 
-# ✅ Unique Images - Koi Duplicate Nahi
 romantic_images = [
     "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1080&auto=format&fit=crop",
@@ -66,23 +61,9 @@ romantic_images = [
     "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1509967419530-da38b4704bc6?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1502378735452-bc7d86632805?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521341057461-6eb5f40b07ab?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1504198458649-3128b932f49e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?q=80&w=1080&auto=format&fit=crop"
+    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop"
 ]
 
-# ✅ Romantic Shayari - Page Safe + Viral
 shayari_data = [
     {"roman": "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.", "urdu": "تیری بانہوں میں سکون ملتا ہے،\nجیسے کسی کی دعا قبول ہو گئی ہو۔"},
     {"roman": "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.", "urdu": "تیرے بغیر یہ دل سن سن سا ہے،\nجیسے بغیر بارش کے موسم سونا ہے۔"},
@@ -105,49 +86,46 @@ shayari_data = [
     {"roman": "Teri khushbu se hi meri saans chalti hai,\nTeri yaad se hi mujhe sukoon milta hai.", "urdu": "تیری خوشبو سے ہی میری سانس چلتی ہے،\nتیری یاد سے ہی مجھے سکون ملتا ہے۔"},
     {"roman": "Tere ishq mein hadd se guzar jayenge,\nTere liye duniya se lad jayenge.", "urdu": "تیرے عشق میں حد سے گزر جائیں گے،\nتیرے لیے دنیا سے لڑ جائیں گے۔"},
     {"roman": "Mujhe teri aadat si nahi, junoon hai,\nTere bina jeena toh ek saza hai.", "urdu": "مجھے تیری عادت سی نہیں، جنون ہے،\nتیرے بغیر جینا تو ایک سزا ہے۔"},
-    {"roman": "Tere pyar mein hadd se guzar gaye hum,\nTujhe chahte chahte mar gaye hum.", "urdu": "تیرے پیار میں حد سے گزر گئے ہم،\nتجھے چاہتے چاہتے مر گئے ہم۔"},
-    {"roman": "Woh mujhse pyar ka izhar kar rahe hain,\nMain unko dekh kar sharma raha hoon.", "urdu": "وہ مجھ سے پیار کا اظہار کر رہے ہیں،\nمیں ان کو دیکھ کر شرما رہا ہوں۔"},
-    {"roman": "Teri aankhon mein jo nasha hai,\nWoh kisi sharaab mein kahan.", "urdu": "تیری آنکھوں میں جو نشہ ہے،\nوہ کسی شراب میں کہاں۔"},
+    {"roman": "Teri aankhon mein jo nasha hai,\nWoh kisi aur mein kahan.", "urdu": "تیری آنکھوں میں جو نشہ ہے،\nوہ کسی اور میں کہاں۔"},
     {"roman": "Dil chahta hai tujhe seene se laga loon,\nTeri yaadon mein hi kho jaoon.", "urdu": "دل چاہتا ہے تجھے سینے سے لگا لوں،\nتیری یادوں میں ہی کھو جاؤں۔"},
     {"roman": "Tere naam se shuru, tere naam pe khatam,\nMeri kahani tu hi hai, mera anjaam tu hi hai.", "urdu": "تیرے نام سے شروع، تیرے نام پہ ختم،\nمیری کہانی تو ہی ہے، میرا انجام تو ہی ہے۔"},
     {"roman": "Chandni raat mein teri yaad aayi,\nDil ne phir teri tasveer banayi.", "urdu": "چاندنی رات میں تیری یاد آئی،\nدل نے پھر تیری تصویر بنائی۔"},
     {"roman": "Tum mile toh laga, dua qabool ho gayi,\nMeri har khushi ab tere naam ho gayi.", "urdu": "تم ملے تو لگا، دعا قبول ہو گئی،\nمیری ہر خوشی اب تیرے نام ہو گئی۔"},
     {"roman": "Ishq tera meri jaan le gaya,\nTere bina jeena mushkil ho gaya.", "urdu": "عشق تیرا میری جان لے گیا،\nتیرے بغیر جینا مشکل ہو گیا۔"},
-    {"roman": "Teri ek muskaan pe sab kuch luta doon,\nTere liye apni jaan bhi de doon.", "urdu": "تیری ایک مسکان پہ سب کچھ لٹا دوں،\nتیرے لیے اپنی جان بھی دے دوں۔"}
+    {"roman": "Teri ek muskaan pe sab kuch luta doon,\nTere liye apni jaan bhi de doon.", "urdu": "تیری ایک مسکان پہ سب کچھ لٹا دوں،\nتیرے لیے اپنی جان بھی دے دوں۔"},
+    {"roman": "Woh mujhse pyar ka izhar kar rahe hain,\nMain unko dekh kar sharma raha hoon.", "urdu": "وہ مجھ سے پیار کا اظہار کر رہے ہیں،\nمیں ان کو دیکھ کر شرما رہا ہوں۔"},
+    {"roman": "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon.", "urdu": "تیرے نام کی محفل سجا لوں،\nتیری یادوں میں ہی کھو جاؤں۔"}
 ]
 
 HASHTAGS = "#UrduShayari #UrduPoetry #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima #Ishq #Mohabbat"
 
 def process_and_post():
     if not PAGE_ID or not TOKEN:
-        print("❌ FB_PAGE_ID ya FB_TOKEN secret missing hai!")
+        print("❌ FB_PAGE_ID ya FB_TOKEN missing hai!")
         sys.exit(1)
     font_path = download_font()
     image_url = random.choice(romantic_images)
-    selected_shayari = random.choice(shayari_data)
+    selected = random.choice(shayari_data)
     try:
         try:
             headers = {'User-Agent': 'Mozilla/5.0'}
-            img_response = requests.get(image_url, headers=headers, timeout=15)
-            img_response.raise_for_status()
-            img = Image.open(io.BytesIO(img_response.content)).convert("RGBA")
+            r = requests.get(image_url, headers=headers, timeout=15)
+            r.raise_for_status()
+            img = Image.open(io.BytesIO(r.content)).convert("RGBA")
         except Exception as e:
-            print(f"Image download fail, blank background use kar raha hoon: {e}")
+            print(f"Image fail, blank use kar raha hoon: {e}")
             img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255))
-        
         overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
-        draw_overlay = ImageDraw.Draw(overlay)
+        d = ImageDraw.Draw(overlay)
         for i in range(img.height):
             alpha = int(160 * (i / img.height))
-            draw_overlay.line([(0, i), (img.width, i)], fill=(0, 0, 0, alpha))
+            d.line([(0, i), (img.width, i)], fill=(0, 0, 0, alpha))
         img = Image.alpha_composite(img, overlay)
         draw = ImageDraw.Draw(img)
-        
-        roman_text = selected_shayari["roman"]
-        font_size = 65 
-        max_width = img.width - 150   
-        max_height = img.height - 400 
-        
+        roman_text = selected["roman"]
+        font_size = 65
+        max_width = img.width - 150
+        max_height = img.height - 400
         while font_size > 20:
             try:
                 shairi_font = ImageFont.truetype(font_path, font_size)
@@ -155,37 +133,25 @@ def process_and_post():
                 shairi_font = ImageFont.load_default()
                 break
             bbox = draw.multiline_textbbox((0, 0), roman_text, font=shairi_font, align="center")
-            text_width = bbox[2] - bbox[0]
-            text_height = bbox[3] - bbox[1]
-            if text_width < max_width and text_height < max_height:
+            if (bbox[2]-bbox[0] < max_width) and (bbox[3]-bbox[1] < max_height):
                 break
-            font_size -= 2 
-
-        x_center = img.width / 2
-        y_center = (img.height / 2) - 50 
-        
-        draw.multiline_text((x_center, y_center), roman_text, font=shairi_font, fill="white", anchor="mm", align="center", stroke_width=4, stroke_fill="black")
-        
+            font_size -= 2
+        draw.multiline_text((img.width/2, (img.height/2)-50), roman_text, font=shairi_font, fill="white", anchor="mm", align="center", stroke_width=4, stroke_fill="black")
         try:
             wm_font = ImageFont.truetype(font_path, 40)
         except:
             wm_font = ImageFont.load_default()
-        draw.text((img.width / 2, img.height - 80), PAGE_NAME, font=wm_font, fill="white", anchor="mm", stroke_width=2, stroke_fill="black")
-        
-        image_path = "premium_shairi.jpg"
-        img.convert("RGB").save(image_path, format="JPEG", quality=100)
-
+        draw.text((img.width/2, img.height-80), PAGE_NAME, font=wm_font, fill="white", anchor="mm", stroke_width=2, stroke_fill="black")
+        img.convert("RGB").save("premium_shairi.jpg", format="JPEG", quality=100)
         print("Uploading to 【entity-Facebook¦canonical_name=Facebook】...")
         fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-        urdu_caption = selected_shayari["urdu"]
-        caption = f"{urdu_caption}\n\nTag someone! ❤\n\n{HASHTAGS}"
-        payload = {"caption": caption, "access_token": TOKEN}
-        with open(image_path, 'rb') as img_file:
-            files = {'source': img_file}
-            fb_response = requests.post(fb_url, data=payload, files=files, timeout=30)
-        print(f"【entity-Facebook¦canonical_name=Facebook】 Response: {fb_response.status_code}")
-        fb_response.raise_for_status()
-        print(f"✅ POST SUCCESS! ID: {fb_response.json().get('id')}")
+        caption = f"{selected['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS}"
+        with open("premium_shairi.jpg", 'rb') as f:
+            files = {'source': f}
+            res = requests.post(fb_url, data={"caption": caption, "access_token": TOKEN}, files=files, timeout=30)
+        print(f"【entity-Facebook¦canonical_name=Facebook】 Response: {res.status_code}")
+        res.raise_for_status()
+        print(f"✅ POST SUCCESS! ID: {res.json().get('id')}")
     except Exception as e:
         print(f"❌ FATAL ERROR: {e}")
         sys.exit(1)
