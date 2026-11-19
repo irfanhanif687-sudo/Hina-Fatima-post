@@ -280,7 +280,7 @@ def make_text_image(shayari_text):
     print(f"✅ Text image ban gayi: {wrapped}")
     return "shayari_overlay.png"
 
-# ✅ ASLI FIX: Wav ko mp3 mein badalna hi band - Seedha wav use hoga, is liye wo error aayega hi nahi
+# ✅ FIXED - Ab dhun TEZ aur SAAF hogi, pehle wali halki/ajeeb wali nahi
 def make_local_indian_music():
     dhun = get_dhun_for_this_slot()
     print(f"✅ Dhun bana raha hoon: {dhun['name']}")
@@ -297,11 +297,14 @@ def make_local_indian_music():
         notes = dhun["raga"]
         tempo = dhun["tempo"]
         samples = [0.0] * total
+
+        # Tanpura - ab tez
         if dhun["tanpura"] > 0:
             for i in range(total):
                 t = i / sample_rate
-                drone = (0.12 * math.sin(2 * math.pi * 130.81 * t) + 0.08 * math.sin(2 * math.pi * 196.00 * t) + 0.05 * math.sin(2 * math.pi * 261.63 * t)) * dhun["tanpura"]
+                drone = (0.25 * math.sin(2 * math.pi * 130.81 * t) + 0.18 * math.sin(2 * math.pi * 196.00 * t) + 0.10 * math.sin(2 * math.pi * 261.63 * t)) * dhun["tanpura"]
                 samples[i] += drone
+
         note_len = int(sample_rate * tempo)
         pos = 0
         idx = 0
@@ -312,19 +315,22 @@ def make_local_indian_music():
                 if pos + i >= total:
                     break
                 t = i / sample_rate
-                decay = math.exp(-t * 2.2)
+                # FIX: Pehle decay 2.2 tha, is liye awaaz turant khatam ho jati thi. Ab 0.9 hai.
+                decay = math.exp(-t * 0.9)
                 vib = 1 + 0.006 * math.sin(2 * math.pi * 5.5 * t)
                 f = freq * vib
                 if dhun["sitar"] > 0:
-                    sitar_val = (0.55 * math.sin(2 * math.pi * f * t) + 0.30 * math.sin(2 * math.pi * f * 2 * t) + 0.18 * math.sin(2 * math.pi * f * 3 * t) + 0.10 * math.sin(2 * math.pi * f * 5 * t)) * decay * dhun["sitar"]
+                    # FIX: Pehle volume 0.55 tha, ab 1.2 hai - 2x se zyada tez
+                    sitar_val = (1.2 * math.sin(2 * math.pi * f * t) + 0.7 * math.sin(2 * math.pi * f * 2 * t) + 0.4 * math.sin(2 * math.pi * f * 3 * t) + 0.2 * math.sin(2 * math.pi * f * 5 * t)) * decay * dhun["sitar"]
                     samples[pos + i] += sitar_val
                 if dhun["bansuri"] > 0:
-                    bansuri_val = (0.60 * math.sin(2 * math.pi * f * 0.5 * t) + 0.25 * math.sin(2 * math.pi * f * t)) * math.exp(-t * 0.8) * dhun["bansuri"]
+                    bansuri_val = (1.1 * math.sin(2 * math.pi * f * 0.5 * t) + 0.6 * math.sin(2 * math.pi * f * t)) * math.exp(-t * 0.5) * dhun["bansuri"]
                     samples[pos + i] += bansuri_val
                 if dhun.get("harmonium", 0) > 0:
-                    harm_val = (0.45 * math.sin(2 * math.pi * f * t) + 0.25 * math.sin(2 * math.pi * f * 1.5 * t) + 0.15 * math.sin(2 * math.pi * f * 2 * t)) * math.exp(-t * 1.2) * dhun["harmonium"]
+                    harm_val = (0.9 * math.sin(2 * math.pi * f * t) + 0.5 * math.sin(2 * math.pi * f * 1.5 * t) + 0.3 * math.sin(2 * math.pi * f * 2 * t)) * math.exp(-t * 0.6) * dhun["harmonium"]
                     samples[pos + i] += harm_val
             pos += note_len
+
         if dhun["tabla"] > 0:
             tabla_interval = int(sample_rate * 0.75)
             for start in range(0, total, tabla_interval):
@@ -332,19 +338,19 @@ def make_local_indian_music():
                     if start + i >= total:
                         break
                     t = i / sample_rate
-                    thump = 0.35 * math.sin(2 * math.pi * 120 * t) * math.exp(-t * 25) * dhun["tabla"]
+                    # FIX: Tabla bhi ab 2x tez - pehle 0.35 tha
+                    thump = 0.7 * math.sin(2 * math.pi * 120 * t) * math.exp(-t * 25) * dhun["tabla"]
                     samples[start + i] += thump
                 for i in range(int(sample_rate * 0.06)):
                     if start + int(sample_rate * 0.35) + i >= total:
                         break
                     t = i / sample_rate
-                    tick = 0.18 * math.sin(2 * math.pi * 1800 * t) * math.exp(-t * 35) * dhun["tabla"]
+                    tick = 0.35 * math.sin(2 * math.pi * 1800 * t) * math.exp(-t * 35) * dhun["tabla"]
                     samples[start + int(sample_rate * 0.35) + i] += tick
+
         max_val = max(abs(s) for s in samples) or 1
-        scale = 16000 / max_val
-        if scale > 1.2:
-            scale = 1.2
-        # ✅ Pehle wali galti: ek ek karke writeframes kar rahe the - ab ek hi baar mein
+        # FIX: Pehle scale 16000 / 1.2 pe rok diya tha, is liye halki thi. Ab full 30000
+        scale = 30000 / max_val
         int_samples = [int(max(-32767, min(32767, s * scale))) for s in samples]
         data = b''.join(struct.pack('<h', s) for s in int_samples)
         with wave.open("background.wav", "w") as wf:
@@ -352,12 +358,13 @@ def make_local_indian_music():
             wf.setsampwidth(2)
             wf.setframerate(sample_rate)
             wf.writeframes(data)
+
         wav_size = os.path.getsize("background.wav")
-        print(f"✅ Dhun Ready WAV: {dhun['name']} - {wav_size} bytes")
+        print(f"✅ Dhun Ready WAV - TEZ WALI: {dhun['name']} - {wav_size} bytes")
         if wav_size < 100000:
             print("❌ WAV file bahut choti hai, kharab bani hai!")
             return None
-        # ✅ Yahan pehle mp3 convert hota tha aur fail hota tha - ab nahi hoga, seedha wav return
+        # FIX: mp3 convert nahi karna, seedha wav return - is liye FFmpeg wav->mp3 fail nahi aayega
         return "background.wav"
     except Exception as e:
         print(f"Local music fail: {e}")
@@ -412,10 +419,11 @@ def make_final_reel(video_url, shayari_text, music_path):
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
     print(f"Adding DHUN: {music_path} - size {os.path.getsize(music_path)}")
+    # FIX: Pehle volume=0.9 + lowpass tha, is liye awaaz dab jati thi. Ab volume=1.8, lowpass khatam.
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
         "[v][1:v]overlay=0:0[outv];"
-        "[2:a]volume=0.9,lowpass=f=5000,afade=t=in:st=0:d=1,afade=t=out:st=14:d=1[outa]"
+        "[2:a]volume=1.8,afade=t=in:st=0:d=0.5,afade=t=out:st=14:d=1[outa]"
     )
     cmd = ["ffmpeg", "-y",
            "-i", raw_path,
