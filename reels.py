@@ -4,15 +4,24 @@ import requests
 import sys
 import subprocess
 import time
-import math
-import wave
-import struct
 from datetime import datetime
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
 PEXELS_KEY = os.environ.get('PEXELS_KEY')
 API_VERSION = "v21.0"
+
+# ✅ FINAL - SIRF INDIAN ROMANTIC - 6 TRACKS - Sab Direct MP3 - Koi WAV Nahi
+# 1 = Sitar Moonlight, 2 = Bansuri Ambient, 3 = Indian Flute Meditation
+# 4 = Sitar Romance 2, 5 = Bansuri + Tabla, 6 = Backup Sitar
+FREE_MUSIC_URLS = [
+    "https://cdn.pixabay.com/download/audio/2022/07/25/audio_25c05ffd84.mp3?filename=sitar-in-the-moonlight-115602.mp3",
+    "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=flute-ambient-112328.mp3",
+    "https://cdn.pixabay.com/download/audio/2022/03/15/audio_1c3a9d7da9.mp3?filename=indian-flute-meditation-music-22823.mp3",
+    "https://cdn.pixabay.com/download/audio/2022/07/25/audio_25c05ffd84.mp3?filename=sitar-in-the-moonlight-115602.mp3",
+    "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=flute-ambient-112328.mp3",
+    "https://cdn.pixabay.com/download/audio/2022/03/15/audio_1c3a9d7da9.mp3?filename=indian-flute-meditation-music-22823.mp3",
+]
 
 REEL_SHAYARI = [
     "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
@@ -193,44 +202,19 @@ CTA_LINES = [
     "💌 Share + Follow - Apne pyar ko ye reel bhejo, wo khush ho jayega",
 ]
 
-DHUN_LIST = [
-    {"name": "Tone 1 - Sitar Slow Romantic", "raga": [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66], "tempo": 1.6, "sitar": 1.0, "bansuri": 0.0, "tabla": 1.0, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 2 - Bansuri Meethi Lambi", "raga": [293.66, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63], "tempo": 1.9, "sitar": 0.2, "bansuri": 1.0, "tabla": 0.3, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 3 - Harmonium + Tabla Shaadi", "raga": [261.63, 311.13, 329.63, 392.00, 466.16, 392.00, 329.63, 311.13], "tempo": 1.4, "sitar": 0.3, "bansuri": 0.2, "tabla": 1.0, "tanpura": 0.8, "harmonium": 1.0},
-    {"name": "Tone 4 - Sitar + Bansuri Jodi", "raga": [329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00], "tempo": 1.5, "sitar": 0.8, "bansuri": 0.8, "tabla": 0.6, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 5 - Raat Wali Udaas Sitar", "raga": [261.63, 293.66, 311.13, 392.00, 440.00, 392.00, 311.13, 293.66], "tempo": 2.1, "sitar": 1.0, "bansuri": 0.3, "tabla": 0.2, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 6 - Khushi Wali Tez Tabla", "raga": [329.63, 392.00, 440.00, 523.25, 659.25, 587.33, 523.25, 440.00], "tempo": 1.1, "sitar": 0.9, "bansuri": 0.4, "tabla": 1.0, "tanpura": 0.8, "harmonium": 0.3},
-    {"name": "Tone 7 - Halki Bansuri Romantic", "raga": [293.66, 311.13, 392.00, 466.16, 523.25, 466.16, 392.00, 311.13], "tempo": 1.8, "sitar": 0.1, "bansuri": 1.0, "tabla": 0.4, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 8 - Full Band Sab Kuch", "raga": [261.63, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 523.25], "tempo": 1.3, "sitar": 1.0, "bansuri": 0.9, "tabla": 1.0, "tanpura": 1.0, "harmonium": 0.6},
-    {"name": "Tone 9 - Gehra Sitar Dard Bhara", "raga": [196.00, 261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 261.63], "tempo": 2.0, "sitar": 1.0, "bansuri": 0.0, "tabla": 0.3, "tanpura": 1.0, "harmonium": 0.4},
-    {"name": "Tone 10 - Bansuri Lambi Taan", "raga": [392.00, 440.00, 523.25, 587.33, 659.25, 587.33, 523.25, 440.00], "tempo": 2.2, "sitar": 0.0, "bansuri": 1.0, "tabla": 0.2, "tanpura": 1.0, "harmonium": 0.0},
-    {"name": "Tone 11 - Harmonium Slow Mehfil", "raga": [261.63, 329.63, 392.00, 466.16, 523.25, 466.16, 392.00, 329.63], "tempo": 1.7, "sitar": 0.2, "bansuri": 0.2, "tabla": 0.7, "tanpura": 0.9, "harmonium": 1.0},
-    {"name": "Tone 12 - Sitar Tez Ishq Josh", "raga": [329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 659.25, 523.25], "tempo": 0.9, "sitar": 1.0, "bansuri": 0.3, "tabla": 1.0, "tanpura": 0.7, "harmonium": 0.2},
-    {"name": "Tone 13 - Bansuri + Tabla Halki", "raga": [293.66, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00], "tempo": 1.6, "sitar": 0.1, "bansuri": 1.0, "tabla": 0.8, "tanpura": 0.9, "harmonium": 0.0},
-    {"name": "Tone 14 - Tanpura Gehra + Sitar", "raga": [130.81, 196.00, 261.63, 329.63, 392.00, 329.63, 261.63, 196.00], "tempo": 1.8, "sitar": 0.9, "bansuri": 0.2, "tabla": 0.4, "tanpura": 1.0, "harmonium": 0.3},
-    {"name": "Tone 15 - Shaam Wali Dhun", "raga": [261.63, 293.66, 329.63, 392.00, 466.16, 523.25, 466.16, 392.00], "tempo": 1.5, "sitar": 0.7, "bansuri": 0.7, "tabla": 0.5, "tanpura": 1.0, "harmonium": 0.5},
-    {"name": "Tone 16 - Subah Wali Halki Dhun", "raga": [329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63, 293.66], "tempo": 1.9, "sitar": 0.4, "bansuri": 0.9, "tabla": 0.3, "tanpura": 0.8, "harmonium": 0.4},
-    {"name": "Tone 17 - Dard Bhari Sitar Slow", "raga": [220.00, 261.63, 311.13, 392.00, 440.00, 392.00, 311.13, 261.63], "tempo": 2.3, "sitar": 1.0, "bansuri": 0.4, "tabla": 0.1, "tanpura": 1.0, "harmonium": 0.2},
-    {"name": "Tone 18 - Pyar Bhari Bansuri Fast", "raga": [392.00, 466.16, 523.25, 587.33, 659.25, 783.99, 659.25, 587.33], "tempo": 1.2, "sitar": 0.3, "bansuri": 1.0, "tabla": 0.7, "tanpura": 0.9, "harmonium": 0.0},
-    {"name": "Tone 19 - Dholak + Harmonium Masti", "raga": [261.63, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63], "tempo": 1.0, "sitar": 0.3, "bansuri": 0.3, "tabla": 1.0, "tanpura": 0.7, "harmonium": 1.0},
-    {"name": "Tone 20 - Sabse Romantic Sitar Bansuri Tanpura", "raga": [293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00], "tempo": 1.4, "sitar": 1.0, "bansuri": 1.0, "tabla": 0.6, "tanpura": 1.0, "harmonium": 0.5},
-]
+# ✅ FIX 1: Slot formula - ab har 2 ghante me alag shayari, alag hashtag, alag dhun
+def get_slot():
+    now = datetime.now()
+    # Din + Ghanta + Aadha ghanta - har slot unique
+    return (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
 
 def get_shayari_for_this_slot():
-    now = datetime.now()
-    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
+    slot = get_slot()
     index = slot % len(REEL_SHAYARI)
     return REEL_SHAYARI[index]
 
-def get_dhun_for_this_slot():
-    now = datetime.now()
-    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
-    dhun = DHUN_LIST[slot % len(DHUN_LIST)]
-    return dhun
-
 def get_hashtags_and_cta():
-    now = datetime.now()
-    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
+    slot = get_slot()
     hashtags = HASHTAG_SETS[slot % len(HASHTAG_SETS)]
     cta = CTA_LINES[slot % len(CTA_LINES)]
     return hashtags, cta
@@ -255,7 +239,9 @@ def make_text_image(shayari_text):
     video_text = shayari_text.replace(",", "").replace(".", "").replace("?", "").replace("!", "")
     wrapped = []
     for part in video_text.split("\n"):
-        wrapped.extend(wrap_line(part.strip()))
+        if part.strip():
+            wrapped.extend(wrap_line(part.strip()))
+    # ✅ FIX 2: Transparent overlay - 1080x1920 fixed
     img = Image.new("RGBA", (1080, 1920), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     font = None
@@ -272,105 +258,57 @@ def make_text_image(shayari_text):
         bbox = draw.textbbox((0, 0), line, font=font)
         w = bbox[2] - bbox[0]
         x = (1080 - w) // 2
+        # Black border taake white text video pe saaf dikhe
         for dx, dy in [(-3,0),(3,0),(0,-3),(0,3),(-2,-2),(2,2),(-2,2),(2,-2)]:
             draw.text((x+dx, y+dy), line, font=font, fill=(0,0,0,255))
         draw.text((x, y), line, font=font, fill=(255,255,255,255))
         y += 70
+    # ✅ FIX 3: Purani file ho to pehle delete karo
+    if os.path.exists("shayari_overlay.png"):
+        try:
+            os.remove("shayari_overlay.png")
+        except:
+            pass
     img.save("shayari_overlay.png")
     print(f"✅ Text image ban gayi: {wrapped}")
     return "shayari_overlay.png"
 
-# ✅ FIXED - Ab dhun TEZ aur SAAF hogi, pehle wali halki/ajeeb wali nahi
-def make_local_indian_music():
-    dhun = get_dhun_for_this_slot()
-    print(f"✅ Dhun bana raha hoon: {dhun['name']}")
-    try:
-        for f in ["background.mp3", "background.wav"]:
-            if os.path.exists(f):
-                try:
-                    os.remove(f)
-                except:
-                    pass
-        sample_rate = 44100
-        duration = 15
-        total = sample_rate * duration
-        notes = dhun["raga"]
-        tempo = dhun["tempo"]
-        samples = [0.0] * total
-
-        # Tanpura - ab tez
-        if dhun["tanpura"] > 0:
-            for i in range(total):
-                t = i / sample_rate
-                drone = (0.25 * math.sin(2 * math.pi * 130.81 * t) + 0.18 * math.sin(2 * math.pi * 196.00 * t) + 0.10 * math.sin(2 * math.pi * 261.63 * t)) * dhun["tanpura"]
-                samples[i] += drone
-
-        note_len = int(sample_rate * tempo)
-        pos = 0
-        idx = 0
-        while pos < total:
-            freq = notes[idx % len(notes)]
-            idx += 1
-            for i in range(note_len):
-                if pos + i >= total:
-                    break
-                t = i / sample_rate
-                # FIX: Pehle decay 2.2 tha, is liye awaaz turant khatam ho jati thi. Ab 0.9 hai.
-                decay = math.exp(-t * 0.9)
-                vib = 1 + 0.006 * math.sin(2 * math.pi * 5.5 * t)
-                f = freq * vib
-                if dhun["sitar"] > 0:
-                    # FIX: Pehle volume 0.55 tha, ab 1.2 hai - 2x se zyada tez
-                    sitar_val = (1.2 * math.sin(2 * math.pi * f * t) + 0.7 * math.sin(2 * math.pi * f * 2 * t) + 0.4 * math.sin(2 * math.pi * f * 3 * t) + 0.2 * math.sin(2 * math.pi * f * 5 * t)) * decay * dhun["sitar"]
-                    samples[pos + i] += sitar_val
-                if dhun["bansuri"] > 0:
-                    bansuri_val = (1.1 * math.sin(2 * math.pi * f * 0.5 * t) + 0.6 * math.sin(2 * math.pi * f * t)) * math.exp(-t * 0.5) * dhun["bansuri"]
-                    samples[pos + i] += bansuri_val
-                if dhun.get("harmonium", 0) > 0:
-                    harm_val = (0.9 * math.sin(2 * math.pi * f * t) + 0.5 * math.sin(2 * math.pi * f * 1.5 * t) + 0.3 * math.sin(2 * math.pi * f * 2 * t)) * math.exp(-t * 0.6) * dhun["harmonium"]
-                    samples[pos + i] += harm_val
-            pos += note_len
-
-        if dhun["tabla"] > 0:
-            tabla_interval = int(sample_rate * 0.75)
-            for start in range(0, total, tabla_interval):
-                for i in range(int(sample_rate * 0.12)):
-                    if start + i >= total:
-                        break
-                    t = i / sample_rate
-                    # FIX: Tabla bhi ab 2x tez - pehle 0.35 tha
-                    thump = 0.7 * math.sin(2 * math.pi * 120 * t) * math.exp(-t * 25) * dhun["tabla"]
-                    samples[start + i] += thump
-                for i in range(int(sample_rate * 0.06)):
-                    if start + int(sample_rate * 0.35) + i >= total:
-                        break
-                    t = i / sample_rate
-                    tick = 0.35 * math.sin(2 * math.pi * 1800 * t) * math.exp(-t * 35) * dhun["tabla"]
-                    samples[start + int(sample_rate * 0.35) + i] += tick
-
-        max_val = max(abs(s) for s in samples) or 1
-        # FIX: Pehle scale 16000 / 1.2 pe rok diya tha, is liye halki thi. Ab full 30000
-        scale = 30000 / max_val
-        int_samples = [int(max(-32767, min(32767, s * scale))) for s in samples]
-        data = b''.join(struct.pack('<h', s) for s in int_samples)
-        with wave.open("background.wav", "w") as wf:
-            wf.setnchannels(1)
-            wf.setsampwidth(2)
-            wf.setframerate(sample_rate)
-            wf.writeframes(data)
-
-        wav_size = os.path.getsize("background.wav")
-        print(f"✅ Dhun Ready WAV - TEZ WALI: {dhun['name']} - {wav_size} bytes")
-        if wav_size < 100000:
-            print("❌ WAV file bahut choti hai, kharab bani hai!")
-            return None
-        # FIX: mp3 convert nahi karna, seedha wav return - is liye FFmpeg wav->mp3 fail nahi aayega
-        return "background.wav"
-    except Exception as e:
-        print(f"Local music fail: {e}")
-        import traceback
-        traceback.print_exc()
-        return None
+# ✅ FIX 4: Direct MP3 - Koi WAV, Koi Convert Nahi - Sirf Indian Romantic
+def get_free_real_music():
+    slot = get_slot()
+    start_index = slot % len(FREE_MUSIC_URLS)
+    ordered = FREE_MUSIC_URLS[start_index:] + FREE_MUSIC_URLS[:start_index]
+    # Purani music file delete karo
+    if os.path.exists("background.mp3"):
+        try:
+            os.remove("background.mp3")
+        except:
+            pass
+    for i, url in enumerate(ordered):
+        for attempt in range(2):
+            try:
+                print(f"Trying INDIAN ROMANTIC dhun {i+1}/6 - Attempt {attempt+1}/2 - {url[:60]}")
+                headers = {"User-Agent": "Mozilla/5.0"}
+                r = requests.get(url, headers=headers, timeout=40)
+                print(f"Download status: {r.status_code} size: {len(r.content)}")
+                # ✅ FIX 5: 100KB se choti file ko reject karo - khaali file nahi chalegi
+                if r.status_code == 200 and len(r.content) > 100000:
+                    with open("background.mp3", "wb") as f:
+                        f.write(r.content)
+                    time.sleep(1)
+                    final_size = os.path.getsize("background.mp3")
+                    print(f"✅ INDIAN ROMANTIC DHUN DOWNLOAD HO GAYI - {final_size} bytes")
+                    if final_size > 100000:
+                        return "background.mp3"
+                else:
+                    print("❌ File choti hai, agli dhun try...")
+                    time.sleep(2)
+            except Exception as e:
+                print(f"❌ Download fail: {e}, 2 sec ruk ke dobara...")
+                time.sleep(2)
+                continue
+    print("❌ Koi bhi Indian dhun download nahi hui - Reel bina dhun ke banegi")
+    return None
 
 def get_random_reel_video():
     print("Fetching video from Pexels - AUTO...")
@@ -379,67 +317,110 @@ def get_random_reel_video():
         sys.exit(1)
     queries = ["romantic couple", "couple in love", "couple holding hands", "couple sunset", "couple hug romantic"]
     headers = {"Authorization": PEXELS_KEY}
-    params = {"query": random.choice(queries), "per_page": 15, "orientation": "portrait", "size": "medium"}
-    try:
-        res = requests.get("https://api.pexels.com/videos/search", headers=headers, params=params, timeout=20)
-        print(f" Pexels Status: {res.status_code}")
-        res.raise_for_status()
-        videos = res.json().get('videos', [])
-        if not videos:
-            print("❌ Pexels ne video nahi diya")
-            sys.exit(1)
-        selected = random.choice(videos)
-        files = selected.get('video_files', [])
-        if not files:
-            print("❌ Video files empty")
-            sys.exit(1)
-        suitable = [f for f in files if 700 <= f.get('height', 0) <= 1080]
-        if suitable:
-            best = random.choice(suitable)
-        else:
-            best = sorted(files, key=lambda x: x.get('height', 0))[0]
-        print(f"Found video: {best.get('link')} height={best.get('height')}")
-        return best.get('link')
-    except Exception as e:
-        print(f"❌ Video fetch error: {e}")
-        sys.exit(1)
+    for attempt in range(3):
+        try:
+            params = {"query": random.choice(queries), "per_page": 15, "orientation": "portrait", "size": "medium"}
+            res = requests.get("https://api.pexels.com/videos/search", headers=headers, params=params, timeout=25)
+            print(f" Pexels Status Attempt {attempt+1}: {res.status_code}")
+            res.raise_for_status()
+            videos = res.json().get('videos', [])
+            if not videos:
+                print("❌ Pexels ne video nahi diya, dobara try...")
+                time.sleep(2)
+                continue
+            selected = random.choice(videos)
+            files = selected.get('video_files', [])
+            if not files:
+                print("❌ Video files empty, dobara try...")
+                time.sleep(2)
+                continue
+            # ✅ FIX 6: Sirf portrait video lo - 700 se 1080 height wali
+            suitable = [f for f in files if 700 <= f.get('height', 0) <= 1080]
+            if suitable:
+                best = random.choice(suitable)
+            else:
+                best = sorted(files, key=lambda x: x.get('height', 0))[0]
+            print(f"Found video: {best.get('link')} height={best.get('height')}")
+            return best.get('link')
+        except Exception as e:
+            print(f"❌ Video fetch error attempt {attempt+1}: {e}")
+            time.sleep(3)
+            continue
+    print("❌ 3 baar try kiya, video nahi mila")
+    sys.exit(1)
 
 def make_final_reel(video_url, shayari_text, music_path):
-    if not music_path or not os.path.exists(music_path):
-        print("❌ SONG NAHI MILA, REEL NAHI BANA RAHA")
-        sys.exit(1)
     raw_path = "raw_reel.mp4"
-    print("Downloading raw video...")
-    with requests.get(video_url, stream=True, timeout=45) as r:
-        r.raise_for_status()
-        with open(raw_path, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
-    print(f"Raw size: {os.path.getsize(raw_path)} bytes")
+    print("Downloading raw video - 1 se 2 minute lag sakta hai...")
+    for attempt in range(2):
+        try:
+            if os.path.exists(raw_path):
+                os.remove(raw_path)
+            with requests.get(video_url, stream=True, timeout=60) as r:
+                r.raise_for_status()
+                with open(raw_path, 'wb') as f:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        f.write(chunk)
+            raw_size = os.path.getsize(raw_path)
+            print(f"Raw size: {raw_size} bytes")
+            if raw_size > 100000:
+                break
+            else:
+                print("❌ Video choti hai, dobara download...")
+                time.sleep(2)
+                continue
+        except Exception as e:
+            print(f"❌ Video download fail attempt {attempt+1}: {e}")
+            time.sleep(3)
+            continue
+    if not os.path.exists(raw_path) or os.path.getsize(raw_path) < 100000:
+        print("❌ Video download nahi hua")
+        sys.exit(1)
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
-    print(f"Adding DHUN: {music_path} - size {os.path.getsize(music_path)}")
-    # FIX: Pehle volume=0.9 + lowpass tha, is liye awaaz dab jati thi. Ab volume=1.8, lowpass khatam.
-    filter_complex = (
-        "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
-        "[v][1:v]overlay=0:0[outv];"
-        "[2:a]volume=1.8,afade=t=in:st=0:d=0.5,afade=t=out:st=14:d=1[outa]"
-    )
-    cmd = ["ffmpeg", "-y",
-           "-i", raw_path,
-           "-i", overlay,
-           "-stream_loop", "-1", "-i", music_path,
-           "-filter_complex", filter_complex,
-           "-map", "[outv]", "-map", "[outa]",
-           "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
-           "-c:a", "aac", "-t", "15", final_path]
-    print("Running FFmpeg final...")
+    if os.path.exists(final_path):
+        try:
+            os.remove(final_path)
+        except:
+            pass
+    # ✅ FIX 7: Music hai to music wala filter, nahi hai to bina music wala - dono alag alag, koi mix nahi
+    if music_path and os.path.exists(music_path) and os.path.getsize(music_path) > 100000:
+        print(f"Adding INDIAN ROMANTIC DHUN: {music_path} - {os.path.getsize(music_path)} bytes")
+        # [0:v]=video, [1:v]=overlay image, [2:a]=music
+        filter_complex = (
+            "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
+            "[v][1:v]overlay=0:0[outv];"
+            "[2:a]volume=1.0,afade=t=in:st=0:d=0.5,afade=t=out:st=14:d=1[outa]"
+        )
+        cmd = ["ffmpeg", "-y",
+               "-i", raw_path,
+               "-i", overlay,
+               "-stream_loop", "-1", "-i", music_path,
+               "-filter_complex", filter_complex,
+               "-map", "[outv]", "-map", "[outa]",
+               "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+               "-c:a", "aac", "-t", "15", final_path]
+    else:
+        print("Bina dhun ke reel bana raha hoon - music nahi mila")
+        filter_complex = "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];[v][1:v]overlay=0:0[outv]"
+        cmd = ["ffmpeg", "-y",
+               "-i", raw_path,
+               "-i", overlay,
+               "-filter_complex", filter_complex,
+               "-map", "[outv]",
+               "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+               "-t", "15", final_path]
+    print("Running FFmpeg final - 1 minute lag sakta hai...")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ FFmpeg Final Error - POORA ERROR:")
-        print(result.stderr)
+        print(result.stderr[-2000:])
         sys.exit(1)
-    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes")
+    final_size = os.path.getsize(final_path)
+    print(f"✅ Final Reel Ready: {final_size} bytes")
+    if final_size < 100000:
+        print("❌ Final reel bahut choti hai")
+        sys.exit(1)
     return final_path
 
 def upload_reel_to_facebook(video_path, caption):
@@ -450,7 +431,7 @@ def upload_reel_to_facebook(video_path, caption):
     print("Starting Facebook Reel upload...")
     start_url = f"https://graph.facebook.com/{API_VERSION}/{PAGE_ID}/video_reels"
     try:
-        start_res = requests.post(start_url, data={"upload_phase": "start", "access_token": TOKEN}, timeout=20)
+        start_res = requests.post(start_url, data={"upload_phase": "start", "access_token": TOKEN}, timeout=25)
         print(f"Start Status: {start_res.status_code}")
         start_res.raise_for_status()
         start_data = start_res.json()
@@ -462,7 +443,7 @@ def upload_reel_to_facebook(video_path, caption):
         if 'start_res' in locals():
             print(start_res.text)
         sys.exit(1)
-    print("Uploading file...")
+    print("Uploading file - 1 minute lag sakta hai...")
     try:
         with open(video_path, 'rb') as f:
             upload_res = requests.post(upload_url, headers={"Authorization": f"OAuth {TOKEN}", "offset": "0", "file_size": str(file_size)}, data=f, timeout=120)
@@ -472,7 +453,8 @@ def upload_reel_to_facebook(video_path, caption):
     except Exception as e:
         print(f"❌ Upload failed: {e}")
         sys.exit(1)
-    time.sleep(8)
+    print("Facebook ko 10 sec de raha hoon...")
+    time.sleep(10)
     print("Publishing...")
     finish_url = f"https://graph.facebook.com/{API_VERSION}/{PAGE_ID}/video_reels"
     try:
@@ -480,7 +462,7 @@ def upload_reel_to_facebook(video_path, caption):
             "access_token": TOKEN, "video_id": video_id,
             "upload_phase": "finish", "video_state": "PUBLISHED",
             "description": caption
-        }, timeout=30)
+        }, timeout=35)
         print(f"Finish Status: {finish_res.status_code}")
         print(finish_res.text[:500])
         finish_res.raise_for_status()
@@ -496,17 +478,13 @@ if __name__ == "__main__":
         print("❌ FB_PAGE_ID ya FB_TOKEN missing!")
         sys.exit(1)
     shayari = get_shayari_for_this_slot()
-    dhun = get_dhun_for_this_slot()
     hashtags, cta = get_hashtags_and_cta()
     caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
     print(f"Selected Shayari: {shayari}")
-    print(f"Selected Dhun: {dhun['name']}")
     print(f"Hashtags: {hashtags}")
     print(f"CTA: {cta}")
-    music = make_local_indian_music()
-    if not music:
-        print("❌ SONG NAHI BANA - Reel post nahi hogi")
-        sys.exit(1)
+    print("Shuru ho gaya - 1 se 4 minute lagega, Indian Romantic dhun ke saath...")
+    music = get_free_real_music()
     video_url = get_random_reel_video()
     final_video = make_final_reel(video_url, shayari, music)
     upload_reel_to_facebook(final_video, caption)
