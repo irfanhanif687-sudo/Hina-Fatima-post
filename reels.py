@@ -14,6 +14,7 @@ TOKEN = os.environ.get('FB_TOKEN')
 PEXELS_KEY = os.environ.get('PEXELS_KEY')
 API_VERSION = "v21.0"
 
+# 100 SHAYARI - 8 DIN TAK KOI REPEAT NAHI HOGI
 REEL_SHAYARI = [
     "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
     "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
@@ -44,10 +45,101 @@ REEL_SHAYARI = [
     "Ishq tera meri jaan le gaya,\nTere bina jeena mushkil ho gaya.",
     "Teri ek muskaan pe sab kuch luta doon,\nTere liye apni jaan bhi de doon.",
     "Woh mujhse pyar ka izhar kar rahe hain,\nMain unko dekh kar sharma raha hoon.",
-    "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon."
+    "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon.",
+    "Tere bina zindagi adhoori si lagti hai,\nTere saath har khushi poori si lagti hai.",
+    "Teri yaadon ka chirag jalaye rakha hai,\nTere ishq ko dil mein basaye rakha hai.",
+    "Tujhe dekhne ki hasrat har roz hai,\nTere bina jeena ek bojh hai.",
+    "Meri duaon mein bas tera naam hai,\nMeri har khushi ka tu hi paigham hai.",
+    "Tere chehre ki roshni se roshan hai jahan,\nTere bina andhera hai mera aasmaan.",
+    "Teri muskaan meri duniya hai,\nTeri khushi meri manzil hai.",
+    "Dil ne tujhe apna maan liya hai,\nTere bina jeena mushkil maan liya hai.",
+    "Teri baatein sun kar dil khush ho jata hai,\nTera naam sun kar chehra khil jata hai.",
+    "Tere ishq mein hum deewane ho gaye,\nTeri yaad mein hum parwane ho gaye.",
+    "Tum jo mile toh laga zindagi mil gayi,\nTeri mohabbat mein har khushi mil gayi.",
+    "Tere saath guzra har pal yaadgar hai,\nTeri yaad mein jeena hi mera pyar hai.",
+    "Teri aankhon mein apna jahan dekhta hoon,\nTere chehre mein apna aasmaan dekhta hoon.",
+    "Tujhe chahna meri aadat ban gayi,\nTeri yaad meri ibadat ban gayi.",
+    "Mere dil ki dhadkan tu hi hai,\nMeri har khushi ka kaaran tu hi hai.",
+    "Tere bina saans bhi bojh lagti hai,\nTere saath zindagi phool lagti hai.",
+    "Teri yaad aaye toh dil muskurata hai,\nTera naam aaye toh chehra khil jata hai.",
+    "Tujhe paane ki dua har roz karta hoon,\nTere liye khuda se fariyaad karta hoon.",
+    "Tere pyar ka nasha chadha hua hai,\nMera dil tere naam pe likha hua hai.",
+    "Teri ek jhalak ke liye tarasta hoon,\nTere deedar ke liye tarapta hoon.",
+    "Tum meri duaon ka asar ho,\nTum meri mohabbat ka safar ho.",
+    "Tere ishq ne mujhe jeena sikha diya,\nTeri yaad ne mujhe marna sikha diya.",
+    "Dil ki har dhadkan mein tu basi hai,\nMeri har saans mein teri khushbu basi hai.",
+    "Teri mohabbat mein khoya rehta hoon,\nTeri yaadon mein soya rehta hoon.",
+    "Tujhe dekh kar dil dhadak uthta hai,\nTera naam sun kar chehra mehak uthta hai.",
+    "Tere bina ye sheher veeran lagta hai,\nTere saath har rasta gulistaan lagta hai.",
+    "Teri yaadon ki baarish mein bheeg jata hoon,\nTere khayalon mein kho kar jee jata hoon.",
+    "Tum jo hanste ho toh phool khil jate hain,\nTum jo rote ho toh dil mil jate hain.",
+    "Meri zindagi ki kitaab tu hi hai,\nMere har panne ka jawab tu hi hai.",
+    "Tere naam se din shuru hota hai,\nTeri yaad se din khatam hota hai.",
+    "Tujhe chahne ka junoon sar pe hai,\nTere ishq ka nasha har pal pe hai.",
+    "Teri baahon ka ghera jannat lagta hai,\nTera saath har pal amanat lagta hai.",
+    "Tere labon ki hansi meri dua hai,\nTeri khushi meri har khata hai.",
+    "Dil ki galiyon mein tera naam likha hai,\nMeri har dua mein tera naam likha hai.",
+    "Tujhe dekh kar lagta hai khuda ne,\nMeri har dua qabool kar li hai.",
+    "Tere ishq mein rang gaya hoon main,\nTeri yaad mein dhang gaya hoon main.",
+    "Tum meri subah ki pehli dua ho,\nTum meri raat ki aakhri yaad ho.",
+    "Tere saath chalna meri manzil hai,\nTera haath pakadna meri khushi hai.",
+    "Teri yaad mein aansu bhi meetha lagta hai,\nTere bina jeena bhi saza lagta hai.",
+    "Tujhe paa kar laga duniya mil gayi,\nTeri mohabbat mein jannat mil gayi.",
+    "Mere dil ka sukoon tu hi hai,\nMeri zindagi ka junoon tu hi hai.",
+    "Teri ek nazar pe duniya qurban hai,\nTeri ek ada pe jaan qurban hai.",
+    "Tujhe soch kar hi dil khush ho jata hai,\nTera naam le kar hi din guzar jata hai.",
+    "Tere pyar mein hum bikhar gaye,\nTeri yaad mein hum nikhar gaye.",
+    "Tum jo na mile toh kya hota,\nMera dil tere bina kya hota.",
+    "Teri mohabbat ka rang chadha hai,\nMera dil tere naam pe likha hai.",
+    "Tere bina chandni bhi kali lagti hai,\nTere saath andheri raat bhi roshan lagti hai.",
+    "Teri yaadon ka silsila chalta rahe,\nTera pyar dil mein palta rahe.",
+    "Tujhe chahna meri kismat hai,\nTere saath jeena meri jannat hai.",
+    "Tere chehre ki muskaan pe mar jaoon,\nTeri ek ada pe sab kuch waar jaoon.",
+    "Dil ne tujhe apni dua bana liya,\nTere naam ko apna khuda bana liya.",
+    "Teri yaad mein shab guzar jati hai,\nTere khwab mein subah guzar jati hai.",
+    "Tum meri zindagi ka noor ho,\nTum meri mohabbat ka suroor ho.",
+    "Tere ishq mein hum fanaa ho gaye,\nTeri yaad mein hum deewana ho gaye.",
+    "Tujhe dekh kar lagta hai,\nKhuda ne meri sun li hai.",
+    "Tere bina dil ka haal bura hai,\nTere saath har pal suhana hai.",
+    "Teri baatein meri jaan hain,\nTeri yaadein meri pehchan hain.",
+    "Tum jo mile toh laga,\nMeri duniya badal gayi.",
+    "Tere pyar ka diya jalaye rakha hai,\nTere naam ka diya jalaye rakha hai.",
+    "Tujhe chahne ki wajah tu hi hai,\nMere jeene ki wajah tu hi hai.",
+    "Tere saath har gham khushi lagta hai,\nTere bina har sukh bhi gham lagta hai.",
+    "Teri yaad mein dil beqarar hai,\nTera pyar hi mera sansar hai.",
+    "Tum meri har dua ka jawab ho,\nTum meri har khushi ka hisaab ho.",
+    "Tere ishq mein hum kho gaye,\nTeri yaad mein hum so gaye.",
+    "Dil ki kitaab mein tera naam hai,\nMeri har baat mein tera naam hai.",
+    "Tujhe paa ke laga sab kuch paa liya,\nTere bina laga sab kuch ganwa diya.",
+    "Teri mohabbat meri bandagi hai,\nTeri yaad meri zindagi hai.",
+    "Tere chehre ko dekh kar jee leta hoon,\nTeri yaad mein hi mar kar jee leta hoon.",
+    "Tum jo hanste ho toh dil khil jata hai,\nTum jo milte ho toh jahan mil jata hai.",
+    "Tere bina ye dil udaas hai,\nTere saath har pal khaas hai.",
+    "Teri yaadon mein khoya rehta hoon,\nTere pyar mein dooba rehta hoon."
 ]
 
-# 100% AUTO - INDIAN ROMANTIC - DJ DELETE
+HASHTAG_SETS = [
+    "#UrduShayari #LoveShayari #HinaFatima #RomanticReels #DilKiBaat",
+    "#RomanticReels #Ishq #Mohabbat #HinaFatima #TrendingReels",
+    "#ShayariLovers #DilSe #LoveStatus #HinaFatima #ViralReels",
+    "#SadShayari #IshqWalaLove #UrduPoetry #HinaFatima #ReelsViral",
+    "#MohabbatShayari #Pyar #DilKiAwaaz #HinaFatima #Foryou",
+    "#LovePoetry #ShayariVideo #RomanticShayari #HinaFatima #Explore",
+    "#DilKaHaal #TeriYaad #IshqShayari #HinaFatima #ReelsInstagram",
+    "#UrduLove #ShayariDaily #PyarMohabbat #HinaFatima #TrendingNow",
+    "#HeartTouching #EmotionalShayari #LoveStory #HinaFatima #ViralVideo",
+    "#ShayariStatus #RomanticStatus #DilKiBaat #HinaFatima #LoveReels",
+]
+
+CTA_LINES = [
+    "Follow karo ❤️ - Roz nayi shayari ke liye",
+    "Apne pyar ko tag karo 🥰",
+    "Comment mein ❤️ likho agar dil ko lagi ho",
+    "Share karo apne special wale ke saath 💕",
+    "Follow kar lo, roz dil ki baat sunne ko milegi ✨",
+    "Like karo agar ye shayari tumhare dil ki hai 💔❤️",
+]
+
 AUTO_MUSIC_URLS = [
     "https://cdn.pixabay.com/audio/2022/02/07/audio_1387f35422.mp3",
     "https://cdn.pixabay.com/audio/2024/12/08/audio_c452b261ca.mp3",
@@ -61,6 +153,13 @@ def get_shayari_for_this_slot():
     slot = (now.day * 24 + now.hour)
     index = slot % len(REEL_SHAYARI)
     return REEL_SHAYARI[index]
+
+def get_hashtags_and_cta():
+    now = datetime.now()
+    slot = (now.day * 24 + now.hour)
+    hashtags = HASHTAG_SETS[slot % len(HASHTAG_SETS)]
+    cta = CTA_LINES[slot % len(CTA_LINES)]
+    return hashtags, cta
 
 def wrap_line(line, max_chars=26):
     words = line.split()
@@ -110,7 +209,6 @@ def make_text_image(shayari_text):
 def make_local_indian_music():
     print("Auto Indian melody bana raha hoon...")
     try:
-        # ✅ FIXED: Purani file delete karo taake purana gaana na baj jaye
         for f in ["background.mp3", "background.wav"]:
             if os.path.exists(f):
                 os.remove(f)
@@ -156,7 +254,6 @@ def make_local_indian_music():
         return None
 
 def download_music_auto():
-    # ✅ FIXED: Shuru mein purani mp3 delete karo
     if os.path.exists("background.mp3"):
         try:
             os.remove("background.mp3")
@@ -233,10 +330,6 @@ def make_final_reel(video_url, shayari_text, music_path):
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
     print(f"Adding AUTO INDIAN SONG: {music_path} - Video ki awaz DELETE, sirf Indian song rahega")
-
-    # ✅ MISTAKE FIXED: Ab -filter:a alag se nahi, sab kuch ek hi filter_complex mein hai
-    # [2:a] wala hissa song ko soft + lowpass + fade karta hai
-    # Is se FFmpeg confuse nahi hoga aur song 100% lagega
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
         "[v][1:v]overlay=0:0[outv];"
@@ -251,7 +344,6 @@ def make_final_reel(video_url, shayari_text, music_path):
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
            "-c:a", "aac", "-t", "15", final_path]
     print("Running FFmpeg...")
-    print(f"Filter: {filter_complex}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ FFmpeg Error:")
@@ -314,8 +406,11 @@ if __name__ == "__main__":
         print("❌ FB_PAGE_ID ya FB_TOKEN missing!")
         sys.exit(1)
     shayari = get_shayari_for_this_slot()
-    caption = f"{shayari}\n\n❤ #Reels #Love #HinaFatima #UrduShayari #Trending"
-    print(f"Selected Shayari for THIS Reel: {shayari}")
+    hashtags, cta = get_hashtags_and_cta()
+    caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
+    print(f"Selected Shayari: {shayari}")
+    print(f"Hashtags: {hashtags}")
+    print(f"CTA: {cta}")
     music = download_music_auto()
     if not music:
         print("❌ SONG NAHI BANA - Reel post nahi hogi")
