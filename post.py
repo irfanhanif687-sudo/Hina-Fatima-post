@@ -1,160 +1,124 @@
 import os
 import random
 import requests
-import io
 import sys
+from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+from io import BytesIO
 
 PAGE_ID = os.environ.get('FB_PAGE_ID')
 TOKEN = os.environ.get('FB_TOKEN')
-PAGE_NAME = "Hina Fatima"
+PEXELS_KEY = os.environ.get('PEXELS_KEY')
+API_VERSION = "v21.0"
 
-def download_font():
-    font_url = "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf"
-    font_path = "Poppins-Bold.ttf"
-    if not os.path.exists(font_path):
-        print("Downloading Font...")
-        r = requests.get(font_url, timeout=15)
-        r.raise_for_status()
-        with open(font_path, 'wb') as f:
-            f.write(r.content)
-        print("✅ Font downloaded.")
-    return font_path
-
-romantic_images = [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1502323777036-f29e3972d82f?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1541123437800-1bb1317badc2?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1541516160071-4bb0c5af65ba?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1485178575877-1a13bf489dfe?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524250502761-1ac6f2e30d43?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1501901609772-df0848060b33?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1495301839102-1e9b0a998cc3?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1485182708500-e8f1f318ba72?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522098543979-ffc7f79a56c4?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1517448931760-8b278f2b56e3?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1508049173477-187e13e7d68f?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1519638831568-d9897f54ed69?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1496347646636-ea47f7d6b37b?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1515023115689-589c33041d3c?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521146764736-56c929d59c83?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1521119989659-a83eee488004?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1518577915332-c2a19f149a75?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1080&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1080&auto=format&fit=crop"
+SHAYARI = [
+    "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
+    "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
+    "Tujhe dekh kar aise khoya main,\nJaise koi khwab dekh kar soya main.",
+    "Ek tera saath chahiye, har khushi se pehle,\nEk teri yaad, sari duniya se pehle.",
+    "Teri zulfon ki khushbu mein kho jata hoon,\nTere chehre ko dekhta hoon toh kho jata hoon.",
+    "Tere ishq ki aag mein jalna acha lagta hai,\nTere liye har dard sehna acha lagta hai.",
+    "Tujhe chahne ki koi hadd nahi,\nTere ishq ki koi hadd nahi.",
+    "Tere paas aata hoon toh waqt ruk jata hai,\nTujhe chhod kar jata hoon toh dil ruk jata hai.",
+    "Tumhari baaton mein woh pyar hai,\nJo kisi aur ki baaton mein nahi.",
+    "Tere pyar mein hum toh aise doobe,\nJaise patthar paani mein doobta hai.",
+    "Mera dil tere naam ka ho gaya,\nJaise teri yaadon ka tohfa mil gaya ho.",
+    "Tumhi ko chaha hai, tumhi ko puja hai,\nDuniya ko bhula kar tumhe dhoonda hai.",
+    "Tere ishq mein jalna bhi ibadat si lagti hai,\nTeri yaad mein jeena bhi hasrat si lagti hai.",
+    "Meri aankhon mein teri tasveer hai,\nMere dil mein tera nasha hai.",
+    "Teri baahon mein jo sukoon mila,\nWoh kisi jannat mein bhi nahi milta.",
+    "Kisi ko chahna gunah toh nahi,\nPar kisi ka ho jana aasan bhi nahi.",
+    "Tere labon ki muskaan pe fida hoon,\nTeri har ada pe fida hoon.",
+    "Raat bhar teri yaadon mein khoya rahoon,\nTere khwabon mein hi soya rahoon.",
+    "Teri khushbu se hi meri saans chalti hai,\nTeri yaad se hi mujhe sukoon milta hai.",
+    "Tere ishq mein hadd se guzar jayenge,\nTere liye duniya se lad jayenge.",
 ]
 
-shayari_data = [
-    {"roman": "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.", "urdu": "تیری بانہوں میں سکون ملتا ہے،\nجیسے کسی کی دعا قبول ہو گئی ہو۔"},
-    {"roman": "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.", "urdu": "تیرے بغیر یہ دل سن سن سا ہے،\nجیسے بغیر بارش کے موسم سونا ہے۔"},
-    {"roman": "Tujhe dekh kar aise khoya main,\nJaise koi khwab dekh kar soya main.", "urdu": "تجھے دیکھ کر ایسے کھویا میں،\nجیسے کوئی خواب دیکھ کر سویا میں۔"},
-    {"roman": "Ek tera saath chahiye, har khushi se pehle,\nEk teri yaad, sari duniya se pehle.", "urdu": "ایک تیرا ساتھ چاہیے، ہر خوشی سے پہلے،\nایک تیری یاد، ساری دنیا سے پہلے۔"},
-    {"roman": "Teri zulfon ki khushbu mein kho jata hoon,\nTere chehre ko dekhta hoon toh kho jata hoon.", "urdu": "تیری زلفوں کی خوشبو میں کھو جاتا ہوں،\nتیرے چہرے کو دیکھتا ہوں تو کھو جاتا ہوں۔"},
-    {"roman": "Tere ishq ki aag mein jalna acha lagta hai,\nTere liye har dard sehna acha lagta hai.", "urdu": "تیرے عشق کی آگ میں جلنا اچھا لگتا ہے،\nتیرے لیے ہر درد سہنا اچھا لگتا ہے۔"},
-    {"roman": "Tujhe chahne ki koi hadd nahi,\nTere ishq ki koi hadd nahi.", "urdu": "تجھے چاہنے کی کوئی حد نہیں،\nتیرے عشق کی کوئی حد نہیں۔"},
-    {"roman": "Tere paas aata hoon toh waqt ruk jata hai,\nTujhe chhod kar jata hoon toh dil ruk jata hai.", "urdu": "تیرے پاس آتا ہوں تو وقت رک جاتا ہے،\nتجھے چھوڑ کر جاتا ہوں تو دل رک جاتا ہے۔"},
-    {"roman": "Tumhari baaton mein woh pyar hai,\nJo kisi aur ki baaton mein nahi.", "urdu": "تمہاری باتوں میں وہ پیار ہے،\nجو کسی اور کی باتوں میں نہیں۔"},
-    {"roman": "Tere pyar mein hum toh aise doobe,\nJaise patthar paani mein doobta hai.", "urdu": "تیرے پیار میں ہم تو ایسے ڈوبے،\nجیسے پتھر پانی میں ڈوبتا ہے۔"},
-    {"roman": "Mera dil tere naam ka ho gaya,\nJaise kisi ne mujhe teri yaadon ka tohfa de diya ho.", "urdu": "میرا دل تیرے نام کا ہو گیا،\nجیسے کسی نے مجھے تیری یادوں کا تحفہ دے دیا ہو۔"},
-    {"roman": "Tumhi ko chaha hai, tumhi ko puja hai,\nMeri hadd toh dekho, duniya ko bhula kar tumhe dhoonda hai.", "urdu": "تمہیں چاہا ہے، تمہیں پوجا ہے،\nمیری حد تو دیکھو، دنیا کو بھلا کر تمہیں ڈھونڈا ہے۔"},
-    {"roman": "Tere ishq mein jalna bhi ibadat si lagti hai,\nTeri yaad mein jeena bhi hasrat si lagti hai.", "urdu": "تیرے عشق میں جلنا بھی عبادت سی لگتی ہے،\nتیری یاد میں جینا بھی حسرت سی لگتی ہے۔"},
-    {"roman": "Meri aankhon mein teri tasveer hai,\nMere dil mein tera nasha hai.", "urdu": "میری آنکھوں میں تیری تصویر ہے،\nمیرے دل میں تیرا نشہ ہے۔"},
-    {"roman": "Teri baahon mein jo sukoon mila,\nWoh kisi jannat mein bhi nahi milta.", "urdu": "تیری بانہوں میں جو سکون ملا،\nوہ کسی جنت میں بھی نہیں ملتا۔"},
-    {"roman": "Kisi ko chahna gunah toh nahi,\nPar kisi ka ho jana aasan bhi nahi.", "urdu": "کسی کو چاہنا گناہ تو نہیں،\nپر کسی کا ہو جانا آسان بھی نہیں۔"},
-    {"roman": "Tere labon ki muskaan pe fida hoon,\nTeri har ada pe fida hoon.", "urdu": "تیرے لبوں کی مسکان پہ فدا ہوں،\nتیری ہر ادا پہ فدا ہوں۔"},
-    {"roman": "Raat bhar teri yaadon mein khoya rahoon,\nTere khwabon mein hi soya rahoon.", "urdu": "رات بھر تیری یادوں میں کھویا رہوں،\nتیرے خوابوں میں ہی سویا رہوں۔"},
-    {"roman": "Teri khushbu se hi meri saans chalti hai,\nTeri yaad se hi mujhe sukoon milta hai.", "urdu": "تیری خوشبو سے ہی میری سانس چلتی ہے،\nتیری یاد سے ہی مجھے سکون ملتا ہے۔"},
-    {"roman": "Tere ishq mein hadd se guzar jayenge,\nTere liye duniya se lad jayenge.", "urdu": "تیرے عشق میں حد سے گزر جائیں گے،\nتیرے لیے دنیا سے لڑ جائیں گے۔"},
-    {"roman": "Mujhe teri aadat si nahi, junoon hai,\nTere bina jeena toh ek saza hai.", "urdu": "مجھے تیری عادت سی نہیں، جنون ہے،\nتیرے بغیر جینا تو ایک سزا ہے۔"},
-    {"roman": "Teri aankhon mein jo nasha hai,\nWoh kisi aur mein kahan.", "urdu": "تیری آنکھوں میں جو نشہ ہے،\nوہ کسی اور میں کہاں۔"},
-    {"roman": "Dil chahta hai tujhe seene se laga loon,\nTeri yaadon mein hi kho jaoon.", "urdu": "دل چاہتا ہے تجھے سینے سے لگا لوں،\nتیری یادوں میں ہی کھو جاؤں۔"},
-    {"roman": "Tere naam se shuru, tere naam pe khatam,\nMeri kahani tu hi hai, mera anjaam tu hi hai.", "urdu": "تیرے نام سے شروع، تیرے نام پہ ختم،\nمیری کہانی تو ہی ہے، میرا انجام تو ہی ہے۔"},
-    {"roman": "Chandni raat mein teri yaad aayi,\nDil ne phir teri tasveer banayi.", "urdu": "چاندنی رات میں تیری یاد آئی،\nدل نے پھر تیری تصویر بنائی۔"},
-    {"roman": "Tum mile toh laga, dua qabool ho gayi,\nMeri har khushi ab tere naam ho gayi.", "urdu": "تم ملے تو لگا، دعا قبول ہو گئی،\nمیری ہر خوشی اب تیرے نام ہو گئی۔"},
-    {"roman": "Ishq tera meri jaan le gaya,\nTere bina jeena mushkil ho gaya.", "urdu": "عشق تیرا میری جان لے گیا،\nتیرے بغیر جینا مشکل ہو گیا۔"},
-    {"roman": "Teri ek muskaan pe sab kuch luta doon,\nTere liye apni jaan bhi de doon.", "urdu": "تیری ایک مسکان پہ سب کچھ لٹا دوں،\nتیرے لیے اپنی جان بھی دے دوں۔"},
-    {"roman": "Woh mujhse pyar ka izhar kar rahe hain,\nMain unko dekh kar sharma raha hoon.", "urdu": "وہ مجھ سے پیار کا اظہار کر رہے ہیں،\nمیں ان کو دیکھ کر شرما رہا ہوں۔"},
-    {"roman": "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon.", "urdu": "تیرے نام کی محفل سجا لوں،\nتیری یادوں میں ہی کھو جاؤں۔"}
+HASHTAG_SETS_PICS = [
+    "#UrduShayari #LoveShayari #HinaFatima #DilKiBaat #Romantic",
+    "#ShayariLovers #Mohabbat #Ishq #HinaFatima #UrduPoetry",
+    "#LoveStatus #DilSe #HinaFatima #ShayariDaily #Trending",
+    "#RomanticShayari #Pyar #HinaFatima #Emotional #Viral",
+    "#SadShayari #DilKaHaal #HinaFatima #LoveStory #Foryou",
+    "#UrduLove #ShayariVideo #HinaFatima #Explore #HeartTouching",
+    "#IshqShayari #TeriYaad #HinaFatima #MohabbatShayari #Daily",
+    "#DilKiAwaaz #PyarMohabbat #HinaFatima #TrendingNow #Love",
+    "#ShayariStatus #RomanticStatus #HinaFatima #ViralPost #Dil",
+    "#HeartTouchingShayari #LovePoetry #HinaFatima #ShayariLovers #New",
 ]
 
-HASHTAGS = "#UrduShayari #UrduPoetry #RomanticShayari #LoveQuotes #Aesthetic #Trending #Viral #FYP #HinaFatima #Ishq #Mohabbat"
+CTA_PICS = [
+    "Follow karo ❤️",
+    "Like karo agar dil ko lagi ho 💕",
+    "Apne pyar ko tag karo 🥰",
+    "Comment mein ❤️ likho",
+    "Share karo 💕",
+]
 
-def process_and_post():
-    if not PAGE_ID or not TOKEN:
-        print("❌ FB_PAGE_ID ya FB_TOKEN missing hai!")
+def get_slot():
+    now = datetime.now()
+    return (now.day * 24 + now.hour)
+
+def get_image_from_pexels():
+    if not PEXELS_KEY:
+        print("❌ PEXELS_KEY missing")
         sys.exit(1)
-    font_path = download_font()
-    image_url = random.choice(romantic_images)
-    selected = random.choice(shayari_data)
+    queries = ["romantic couple", "couple in love", "couple sunset", "love couple", "couple holding hands"]
+    headers = {"Authorization": PEXELS_KEY}
+    params = {"query": random.choice(queries), "per_page": 15, "orientation": "portrait"}
+    res = requests.get("https://api.pexels.com/v1/search", headers=headers, params=params, timeout=20)
+    res.raise_for_status()
+    photos = res.json().get('photos', [])
+    if not photos:
+        print("❌ No photo")
+        sys.exit(1)
+    photo = random.choice(photos)
+    url = photo['src']['large']
+    print(f"Photo: {url}")
+    r = requests.get(url, timeout=20)
+    return Image.open(BytesIO(r.content)).convert("RGB")
+
+def make_post_image(shayari):
+    base = get_image_from_pexels()
+    base = base.resize((1080, 1350))
+    overlay = Image.new("RGBA", base.size, (0,0,0,0))
+    draw = ImageDraw.Draw(overlay)
+    draw.rectangle([0, 850, 1080, 1350], fill=(0,0,0,140))
+    base = base.convert("RGBA")
+    base.alpha_composite(overlay)
+    draw = ImageDraw.Draw(base)
     try:
-        try:
-            headers = {'User-Agent': 'Mozilla/5.0'}
-            r = requests.get(image_url, headers=headers, timeout=15)
-            r.raise_for_status()
-            img = Image.open(io.BytesIO(r.content)).convert("RGBA")
-        except Exception as e:
-            print(f"Image fail, blank use kar raha hoon: {e}")
-            img = Image.new('RGBA', (1080, 1080), (20, 20, 20, 255))
-        overlay = Image.new('RGBA', img.size, (0, 0, 0, 0))
-        d = ImageDraw.Draw(overlay)
-        for i in range(img.height):
-            alpha = int(160 * (i / img.height))
-            d.line([(0, i), (img.width, i)], fill=(0, 0, 0, alpha))
-        img = Image.alpha_composite(img, overlay)
-        draw = ImageDraw.Draw(img)
-        roman_text = selected["roman"]
-        font_size = 65
-        max_width = img.width - 150
-        max_height = img.height - 400
-        while font_size > 20:
-            try:
-                shairi_font = ImageFont.truetype(font_path, font_size)
-            except:
-                shairi_font = ImageFont.load_default()
-                break
-            bbox = draw.multiline_textbbox((0, 0), roman_text, font=shairi_font, align="center")
-            if (bbox[2]-bbox[0] < max_width) and (bbox[3]-bbox[1] < max_height):
-                break
-            font_size -= 2
-        draw.multiline_text((img.width/2, (img.height/2)-50), roman_text, font=shairi_font, fill="white", anchor="mm", align="center", stroke_width=4, stroke_fill="black")
-        try:
-            wm_font = ImageFont.truetype(font_path, 40)
-        except:
-            wm_font = ImageFont.load_default()
-        draw.text((img.width/2, img.height-80), PAGE_NAME, font=wm_font, fill="white", anchor="mm", stroke_width=2, stroke_fill="black")
-        img.convert("RGB").save("premium_shairi.jpg", format="JPEG", quality=100)
-        print("Uploading to 【entity-Facebook¦canonical_name=Facebook】...")
-        fb_url = f"https://graph.facebook.com/v20.0/{PAGE_ID}/photos"
-        caption = f"{selected['urdu']}\n\nTag someone! ❤\n\n{HASHTAGS}"
-        with open("premium_shairi.jpg", 'rb') as f:
-            files = {'source': f}
-            res = requests.post(fb_url, data={"caption": caption, "access_token": TOKEN}, files=files, timeout=30)
-        print(f"【entity-Facebook¦canonical_name=Facebook】 Response: {res.status_code}")
-        res.raise_for_status()
-        print(f"✅ POST SUCCESS! ID: {res.json().get('id')}")
-    except Exception as e:
-        print(f"❌ FATAL ERROR: {e}")
-        sys.exit(1)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 44)
+    except:
+        font = ImageFont.load_default()
+    y = 900
+    for line in shayari.split("\n"):
+        bbox = draw.textbbox((0,0), line, font=font)
+        w = bbox[2]-bbox[0]
+        x = (1080-w)//2
+        for dx, dy in [(-2,0),(2,0),(0,-2),(0,2)]:
+            draw.text((x+dx, y+dy), line, font=font, fill=(0,0,0,255))
+        draw.text((x, y), line, font=font, fill=(255,255,255,255))
+        y += 65
+    base.convert("RGB").save("post_image.jpg", quality=92)
+    return "post_image.jpg"
 
 if __name__ == "__main__":
-    process_and_post()
+    if not PAGE_ID or not TOKEN:
+        print("❌ FB_PAGE_ID ya FB_TOKEN missing")
+        sys.exit(1)
+    slot = get_slot()
+    shayari = SHAYARI[slot % len(SHAYARI)]
+    hashtags = HASHTAG_SETS_PICS[slot % len(HASHTAG_SETS_PICS)]
+    cta = CTA_PICS[slot % len(CTA_PICS)]
+    caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
+    print(f"Shayari: {shayari}")
+    print(f"Hashtags: {hashtags}")
+    img_path = make_post_image(shayari)
+    url = f"https://graph.facebook.com/{API_VERSION}/{PAGE_ID}/photos"
+    with open(img_path, 'rb') as f:
+        res = requests.post(url, data={"access_token": TOKEN, "caption": caption}, files={"source": f}, timeout=60)
+    print(f"Status: {res.status_code}")
+    print(res.text[:500])
+    res.raise_for_status()
+    print("✅ PHOTO POST SUCCESS")
