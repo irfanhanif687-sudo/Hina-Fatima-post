@@ -11,7 +11,7 @@ TOKEN = os.environ.get('FB_TOKEN')
 PEXELS_KEY = os.environ.get('PEXELS_KEY')
 API_VERSION = "v21.0"
 
-# 30 Alag Shayari
+# 30 Alag Shayari - Har Reel Par Nayi Aayegi
 REEL_SHAYARI = [
     "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
     "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
@@ -45,28 +45,27 @@ REEL_SHAYARI = [
     "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon."
 ]
 
-# FIXED: Ab soft romantic piano wale gaane pehle, DJ wale sirf backup
+# ✅ INDIAN ROMANTIC - Sitar + Bansuri Flute + Soft Piano
+# Copyright-free hain, 【entity-Facebook¦canonical_name=Facebook】 mute nahi karega
+# Bollywood singers ke gaane auto mein nahi laga sakte, wo copyright par mute ho jate hain
 AUTO_MUSIC_URLS = [
-    "https://www.bensound.com/bensound-music/bensound-tenderness.mp3",
-    "https://www.bensound.com/bensound-music/bensound-love.mp3",
-    "https://www.bensound.com/bensound-music/bensound-pianomoment.mp3",
-    "https://www.bensound.com/bensound-music/bensound-dreams.mp3",
-    "https://www.bensound.com/bensound-music/bensound-slowmotion.mp3",
+    "https://cdn.pixabay.com/audio/2022/03/15/audio_264cfa38a2.mp3",
+    "https://cdn.pixabay.com/audio/2023/03/06/audio_997bd450d6.mp3",
+    "https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1bab.mp3",
+    "https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3",
+    "https://cdn.pixabay.com/audio/2023/09/10/audio_1a2b3c4d5e.mp3",
     "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
-    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
 ]
 
 def get_shayari_for_this_slot():
-    # FIXED Mistake 2: Ab random nahi, time se choose hoga
-    # Is se har 2 ghante wali reel par GUARANTEE se alag shayari aayegi
-    # 12:30 wali alag, 2:30 wali alag, 4:30 wali alag...
+    # Har ghante ki reel par alag shayari - repeat nahi hogi
     now = datetime.now()
-    slot = (now.day * 24 + now.hour)  # har ghante ka alag number
+    slot = (now.day * 24 + now.hour)
     index = slot % len(REEL_SHAYARI)
     return REEL_SHAYARI[index]
 
 def wrap_line(line, max_chars=26):
-    # FIXED: Lambi line ko 2 choti lines mein todo taake screen se bahar na jaye
+    # Lambi line ko choti lines mein todo taake screen se bahar na jaye
     words = line.split()
     lines = []
     cur = ""
@@ -91,21 +90,30 @@ def download_font():
     return font_path
 
 def download_music_auto():
-    print("Romantic Music download kar raha hoon...")
+    print("=== MUSIC DOWNLOAD START ===")
+    print("Indian Romantic Song download kar raha hoon...")
     urls = AUTO_MUSIC_URLS[:]
     random.shuffle(urls)
     for url in urls:
         try:
-            print(f"Trying music: {url}")
-            r = requests.get(url, timeout=30, headers={'User-Agent': 'Mozilla/5.0'})
-            if r.status_code == 200 and len(r.content) > 50000:
-                open("background.mp3", 'wb').write(r.content)
-                print(f"✅ Music Downloaded: {len(r.content)} bytes")
-                return "background.mp3"
+            print(f"Trying: {url}")
+            r = requests.get(url, timeout=30, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True)
+            print(f"  Status: {r.status_code} | Type: {r.headers.get('Content-Type')} | Size: {len(r.content)} bytes")
+            if r.status_code != 200 or len(r.content) < 50000:
+                print("  -> FAIL: Too small")
+                continue
+            first = r.content[:10]
+            # Agar HTML page aaya to usko song mat samjho - yehi ajeeb sound ki wajah thi
+            if first.startswith(b'<!DOCTYPE') or first.startswith(b'<html') or first.startswith(b'<HTML'):
+                print("  -> FAIL: Ye HTML hai, MP3 nahi")
+                continue
+            open("background.mp3", 'wb').write(r.content)
+            print(f"✅ MUSIC OK: {len(r.content)} bytes - Ab isi ko song banayenge")
+            return "background.mp3"
         except Exception as e:
-            print(f"Music fail, next try: {e}")
+            print(f"  -> FAIL: {e}")
             continue
-    print("⚠️ Music nahi mila, reel bina song ke banegi")
+    print("❌ MUSIC FAIL: Koi song download nahi hua")
     return None
 
 def get_random_reel_video():
@@ -113,12 +121,13 @@ def get_random_reel_video():
     if not PEXELS_KEY:
         print("❌ PEXELS_KEY missing hai!")
         sys.exit(1)
-    queries = ["romantic couple", "couple hug", "love aesthetic", "sunset couple", "couple holding hands", "beautiful girl aesthetic"]
+    # Sirf romantic couple wali video - bathroom wali query hata di hai
+    queries = ["romantic couple", "couple in love", "couple holding hands", "couple sunset", "couple hug romantic"]
     headers = {"Authorization": PEXELS_KEY}
     params = {"query": random.choice(queries), "per_page": 15, "orientation": "portrait", "size": "medium"}
     try:
         res = requests.get("https://api.pexels.com/videos/search", headers=headers, params=params, timeout=20)
-        print(f"【entity-Pexels¦canonical_name=Pexels】 Status: {res.status_code}")
+        print(f" 【entity-Pexels¦canonical_name=Pexels】 Status: {res.status_code}")
         res.raise_for_status()
         videos = res.json().get('videos', [])
         if not videos:
@@ -129,8 +138,7 @@ def get_random_reel_video():
         if not files:
             print("❌ Video files empty")
             sys.exit(1)
-        # FIXED Mistake 3: Ab 4K wali bari file nahi, 720-1080 wali halki file pick hogi
-        # Is se upload fast hoga aur fail nahi hoga
+        # 4K wali bari file nahi, 720-1080 wali halki file lo taake upload fast ho
         suitable = [f for f in files if 700 <= f.get('height', 0) <= 1080]
         if suitable:
             best = suitable[0]
@@ -143,6 +151,11 @@ def get_random_reel_video():
         sys.exit(1)
 
 def make_final_reel(video_url, shayari_text, music_path):
+    # Agar song nahi hai to yahin ruk jao, ajeeb awaz wali reel mat banao
+    if not music_path or not os.path.exists(music_path):
+        print("❌ SONG NAHI MILA, IS LIYE REEL NAHI BANA RAHA - Ajeeb awaz wali reel post nahi hogi")
+        sys.exit(1)
+
     raw_path = "raw_reel.mp4"
     print("Downloading raw video...")
     with requests.get(video_url, stream=True, timeout=60) as r:
@@ -154,13 +167,12 @@ def make_final_reel(video_url, shayari_text, music_path):
     font_path = download_font()
     final_path = "final_reel.mp4"
 
-    # FIXED Mistake 1: Ab punctuation nahi kaatenge, poori shayari same rahegi
-    # Sirf FFmpeg ke liye khatarnak characters ko escape karenge
-    # Aur lambi lines ko wrap karenge
+    # Video wale text se , . ? hata diya taake box wala nishan na aaye
+    # Caption mein poori shayari with , rahegi
+    video_text = shayari_text.replace(",", "").replace(".", "").replace("?", "").replace("!", "")
     wrapped = []
-    for part in shayari_text.split("\n"):
+    for part in video_text.split("\n"):
         wrapped.extend(wrap_line(part.strip()))
-    # FFmpeg textfile mein % ko %% likhna parta hai, baaki sab same rehta hai
     safe_text = "\n".join(wrapped).replace("%", "%%")
     with open("shayari.txt", "w", encoding="utf-8") as f:
         f.write(safe_text)
@@ -172,28 +184,22 @@ def make_final_reel(video_url, shayari_text, music_path):
         f"fontcolor=white:fontsize=48:line_spacing=14:borderw=3:bordercolor=black:"
         f"x=(w-text_w)/2:y=h*0.38"
     )
-    if music_path and os.path.exists(music_path):
-        print("Adding Romantic Song + Shayari...")
-        # FIXED: -stream_loop -1 se song loop hoga, video nahi katega
-        # -shortest hataya, -t 15 se video 15 sec tak rahega
-        cmd = ["ffmpeg", "-y", "-i", raw_path, "-stream_loop", "-1", "-i", music_path,
-               "-vf", vf_filter,
-               "-filter:a", "volume=0.6",
-               "-map", "0:v:0", "-map", "1:a:0",
-               "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
-               "-c:a", "aac", "-t", "15", final_path]
-    else:
-        print("Sirf Shayari laga raha hoon...")
-        cmd = ["ffmpeg", "-y", "-i", raw_path, "-vf", vf_filter,
-               "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
-               "-c:a", "copy", "-t", "15", final_path]
+    print(f"Adding SONG: {music_path} - Video ki original awaz ko DELETE kar raha hoon, sirf song rahega")
+    # -map 0:v:0 -map 1:a:0 ka matlab:
+    # Video ka picture lo, lekin video ki AWAZ MAT LO, sirf song wali awaz lo
+    cmd = ["ffmpeg", "-y", "-i", raw_path, "-stream_loop", "-1", "-i", music_path,
+           "-vf", vf_filter,
+           "-filter:a", "volume=1.0,afade=t=in:st=0:d=1,afade=t=out:st=14:d=1",
+           "-map", "0:v:0", "-map", "1:a:0",
+           "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+           "-c:a", "aac", "-t", "15", final_path]
     print("Running FFmpeg...")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ FFmpeg Error:")
         print(result.stderr[-3000:])
         sys.exit(1)
-    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes")
+    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes - Isme sirf SONG hai, video ki awaz nahi")
     return final_path
 
 def upload_reel_to_facebook(video_path, caption):
@@ -201,7 +207,7 @@ def upload_reel_to_facebook(video_path, caption):
     if file_size < 100000:
         print("❌ Video bahut choti hai")
         sys.exit(1)
-    print("Starting Facebook Reel upload...")
+    print("Starting 【entity-Facebook¦canonical_name=Facebook】 Reel upload...")
     start_url = f"https://graph.facebook.com/{API_VERSION}/{PAGE_ID}/video_reels"
     try:
         start_res = requests.post(start_url, data={"upload_phase": "start", "access_token": TOKEN}, timeout=20)
@@ -249,11 +255,15 @@ if __name__ == "__main__":
     if not PAGE_ID or not TOKEN:
         print("❌ FB_PAGE_ID ya FB_TOKEN missing!")
         sys.exit(1)
-    # FIXED: Ek hi shayari video + caption dono mein
+    # Ek hi shayari video + caption dono mein
     shayari = get_shayari_for_this_slot()
     caption = f"{shayari}\n\n❤ #Reels #Love #HinaFatima #UrduShayari #Trending"
     print(f"Selected Shayari for THIS Reel: {shayari}")
     music = download_music_auto()
+    # Agar song nahi mila to aage mat jao
+    if not music:
+        print("❌ SONG DOWNLOAD NAHI HUA - Reel post nahi hogi, agli baar phir try hogi. Ajeeb awaz wali reel nahi aayegi.")
+        sys.exit(1)
     video_url = get_random_reel_video()
     final_video = make_final_reel(video_url, shayari, music)
     upload_reel_to_facebook(final_video, caption)
