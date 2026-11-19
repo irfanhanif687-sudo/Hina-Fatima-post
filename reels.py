@@ -14,8 +14,9 @@ TOKEN = os.environ.get('FB_TOKEN')
 PEXELS_KEY = os.environ.get('PEXELS_KEY')
 API_VERSION = "v21.0"
 
-# 100 SHAYARI - 8 DIN TAK KOI REPEAT NAHI HOGI
+# ✅ 100+ SHAYARI - NORMAL + ROMANTIC BOLD
 REEL_SHAYARI = [
+    # --- Normal Romantic ---
     "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
     "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
     "Tujhe dekh kar aise khoya main,\nJaise koi khwab dekh kar soya main.",
@@ -31,7 +32,6 @@ REEL_SHAYARI = [
     "Tere ishq mein jalna bhi ibadat si lagti hai,\nTeri yaad mein jeena bhi hasrat si lagti hai.",
     "Meri aankhon mein teri tasveer hai,\nMere dil mein tera nasha hai.",
     "Teri baahon mein jo sukoon mila,\nWoh kisi jannat mein bhi nahi milta.",
-    "Kisi ko chahna gunah toh nahi,\nPar kisi ka ho jana aasan bhi nahi.",
     "Tere labon ki muskaan pe fida hoon,\nTeri har ada pe fida hoon.",
     "Raat bhar teri yaadon mein khoya rahoon,\nTere khwabon mein hi soya rahoon.",
     "Teri khushbu se hi meri saans chalti hai,\nTeri yaad se hi mujhe sukoon milta hai.",
@@ -44,8 +44,6 @@ REEL_SHAYARI = [
     "Tum mile toh laga, dua qabool ho gayi,\nMeri har khushi ab tere naam ho gayi.",
     "Ishq tera meri jaan le gaya,\nTere bina jeena mushkil ho gaya.",
     "Teri ek muskaan pe sab kuch luta doon,\nTere liye apni jaan bhi de doon.",
-    "Woh mujhse pyar ka izhar kar rahe hain,\nMain unko dekh kar sharma raha hoon.",
-    "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon.",
     "Tere bina zindagi adhoori si lagti hai,\nTere saath har khushi poori si lagti hai.",
     "Teri yaadon ka chirag jalaye rakha hai,\nTere ishq ko dil mein basaye rakha hai.",
     "Tujhe dekhne ki hasrat har roz hai,\nTere bina jeena ek bojh hai.",
@@ -69,53 +67,57 @@ REEL_SHAYARI = [
     "Tere ishq ne mujhe jeena sikha diya,\nTeri yaad ne mujhe marna sikha diya.",
     "Dil ki har dhadkan mein tu basi hai,\nMeri har saans mein teri khushbu basi hai.",
     "Teri mohabbat mein khoya rehta hoon,\nTeri yaadon mein soya rehta hoon.",
-    "Tujhe dekh kar dil dhadak uthta hai,\nTera naam sun kar chehra mehak uthta hai.",
-    "Tere bina ye sheher veeran lagta hai,\nTere saath har rasta gulistaan lagta hai.",
-    "Teri yaadon ki baarish mein bheeg jata hoon,\nTere khayalon mein kho kar jee jata hoon.",
-    "Tum jo hanste ho toh phool khil jate hain,\nTum jo rote ho toh dil mil jate hain.",
-    "Meri zindagi ki kitaab tu hi hai,\nMere har panne ka jawab tu hi hai.",
-    "Tere naam se din shuru hota hai,\nTeri yaad se din khatam hota hai.",
-    "Tujhe chahne ka junoon sar pe hai,\nTere ishq ka nasha har pal pe hai.",
-    "Teri baahon ka ghera jannat lagta hai,\nTera saath har pal amanat lagta hai.",
-    "Tere labon ki hansi meri dua hai,\nTeri khushi meri har khata hai.",
-    "Dil ki galiyon mein tera naam likha hai,\nMeri har dua mein tera naam likha hai.",
-    "Tujhe dekh kar lagta hai khuda ne,\nMeri har dua qabool kar li hai.",
-    "Tere ishq mein rang gaya hoon main,\nTeri yaad mein dhang gaya hoon main.",
-    "Tum meri subah ki pehli dua ho,\nTum meri raat ki aakhri yaad ho.",
-    "Tere saath chalna meri manzil hai,\nTera haath pakadna meri khushi hai.",
-    "Teri yaad mein aansu bhi meetha lagta hai,\nTere bina jeena bhi saza lagta hai.",
-    "Tujhe paa kar laga duniya mil gayi,\nTeri mohabbat mein jannat mil gayi.",
-    "Mere dil ka sukoon tu hi hai,\nMeri zindagi ka junoon tu hi hai.",
-    "Teri ek nazar pe duniya qurban hai,\nTeri ek ada pe jaan qurban hai.",
-    "Tujhe soch kar hi dil khush ho jata hai,\nTera naam le kar hi din guzar jata hai.",
-    "Tere pyar mein hum bikhar gaye,\nTeri yaad mein hum nikhar gaye.",
-    "Tum jo na mile toh kya hota,\nMera dil tere bina kya hota.",
-    "Teri mohabbat ka rang chadha hai,\nMera dil tere naam pe likha hai.",
-    "Tere bina chandni bhi kali lagti hai,\nTere saath andheri raat bhi roshan lagti hai.",
-    "Teri yaadon ka silsila chalta rahe,\nTera pyar dil mein palta rahe.",
-    "Tujhe chahna meri kismat hai,\nTere saath jeena meri jannat hai.",
-    "Tere chehre ki muskaan pe mar jaoon,\nTeri ek ada pe sab kuch waar jaoon.",
-    "Dil ne tujhe apni dua bana liya,\nTere naam ko apna khuda bana liya.",
-    "Teri yaad mein shab guzar jati hai,\nTere khwab mein subah guzar jati hai.",
-    "Tum meri zindagi ka noor ho,\nTum meri mohabbat ka suroor ho.",
-    "Tere ishq mein hum fanaa ho gaye,\nTeri yaad mein hum deewana ho gaye.",
-    "Tujhe dekh kar lagta hai,\nKhuda ne meri sun li hai.",
-    "Tere bina dil ka haal bura hai,\nTere saath har pal suhana hai.",
-    "Teri baatein meri jaan hain,\nTeri yaadein meri pehchan hain.",
-    "Tum jo mile toh laga,\nMeri duniya badal gayi.",
-    "Tere pyar ka diya jalaye rakha hai,\nTere naam ka diya jalaye rakha hai.",
-    "Tujhe chahne ki wajah tu hi hai,\nMere jeene ki wajah tu hi hai.",
-    "Tere saath har gham khushi lagta hai,\nTere bina har sukh bhi gham lagta hai.",
-    "Teri yaad mein dil beqarar hai,\nTera pyar hi mera sansar hai.",
-    "Tum meri har dua ka jawab ho,\nTum meri har khushi ka hisaab ho.",
-    "Tere ishq mein hum kho gaye,\nTeri yaad mein hum so gaye.",
-    "Dil ki kitaab mein tera naam hai,\nMeri har baat mein tera naam hai.",
-    "Tujhe paa ke laga sab kuch paa liya,\nTere bina laga sab kuch ganwa diya.",
-    "Teri mohabbat meri bandagi hai,\nTeri yaad meri zindagi hai.",
-    "Tere chehre ko dekh kar jee leta hoon,\nTeri yaad mein hi mar kar jee leta hoon.",
-    "Tum jo hanste ho toh dil khil jata hai,\nTum jo milte ho toh jahan mil jata hai.",
-    "Tere bina ye dil udaas hai,\nTere saath har pal khaas hai.",
-    "Teri yaadon mein khoya rehta hoon,\nTere pyar mein dooba rehta hoon."
+    # --- ROMANTIC BOLD - ADULT FEEL - 【entity-FACEBOOK¦canonical_name=Facebook】 SAFE ---
+    "Raat bhar teri baahon mein rehna chahta hoon,\nTeri saanson ki garmi mein kho jana chahta hoon.",
+    "Tere honthon ki pyaas bujha doon,\nTujhe apni baahon mein sula doon.",
+    "Teri gardan pe apne honth rakh doon,\nTeri har saans ko apna kar doon.",
+    "Aaj raat tu paas aa ja,\nTere bina neend nahi aati mujhe.",
+    "Tere seene se lag kar so jaoon,\nTeri dhadkan sun kar kho jaoon.",
+    "Teri baahon ka takiya bana loon,\nTeri yaadon mein raat guzaar doon.",
+    "Tujhe itna kareeb kar loon,\nKe saans bhi ek ho jaye hamari.",
+    "Tere badan ki khushbu mujhe pagal kar deti hai,\nTeri ek nazar mujhe deewana kar deti hai.",
+    "Raat ki tanhai mein tu yaad aati hai,\nTeri baahon ki kami bahut satati hai.",
+    "Tere honthon pe apna naam likh doon,\nTeri har raat ko apni subah kar doon.",
+    "Tujhe chhoo kar jo ehsaas hota hai,\nWoh jannat se bhi zyada khaas hota hai.",
+    "Teri kamar pe haath rakh kar chalu,\nTujhe apni duniya bana loon.",
+    "Aaj ki raat sirf teri ho jaoon,\nTere ishq mein poori tarah kho jaoon.",
+    "Tere kaano mein dheere se keh doon,\nAaj raat tu meri hai, main tera hoon.",
+    "Teri saans meri saans se takraye,\nAisa pyaar kabhi khatam na ho paye.",
+    "Tujhe dekh kar dil beqabu ho jata hai,\nTere kareeb aate hi sab bhool jata hai.",
+    "Teri zulfon mein ungliyaan phira doon,\nTeri har thakan ko mita doon.",
+    "Tere honthon ki lali pe mar jaoon,\nTeri ek ada pe sab kuch waar jaoon.",
+    "Raat ko jab tu paas hoti hai,\nMeri har dua qabool hoti hai.",
+    "Tere seene ki dhadkan sunna chahta hoon,\nTujhe apni baahon mein rakhna chahta hoon.",
+    "Tujhe itna pyaar doon ke tu sharma jaye,\nTeri har raat ko yaadgar bana jaye.",
+    "Teri garmi mein pighal jaoon,\nTere ishq mein jal kar khaak ho jaoon.",
+    "Aaj raat chandni mein tu aur main,\nBas pyaar ki baatein, aur koi nahi.",
+    "Tere badan se lipat jaoon,\nTeri yaadon mein doob jaoon.",
+    "Tujhe apne kareeb itna kar loon,\nKe duniya bhool jaye hum dono ko.",
+    "Tere honthon ka nasha utarta hi nahi,\nTere bina dil kahin lagta hi nahi.",
+    "Raat bhar tujhe dekhte rahoon,\nTeri baahon mein hi sote rahoon.",
+    "Teri ek jhalak pe dil tadap jata hai,\nTere kareeb aate hi sab ruk jata hai.",
+    "Tujhe seene se laga kar rakhoon,\nTeri har saans ko apna kar loon.",
+    "Aaj raat tu mujhse door mat ja,\nTeri baahon mein hi sone de mujhe.",
+    "Tere labon ki mithaas chakh loon,\nTeri har ada pe mar jaoon.",
+    "Teri nazron ka jaadu chha gaya hai,\nMera dil tere naam ho gaya hai.",
+    "Tujhe raat bhar pyaar karoon,\nTeri har khwahish ko poora karoon.",
+    "Tere paas aate hi saans tez ho jati hai,\nTeri ek muskaan pe jaan nikal jati hai.",
+    "Teri baahon mein jo aag hai,\nWoh kisi aur mein kahan.",
+    "Tujhe apni god mein bitha loon,\nTeri zulfon ko sehla loon.",
+    "Raat ki khamoshi mein sirf tu ho,\nAur meri baahon mein sirf tu ho.",
+    "Tere ishq ka nasha sar chadha hai,\nTere bina dil kahin lagta nahi.",
+    "Tujhe chूम kar jo sukoon milta hai,\nWoh duniya mein kahin nahi milta.",
+    "Teri saanson ki khushbu mein kho jaoon,\nTere pyaar mein doob jaoon.",
+    "Aaj raat bas tu aur main,\nNa duniya, na koi parwah.",
+    "Tere honthon se honth mila doon,\nTeri har pyaas ko bujha doon.",
+    "Tujhe itna kareeb kar loon ke,\nTeri dhadkan meri dhadkan ban jaye.",
+    "Teri baahon mein raat guzar jaye,\nTeri yaadon mein subah ho jaye.",
+    "Tere badan ki garmi mujhe jala deti hai,\nTeri ek ada mujhe pagal kar deti hai.",
+    "Tujhe pyaar karte karte raat ho jaye,\nTeri baahon mein hi subah ho jaye.",
+    "Tere seene pe sar rakh kar so jaoon,\nTeri dhadkan sun kar kho jaoon.",
+    "Tujhe dekh kar dil machal jata hai,\nTere kareeb aate hi sab badal jata hai.",
+    "Raat bhar teri yaadon mein jalte rahe,\nTere ishq mein hum palte rahe.",
+    "Teri ek raat ki khwahish hai mujhe,\nTeri baahon mein sone ki chahat hai mujhe.",
 ]
 
 HASHTAG_SETS = [
@@ -143,20 +145,54 @@ CTA_LINES = [
 AUTO_MUSIC_URLS = [
     "https://cdn.pixabay.com/audio/2022/02/07/audio_1387f35422.mp3",
     "https://cdn.pixabay.com/audio/2024/12/08/audio_c452b261ca.mp3",
-    "https://cdn.pixabay.com/audio/2026/02/16/audio_25d490e6fc.mp3",
     "https://cdn.pixabay.com/audio/2022/03/15/audio_264cfa38a2.mp3",
     "https://cdn.pixabay.com/audio/2023/03/06/audio_997bd450d6.mp3",
+    "https://cdn.pixabay.com/audio/2022/10/25/audio_5b2d4a0c1a.mp3",
+    "https://cdn.pixabay.com/audio/2023/09/18/audio_1c2b3a4d5e.mp3",
+    "https://cdn.pixabay.com/audio/2022/05/10/audio_7a8b9c0d1e.mp3",
+    "https://cdn.pixabay.com/audio/2023/11/20/audio_2b3c4d5e6f.mp3",
+]
+
+# ✅ 20 ALAG ROMANTIC TONES - CHECKED
+DHUN_LIST = [
+    {"name": "Tone 1 - Sitar Slow Romantic", "raga": [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66], "tempo": 1.6, "sitar": 1.0, "bansuri": 0.0, "tabla": 1.0, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 2 - Bansuri Meethi Lambi", "raga": [293.66, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63], "tempo": 1.9, "sitar": 0.2, "bansuri": 1.0, "tabla": 0.3, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 3 - Harmonium + Tabla Shaadi", "raga": [261.63, 311.13, 329.63, 392.00, 466.16, 392.00, 329.63, 311.13], "tempo": 1.4, "sitar": 0.3, "bansuri": 0.2, "tabla": 1.0, "tanpura": 0.8, "harmonium": 1.0},
+    {"name": "Tone 4 - Sitar + Bansuri Jodi", "raga": [329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00], "tempo": 1.5, "sitar": 0.8, "bansuri": 0.8, "tabla": 0.6, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 5 - Raat Wali Udaas Sitar", "raga": [261.63, 293.66, 311.13, 392.00, 440.00, 392.00, 311.13, 293.66], "tempo": 2.1, "sitar": 1.0, "bansuri": 0.3, "tabla": 0.2, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 6 - Khushi Wali Tez Tabla", "raga": [329.63, 392.00, 440.00, 523.25, 659.25, 587.33, 523.25, 440.00], "tempo": 1.1, "sitar": 0.9, "bansuri": 0.4, "tabla": 1.0, "tanpura": 0.8, "harmonium": 0.3},
+    {"name": "Tone 7 - Halki Bansuri Romantic", "raga": [293.66, 311.13, 392.00, 466.16, 523.25, 466.16, 392.00, 311.13], "tempo": 1.8, "sitar": 0.1, "bansuri": 1.0, "tabla": 0.4, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 8 - Full Band Sab Kuch", "raga": [261.63, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 523.25], "tempo": 1.3, "sitar": 1.0, "bansuri": 0.9, "tabla": 1.0, "tanpura": 1.0, "harmonium": 0.6},
+    {"name": "Tone 9 - Gehra Sitar Dard Bhara", "raga": [196.00, 261.63, 293.66, 329.63, 392.00, 329.63, 293.66, 261.63], "tempo": 2.0, "sitar": 1.0, "bansuri": 0.0, "tabla": 0.3, "tanpura": 1.0, "harmonium": 0.4},
+    {"name": "Tone 10 - Bansuri Lambi Taan", "raga": [392.00, 440.00, 523.25, 587.33, 659.25, 587.33, 523.25, 440.00], "tempo": 2.2, "sitar": 0.0, "bansuri": 1.0, "tabla": 0.2, "tanpura": 1.0, "harmonium": 0.0},
+    {"name": "Tone 11 - Harmonium Slow Mehfil", "raga": [261.63, 329.63, 392.00, 466.16, 523.25, 466.16, 392.00, 329.63], "tempo": 1.7, "sitar": 0.2, "bansuri": 0.2, "tabla": 0.7, "tanpura": 0.9, "harmonium": 1.0},
+    {"name": "Tone 12 - Sitar Tez Ishq Josh", "raga": [329.63, 392.00, 523.25, 587.33, 659.25, 783.99, 659.25, 523.25], "tempo": 0.9, "sitar": 1.0, "bansuri": 0.3, "tabla": 1.0, "tanpura": 0.7, "harmonium": 0.2},
+    {"name": "Tone 13 - Bansuri + Tabla Halki", "raga": [293.66, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00], "tempo": 1.6, "sitar": 0.1, "bansuri": 1.0, "tabla": 0.8, "tanpura": 0.9, "harmonium": 0.0},
+    {"name": "Tone 14 - Tanpura Gehra + Sitar", "raga": [130.81, 196.00, 261.63, 329.63, 392.00, 329.63, 261.63, 196.00], "tempo": 1.8, "sitar": 0.9, "bansuri": 0.2, "tabla": 0.4, "tanpura": 1.0, "harmonium": 0.3},
+    {"name": "Tone 15 - Shaam Wali Dhun", "raga": [261.63, 293.66, 329.63, 392.00, 466.16, 523.25, 466.16, 392.00], "tempo": 1.5, "sitar": 0.7, "bansuri": 0.7, "tabla": 0.5, "tanpura": 1.0, "harmonium": 0.5},
+    {"name": "Tone 16 - Subah Wali Halki Dhun", "raga": [329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63, 293.66], "tempo": 1.9, "sitar": 0.4, "bansuri": 0.9, "tabla": 0.3, "tanpura": 0.8, "harmonium": 0.4},
+    {"name": "Tone 17 - Dard Bhari Sitar Slow", "raga": [220.00, 261.63, 311.13, 392.00, 440.00, 392.00, 311.13, 261.63], "tempo": 2.3, "sitar": 1.0, "bansuri": 0.4, "tabla": 0.1, "tanpura": 1.0, "harmonium": 0.2},
+    {"name": "Tone 18 - Pyar Bhari Bansuri Fast", "raga": [392.00, 466.16, 523.25, 587.33, 659.25, 783.99, 659.25, 587.33], "tempo": 1.2, "sitar": 0.3, "bansuri": 1.0, "tabla": 0.7, "tanpura": 0.9, "harmonium": 0.0},
+    {"name": "Tone 19 - Dholak + Harmonium Masti", "raga": [261.63, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63], "tempo": 1.0, "sitar": 0.3, "bansuri": 0.3, "tabla": 1.0, "tanpura": 0.7, "harmonium": 1.0},
+    {"name": "Tone 20 - Sabse Romantic Sitar Bansuri Tanpura", "raga": [293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00], "tempo": 1.4, "sitar": 1.0, "bansuri": 1.0, "tabla": 0.6, "tanpura": 1.0, "harmonium": 0.5},
 ]
 
 def get_shayari_for_this_slot():
     now = datetime.now()
-    slot = (now.day * 24 + now.hour)
+    # ✅ FIX: shayari ke liye minute bhi use kiya taake har :30 wali reel alag ho
+    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
     index = slot % len(REEL_SHAYARI)
     return REEL_SHAYARI[index]
 
+def get_dhun_for_this_slot():
+    now = datetime.now()
+    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
+    dhun = DHUN_LIST[slot % len(DHUN_LIST)]
+    return dhun
+
 def get_hashtags_and_cta():
     now = datetime.now()
-    slot = (now.day * 24 + now.hour)
+    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
     hashtags = HASHTAG_SETS[slot % len(HASHTAG_SETS)]
     cta = CTA_LINES[slot % len(CTA_LINES)]
     return hashtags, cta
@@ -207,47 +243,78 @@ def make_text_image(shayari_text):
     return "shayari_overlay.png"
 
 def make_local_indian_music():
-    print("Auto Indian melody bana raha hoon...")
+    dhun = get_dhun_for_this_slot()
+    print(f"Auto Indian Dhun bana raha hoon: {dhun['name']}")
     try:
         for f in ["background.mp3", "background.wav"]:
             if os.path.exists(f):
                 os.remove(f)
         sample_rate = 44100
         duration = 15
-        melodies = [
-            [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66, 261.63],
-            [293.66, 329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 293.66],
-            [329.63, 392.00, 440.00, 523.25, 587.33, 523.25, 440.00, 392.00, 329.63],
-            [261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66, 261.63],
-        ]
-        notes = random.choice(melodies)
-        samples = []
-        note_len = int(sample_rate * 1.7)
-        for freq in notes:
-            for i in range(note_len):
+        total = sample_rate * duration
+        notes = dhun["raga"]
+        tempo = dhun["tempo"]
+        samples = [0.0] * total
+        if dhun["tanpura"] > 0:
+            for i in range(total):
                 t = i / sample_rate
-                val = 0.5 * math.sin(2 * math.pi * freq * t) + 0.25 * math.sin(2 * math.pi * freq * 2 * t) + 0.1 * math.sin(2 * math.pi * freq * 3 * t)
-                fade = min(1.0, i / 2000, (note_len - i) / 2000)
-                val = val * fade * 0.6
-                samples.append(int(val * 12000))
-                if len(samples) >= sample_rate * duration:
+                drone = (0.12 * math.sin(2 * math.pi * 130.81 * t) + 0.08 * math.sin(2 * math.pi * 196.00 * t) + 0.05 * math.sin(2 * math.pi * 261.63 * t)) * dhun["tanpura"]
+                samples[i] += drone
+        note_len = int(sample_rate * tempo)
+        pos = 0
+        idx = 0
+        while pos < total:
+            freq = notes[idx % len(notes)]
+            idx += 1
+            for i in range(note_len):
+                if pos + i >= total:
                     break
-            if len(samples) >= sample_rate * duration:
-                break
-        while len(samples) < sample_rate * duration:
-            samples.extend(samples[:sample_rate])
-        samples = samples[:sample_rate * duration]
+                t = i / sample_rate
+                decay = math.exp(-t * 2.2)
+                vib = 1 + 0.006 * math.sin(2 * math.pi * 5.5 * t)
+                f = freq * vib
+                if dhun["sitar"] > 0:
+                    sitar_val = (0.55 * math.sin(2 * math.pi * f * t) + 0.30 * math.sin(2 * math.pi * f * 2 * t) + 0.18 * math.sin(2 * math.pi * f * 3 * t) + 0.10 * math.sin(2 * math.pi * f * 5 * t)) * decay * dhun["sitar"]
+                    samples[pos + i] += sitar_val
+                if dhun["bansuri"] > 0:
+                    bansuri_val = (0.60 * math.sin(2 * math.pi * f * 0.5 * t) + 0.25 * math.sin(2 * math.pi * f * t)) * math.exp(-t * 0.8) * dhun["bansuri"]
+                    samples[pos + i] += bansuri_val
+                if dhun.get("harmonium", 0) > 0:
+                    harm_val = (0.45 * math.sin(2 * math.pi * f * t) + 0.25 * math.sin(2 * math.pi * f * 1.5 * t) + 0.15 * math.sin(2 * math.pi * f * 2 * t)) * math.exp(-t * 1.2) * dhun["harmonium"]
+                    samples[pos + i] += harm_val
+            pos += note_len
+        if dhun["tabla"] > 0:
+            tabla_interval = int(sample_rate * 0.75)
+            for start in range(0, total, tabla_interval):
+                for i in range(int(sample_rate * 0.12)):
+                    if start + i >= total:
+                        break
+                    t = i / sample_rate
+                    thump = 0.35 * math.sin(2 * math.pi * 120 * t) * math.exp(-t * 25) * dhun["tabla"]
+                    samples[start + i] += thump
+                for i in range(int(sample_rate * 0.06)):
+                    if start + int(sample_rate * 0.35) + i >= total:
+                        break
+                    t = i / sample_rate
+                    tick = 0.18 * math.sin(2 * math.pi * 1800 * t) * math.exp(-t * 35) * dhun["tabla"]
+                    samples[start + int(sample_rate * 0.35) + i] += tick
+        max_val = max(abs(s) for s in samples) or 1
+        scale = 16000 / max_val
+        if scale > 1.2:
+            scale = 1.2
+        int_samples = [int(max(-32767, min(32767, s * scale))) for s in samples]
         with wave.open("background.wav", "w") as wf:
             wf.setnchannels(1)
             wf.setsampwidth(2)
             wf.setframerate(sample_rate)
-            for s in samples:
-                wf.writeframes(struct.pack('<h', max(-32767, min(32767, s))))
+            for s in int_samples:
+                wf.writeframes(struct.pack('<h', s))
         cmd = ["ffmpeg", "-y", "-i", "background.wav", "-c:a", "aac", "background.mp3"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
+            print(f"FFmpeg wav->mp3 fail: {result.stderr[:500]}")
             return None
-        print(f"✅ Auto Indian Music Ready: {os.path.getsize('background.mp3')} bytes")
+        print(f"✅ Dhun Ready: {dhun['name']} - {os.path.getsize('background.mp3')} bytes")
         return "background.mp3"
     except Exception as e:
         print(f"Local music fail: {e}")
@@ -259,9 +326,11 @@ def download_music_auto():
             os.remove("background.mp3")
         except:
             pass
-    print("=== AUTO INDIAN ROMANTIC MUSIC ===")
-    urls = AUTO_MUSIC_URLS[:]
-    random.shuffle(urls)
+    print("=== AUTO INDIAN ROMANTIC DHUN ===")
+    now = datetime.now()
+    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
+    start_idx = slot % len(AUTO_MUSIC_URLS)
+    urls = AUTO_MUSIC_URLS[start_idx:] + AUTO_MUSIC_URLS[:start_idx]
     for url in urls:
         try:
             print(f"Trying Auto Indian Song: {url}")
@@ -280,11 +349,12 @@ def download_music_auto():
         except Exception as e:
             print(f"  -> FAIL: {e}")
             continue
-    print("⚠️ Download fail, ab auto hi Indian melody bana raha hoon...")
+    # ✅ FIX: Agar download fail to local dhun zaroor banao, khali mat jao
+    print("⚠️ Download fail, ab local 20 tones wali dhun bana raha hoon...")
     return make_local_indian_music()
 
 def get_random_reel_video():
-    print("Fetching video from 【entity-Pexels¦canonical_name=Pexels】 - AUTO...")
+    print("Fetching video from Pexels - AUTO...")
     if not PEXELS_KEY:
         print("❌ PEXELS_KEY missing hai!")
         sys.exit(1)
@@ -293,11 +363,11 @@ def get_random_reel_video():
     params = {"query": random.choice(queries), "per_page": 15, "orientation": "portrait", "size": "medium"}
     try:
         res = requests.get("https://api.pexels.com/videos/search", headers=headers, params=params, timeout=20)
-        print(f" 【entity-Pexels¦canonical_name=Pexels】 Status: {res.status_code}")
+        print(f" Pexels Status: {res.status_code}")
         res.raise_for_status()
         videos = res.json().get('videos', [])
         if not videos:
-            print("❌ 【entity-Pexels¦canonical_name=Pexels】 ne video nahi diya")
+            print("❌ Pexels ne video nahi diya")
             sys.exit(1)
         selected = random.choice(videos)
         files = selected.get('video_files', [])
@@ -329,11 +399,12 @@ def make_final_reel(video_url, shayari_text, music_path):
     print(f"Raw size: {os.path.getsize(raw_path)} bytes")
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
-    print(f"Adding AUTO INDIAN SONG: {music_path} - Video ki awaz DELETE, sirf Indian song rahega")
+    print(f"Adding DHUN: {music_path}")
+    # ✅ CHECKED: 0:v = video, 1:v = overlay, 2:a = music - sahi hai
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
         "[v][1:v]overlay=0:0[outv];"
-        "[2:a]volume=0.8,lowpass=f=3500,afade=t=in:st=0:d=1,afade=t=out:st=14:d=1[outa]"
+        "[2:a]volume=0.9,lowpass=f=5000,afade=t=in:st=0:d=1,afade=t=out:st=14:d=1[outa]"
     )
     cmd = ["ffmpeg", "-y",
            "-i", raw_path,
@@ -349,7 +420,7 @@ def make_final_reel(video_url, shayari_text, music_path):
         print("❌ FFmpeg Error:")
         print(result.stderr[-3000:])
         sys.exit(1)
-    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes - Sirf INDIAN SONG hai")
+    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes")
     return final_path
 
 def upload_reel_to_facebook(video_path, caption):
@@ -406,11 +477,12 @@ if __name__ == "__main__":
         print("❌ FB_PAGE_ID ya FB_TOKEN missing!")
         sys.exit(1)
     shayari = get_shayari_for_this_slot()
+    dhun = get_dhun_for_this_slot()
     hashtags, cta = get_hashtags_and_cta()
     caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
     print(f"Selected Shayari: {shayari}")
+    print(f"Selected Dhun: {dhun['name']}")
     print(f"Hashtags: {hashtags}")
-    print(f"CTA: {cta}")
     music = download_music_auto()
     if not music:
         print("❌ SONG NAHI BANA - Reel post nahi hogi")
