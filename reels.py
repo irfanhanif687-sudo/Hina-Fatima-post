@@ -157,7 +157,6 @@ REEL_SHAYARI = [
     "Aaj raat teri god mein duniya bhool jaoon,\nTere pyaar mein hi doob jaoon.",
 ]
 
-# ✅ CONFIRMED - 20 HASHTAG SETS - HAR REEL PE ALAG - MAX 5 - BAN NAHI HOGA
 HASHTAG_SETS = [
     "#UrduShayari #LoveShayari #HinaFatima #RomanticReels #DilKiBaat",
     "#RomanticReels #Ishq #Mohabbat #HinaFatima #TrendingReels",
@@ -181,7 +180,6 @@ HASHTAG_SETS = [
     "#HinaFatima #IshqShayari #LoveReels #UrduShayari #DilKiBaat",
 ]
 
-# ✅ FOLLOW BADHANE WALE CTA - HAR REEL PE ALAG
 CTA_LINES = [
     "❤️ Follow karo - Roz raat ko nayi bold shayari ke liye, miss mat karna!",
     "🥰 Apne pyar ko tag karo + Follow karo - Roz aisi shayari ke liye",
@@ -195,7 +193,6 @@ CTA_LINES = [
     "💌 Share + Follow - Apne pyar ko ye reel bhejo, wo khush ho jayega",
 ]
 
-# ✅ 20 ALAG ROMANTIC TONES - CHECKED
 DHUN_LIST = [
     {"name": "Tone 1 - Sitar Slow Romantic", "raga": [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66], "tempo": 1.6, "sitar": 1.0, "bansuri": 0.0, "tabla": 1.0, "tanpura": 1.0, "harmonium": 0.0},
     {"name": "Tone 2 - Bansuri Meethi Lambi", "raga": [293.66, 329.63, 392.00, 440.00, 523.25, 440.00, 392.00, 329.63], "tempo": 1.9, "sitar": 0.2, "bansuri": 1.0, "tabla": 0.3, "tanpura": 1.0, "harmonium": 0.0},
@@ -283,13 +280,17 @@ def make_text_image(shayari_text):
     print(f"✅ Text image ban gayi: {wrapped}")
     return "shayari_overlay.png"
 
+# ✅ ASLI FIX: Wav ko mp3 mein badalna hi band - Seedha wav use hoga, is liye wo error aayega hi nahi
 def make_local_indian_music():
     dhun = get_dhun_for_this_slot()
-    print(f"✅ SIRF 20 TONES WALI DHUN: {dhun['name']}")
+    print(f"✅ Dhun bana raha hoon: {dhun['name']}")
     try:
         for f in ["background.mp3", "background.wav"]:
             if os.path.exists(f):
-                os.remove(f)
+                try:
+                    os.remove(f)
+                except:
+                    pass
         sample_rate = 44100
         duration = 15
         total = sample_rate * duration
@@ -343,22 +344,25 @@ def make_local_indian_music():
         scale = 16000 / max_val
         if scale > 1.2:
             scale = 1.2
+        # ✅ Pehle wali galti: ek ek karke writeframes kar rahe the - ab ek hi baar mein
         int_samples = [int(max(-32767, min(32767, s * scale))) for s in samples]
+        data = b''.join(struct.pack('<h', s) for s in int_samples)
         with wave.open("background.wav", "w") as wf:
             wf.setnchannels(1)
             wf.setsampwidth(2)
             wf.setframerate(sample_rate)
-            for s in int_samples:
-                wf.writeframes(struct.pack('<h', s))
-        cmd = ["ffmpeg", "-y", "-i", "background.wav", "-c:a", "aac", "background.mp3"]
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"FFmpeg wav->mp3 fail: {result.stderr[:500]}")
+            wf.writeframes(data)
+        wav_size = os.path.getsize("background.wav")
+        print(f"✅ Dhun Ready WAV: {dhun['name']} - {wav_size} bytes")
+        if wav_size < 100000:
+            print("❌ WAV file bahut choti hai, kharab bani hai!")
             return None
-        print(f"✅ Dhun Ready: {dhun['name']} - {os.path.getsize('background.mp3')} bytes")
-        return "background.mp3"
+        # ✅ Yahan pehle mp3 convert hota tha aur fail hota tha - ab nahi hoga, seedha wav return
+        return "background.wav"
     except Exception as e:
         print(f"Local music fail: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 def get_random_reel_video():
@@ -407,7 +411,7 @@ def make_final_reel(video_url, shayari_text, music_path):
     print(f"Raw size: {os.path.getsize(raw_path)} bytes")
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
-    print(f"Adding DHUN: {music_path}")
+    print(f"Adding DHUN: {music_path} - size {os.path.getsize(music_path)}")
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
         "[v][1:v]overlay=0:0[outv];"
@@ -421,11 +425,11 @@ def make_final_reel(video_url, shayari_text, music_path):
            "-map", "[outv]", "-map", "[outa]",
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
            "-c:a", "aac", "-t", "15", final_path]
-    print("Running FFmpeg...")
+    print("Running FFmpeg final...")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
-        print("❌ FFmpeg Error:")
-        print(result.stderr[-3000:])
+        print("❌ FFmpeg Final Error - POORA ERROR:")
+        print(result.stderr)
         sys.exit(1)
     print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes")
     return final_path
@@ -486,7 +490,6 @@ if __name__ == "__main__":
     shayari = get_shayari_for_this_slot()
     dhun = get_dhun_for_this_slot()
     hashtags, cta = get_hashtags_and_cta()
-    # ✅ FOLLOW BOOST - Caption ka order: Shayari -> CTA (Follow) -> Hashtags
     caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
     print(f"Selected Shayari: {shayari}")
     print(f"Selected Dhun: {dhun['name']}")
