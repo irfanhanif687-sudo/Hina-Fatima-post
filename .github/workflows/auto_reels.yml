@@ -2,7 +2,7 @@ name: Facebook Auto Post (Reels)
 
 on:
   schedule:
-    - cron: '30 * * * *'  # ✅ Har ghante ke 30 minute baad (e.g., 1:30, 2:30)
+    - cron: '30 * * * *'  # Har ghante ke 30 minute par - 1:30, 2:30, 3:30
   workflow_dispatch:
 
 jobs:
@@ -26,4 +26,5 @@ jobs:
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_TOKEN: ${{ secrets.FB_TOKEN }}
+          PEXELS_KEY: ${{ secrets.PEXELS_KEY }}
         run: python reels.py
