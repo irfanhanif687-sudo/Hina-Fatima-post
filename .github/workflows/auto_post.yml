@@ -2,7 +2,7 @@ name: Facebook Auto Post (Images)
 
 on:
   schedule:
-    - cron: '0 * * * *'  # ✅ Har ghante ke start mein (e.g., 1:00, 2:00)
+    - cron: '0 * * * *'  # Har ghante ke 0 minute par - 1:00, 2:00, 3:00
   workflow_dispatch:
 
 jobs:
