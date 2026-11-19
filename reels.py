@@ -47,14 +47,13 @@ REEL_SHAYARI = [
     "Tere naam ki mehfil saja loon,\nTeri yaadon mein hi kho jaoon."
 ]
 
-# ✅ FIXED: Fake link hata diya, sirf asli verified Pixabay links hain
-# Sab copyright-free Indian / Romantic Piano hain
+# 100% AUTO - INDIAN ROMANTIC - DJ DELETE
 AUTO_MUSIC_URLS = [
-    "https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1bab.mp3",
-    "https://cdn.pixabay.com/audio/2023/03/06/audio_997bd450d6.mp3",
-    "https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3",
+    "https://cdn.pixabay.com/audio/2022/02/07/audio_1387f35422.mp3",
+    "https://cdn.pixabay.com/audio/2024/12/08/audio_c452b261ca.mp3",
+    "https://cdn.pixabay.com/audio/2026/02/16/audio_25d490e6fc.mp3",
     "https://cdn.pixabay.com/audio/2022/03/15/audio_264cfa38a2.mp3",
-    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    "https://cdn.pixabay.com/audio/2023/03/06/audio_997bd450d6.mp3",
 ]
 
 def get_shayari_for_this_slot():
@@ -79,7 +78,6 @@ def wrap_line(line, max_chars=26):
     return lines
 
 def make_text_image(shayari_text):
-    # ✅ FIXED: FFmpeg drawtext se box aata tha, ab Pillow se banega - box nahi aayega
     from PIL import Image, ImageDraw, ImageFont
     video_text = shayari_text.replace(",", "").replace(".", "").replace("?", "").replace("!", "")
     wrapped = []
@@ -106,18 +104,18 @@ def make_text_image(shayari_text):
         draw.text((x, y), line, font=font, fill=(255,255,255,255))
         y += 70
     img.save("shayari_overlay.png")
-    print(f"✅ Text image ban gayi, box nahi aayega: {wrapped}")
+    print(f"✅ Text image ban gayi: {wrapped}")
     return "shayari_overlay.png"
 
 def make_local_indian_music():
-    # ✅ FIXED: Pichli baar sirf beep tha, ab asli melody banegi
-    # Sa Re Ga Ma Pa Dha - Indian scale, har note alag time par, soft fade ke saath
-    print("Local Indian melody bana raha hoon...")
+    print("Auto Indian melody bana raha hoon...")
     try:
+        # ✅ FIXED: Purani file delete karo taake purana gaana na baj jaye
+        for f in ["background.mp3", "background.wav"]:
+            if os.path.exists(f):
+                os.remove(f)
         sample_rate = 44100
         duration = 15
-        # Indian scale - C Major / Sa Re Ga Ma
-        # Har reel par alag melody taake har baar same na lage
         melodies = [
             [261.63, 293.66, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66, 261.63],
             [293.66, 329.63, 392.00, 440.00, 493.88, 440.00, 392.00, 329.63, 293.66],
@@ -125,16 +123,12 @@ def make_local_indian_music():
             [261.63, 329.63, 392.00, 523.25, 440.00, 392.00, 329.63, 293.66, 261.63],
         ]
         notes = random.choice(melodies)
-        print(f"Selected melody: {notes}")
-        # Har note 1.6 sec ka
         samples = []
         note_len = int(sample_rate * 1.7)
         for freq in notes:
             for i in range(note_len):
                 t = i / sample_rate
-                # Soft sine + thoda 2nd harmonic taake flute jaisa lage, beep jaisa na lage
-                val = 0.5 * math.sin(2 * math.pi * freq * t) + 0.2 * math.sin(2 * math.pi * freq * 2 * t)
-                # Fade in/out har note par taake kat-kat na lage
+                val = 0.5 * math.sin(2 * math.pi * freq * t) + 0.25 * math.sin(2 * math.pi * freq * 2 * t) + 0.1 * math.sin(2 * math.pi * freq * 3 * t)
                 fade = min(1.0, i / 2000, (note_len - i) / 2000)
                 val = val * fade * 0.6
                 samples.append(int(val * 12000))
@@ -142,58 +136,58 @@ def make_local_indian_music():
                     break
             if len(samples) >= sample_rate * duration:
                 break
-        # Agar kam par gaya to loop kar do
         while len(samples) < sample_rate * duration:
             samples.extend(samples[:sample_rate])
         samples = samples[:sample_rate * duration]
-        # WAV banao
         with wave.open("background.wav", "w") as wf:
             wf.setnchannels(1)
             wf.setsampwidth(2)
             wf.setframerate(sample_rate)
             for s in samples:
                 wf.writeframes(struct.pack('<h', max(-32767, min(32767, s))))
-        # WAV ko MP3 mein convert karo
         cmd = ["ffmpeg", "-y", "-i", "background.wav", "-c:a", "aac", "background.mp3"]
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
-            print(f"Convert fail: {result.stderr[-500:]}")
             return None
-        print(f"✅ Local Indian Music Ready: {os.path.getsize('background.mp3')} bytes")
+        print(f"✅ Auto Indian Music Ready: {os.path.getsize('background.mp3')} bytes")
         return "background.mp3"
     except Exception as e:
         print(f"Local music fail: {e}")
         return None
 
 def download_music_auto():
-    print("=== MUSIC DOWNLOAD START ===")
+    # ✅ FIXED: Shuru mein purani mp3 delete karo
+    if os.path.exists("background.mp3"):
+        try:
+            os.remove("background.mp3")
+        except:
+            pass
+    print("=== AUTO INDIAN ROMANTIC MUSIC ===")
     urls = AUTO_MUSIC_URLS[:]
     random.shuffle(urls)
     for url in urls:
         try:
-            print(f"Trying: {url}")
-            # ✅ FIXED: Timeout 30 se 15 kiya taake 6 minute wala hang na ho
-            r = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0'}, allow_redirects=True)
+            print(f"Trying Auto Indian Song: {url}")
+            r = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://pixabay.com/'}, allow_redirects=True)
             print(f"  Status: {r.status_code} | Size: {len(r.content)} bytes")
             if r.status_code != 200 or len(r.content) < 50000:
-                print("  -> FAIL: Too small")
+                print("  -> FAIL, agla try kar raha hoon...")
                 continue
             first = r.content[:10]
             if first.startswith(b'<!DOCTYPE') or first.startswith(b'<html') or first.startswith(b'<HTML'):
-                print("  -> FAIL: Ye HTML hai, MP3 nahi")
+                print("  -> FAIL: HTML hai")
                 continue
             open("background.mp3", 'wb').write(r.content)
-            print(f"✅ MUSIC OK: {len(r.content)} bytes - Asli Pixabay wala song mil gaya")
+            print(f"✅ AUTO INDIAN MUSIC OK: {len(r.content)} bytes")
             return "background.mp3"
         except Exception as e:
-            print(f"  -> FAIL: {e} - Agla try kar raha hoon")
+            print(f"  -> FAIL: {e}")
             continue
-    print("⚠️ Download se song nahi mila, ab andar hi melody bana raha hoon...")
-    # Download fail hua to local melody banao, khaali reel mat bhejo
+    print("⚠️ Download fail, ab auto hi Indian melody bana raha hoon...")
     return make_local_indian_music()
 
 def get_random_reel_video():
-    print("Fetching video from 【entity-Pexels¦canonical_name=Pexels】...")
+    print("Fetching video from 【entity-Pexels¦canonical_name=Pexels】 - AUTO...")
     if not PEXELS_KEY:
         print("❌ PEXELS_KEY missing hai!")
         sys.exit(1)
@@ -215,7 +209,7 @@ def get_random_reel_video():
             sys.exit(1)
         suitable = [f for f in files if 700 <= f.get('height', 0) <= 1080]
         if suitable:
-            best = suitable[0]
+            best = random.choice(suitable)
         else:
             best = sorted(files, key=lambda x: x.get('height', 0))[0]
         print(f"Found video: {best.get('link')} height={best.get('height')}")
@@ -238,20 +232,32 @@ def make_final_reel(video_url, shayari_text, music_path):
     print(f"Raw size: {os.path.getsize(raw_path)} bytes")
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
-    print(f"Adding SONG: {music_path} - Video ki original awaz DELETE, sirf song rahega")
-    cmd = ["ffmpeg", "-y", "-i", raw_path, "-i", overlay, "-stream_loop", "-1", "-i", music_path,
-           "-filter_complex",
-           "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];[v][1:v]overlay=0:0[outv]",
-           "-map", "[outv]", "-map", "2:a:0",
+    print(f"Adding AUTO INDIAN SONG: {music_path} - Video ki awaz DELETE, sirf Indian song rahega")
+
+    # ✅ MISTAKE FIXED: Ab -filter:a alag se nahi, sab kuch ek hi filter_complex mein hai
+    # [2:a] wala hissa song ko soft + lowpass + fade karta hai
+    # Is se FFmpeg confuse nahi hoga aur song 100% lagega
+    filter_complex = (
+        "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
+        "[v][1:v]overlay=0:0[outv];"
+        "[2:a]volume=0.8,lowpass=f=3500,afade=t=in:st=0:d=1,afade=t=out:st=14:d=1[outa]"
+    )
+    cmd = ["ffmpeg", "-y",
+           "-i", raw_path,
+           "-i", overlay,
+           "-stream_loop", "-1", "-i", music_path,
+           "-filter_complex", filter_complex,
+           "-map", "[outv]", "-map", "[outa]",
            "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
            "-c:a", "aac", "-t", "15", final_path]
     print("Running FFmpeg...")
+    print(f"Filter: {filter_complex}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ FFmpeg Error:")
         print(result.stderr[-3000:])
         sys.exit(1)
-    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes - Isme sirf SONG hai")
+    print(f"✅ Final Reel Ready: {os.path.getsize(final_path)} bytes - Sirf INDIAN SONG hai")
     return final_path
 
 def upload_reel_to_facebook(video_path, caption):
