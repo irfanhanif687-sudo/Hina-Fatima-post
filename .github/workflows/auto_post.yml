@@ -2,7 +2,7 @@ name: Facebook Auto Post (Images)
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Har ghante ke 0 minute par - 1:00, 2:00, 3:00
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,17 +11,14 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install requests Pillow
-
       - name: Run Auto Post Script
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
