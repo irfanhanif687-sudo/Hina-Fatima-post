@@ -14,9 +14,7 @@ TOKEN = os.environ.get('FB_TOKEN')
 PEXELS_KEY = os.environ.get('PEXELS_KEY')
 API_VERSION = "v21.0"
 
-# ✅ 100+ SHAYARI - NORMAL + ROMANTIC BOLD
 REEL_SHAYARI = [
-    # --- Normal Romantic ---
     "Teri baahon mein sukoon milta hai,\nJaise kisi ki dua qabool ho gayi ho.",
     "Tere bina yeh dil sunn sa hai,\nJaise bina baarish ke mausam soona hai.",
     "Tujhe dekh kar aise khoya main,\nJaise koi khwab dekh kar soya main.",
@@ -67,7 +65,6 @@ REEL_SHAYARI = [
     "Tere ishq ne mujhe jeena sikha diya,\nTeri yaad ne mujhe marna sikha diya.",
     "Dil ki har dhadkan mein tu basi hai,\nMeri har saans mein teri khushbu basi hai.",
     "Teri mohabbat mein khoya rehta hoon,\nTeri yaadon mein soya rehta hoon.",
-    # --- ROMANTIC BOLD - ADULT FEEL - 【entity-FACEBOOK¦canonical_name=Facebook】 SAFE ---
     "Raat bhar teri baahon mein rehna chahta hoon,\nTeri saanson ki garmi mein kho jana chahta hoon.",
     "Tere honthon ki pyaas bujha doon,\nTujhe apni baahon mein sula doon.",
     "Teri gardan pe apne honth rakh doon,\nTeri har saans ko apna kar doon.",
@@ -106,7 +103,7 @@ REEL_SHAYARI = [
     "Tujhe apni god mein bitha loon,\nTeri zulfon ko sehla loon.",
     "Raat ki khamoshi mein sirf tu ho,\nAur meri baahon mein sirf tu ho.",
     "Tere ishq ka nasha sar chadha hai,\nTere bina dil kahin lagta nahi.",
-    "Tujhe chूम kar jo sukoon milta hai,\nWoh duniya mein kahin nahi milta.",
+    "Tujhe choom kar jo sukoon milta hai,\nWoh duniya mein kahin nahi milta.",
     "Teri saanson ki khushbu mein kho jaoon,\nTere pyaar mein doob jaoon.",
     "Aaj raat bas tu aur main,\nNa duniya, na koi parwah.",
     "Tere honthon se honth mila doon,\nTeri har pyaas ko bujha doon.",
@@ -118,8 +115,49 @@ REEL_SHAYARI = [
     "Tujhe dekh kar dil machal jata hai,\nTere kareeb aate hi sab badal jata hai.",
     "Raat bhar teri yaadon mein jalte rahe,\nTere ishq mein hum palte rahe.",
     "Teri ek raat ki khwahish hai mujhe,\nTeri baahon mein sone ki chahat hai mujhe.",
+    "Teri chhat pe haath rakh ke so jaoon,\nTeri dhadkan ko apni lori bana loon.",
+    "Tu jo sharma ke mere seene mein chhup jaye,\nMera dil or zor se dhadak jaye.",
+    "Teri kamar ko pakad ke apne kareeb kar loon,\nTeri har saans ko apni bana loon.",
+    "Aaj raat teri galiyon mein kho jaoon,\nTere honthon ki galiyon mein kho jaoon.",
+    "Tere kaan ke peeche ek pyaar bhara kiss doon,\nTeri har thakan ko door kar doon.",
+    "Tu jo mere honthon pe ungli rakh de,\nMeri saari baatein ruk jayen.",
+    "Teri aankhon mein dekh ke lagta hai,\nJaise saari raat abhi baaki hai.",
+    "Tujhe raat bhar apne seene se laga ke rakhoon,\nTeri garmi mein hi so jaoon.",
+    "Tere honthon ki narmi ko mehsoos karoon,\nTeri har ada pe fida ho jaoon.",
+    "Tu jab mere itne paas aati hai,\nMujhe apna aapa bhool jata hai.",
+    "Teri saans jab mere chehre pe lagti hai,\nDil mein ek toofan sa uth jata hai.",
+    "Aaj raat tujhe apni jaan bana loon,\nTere ishq mein poora doob jaoon.",
+    "Tere badan ki har khushbu ko pee loon,\nTere pyaar mein khud ko bhool jaoon.",
+    "Tujhe dekh ke dil kehta hai,\nKaash ye raat kabhi khatam na ho.",
+    "Teri baahon mein aake lagta hai,\nJaise duniya ki har khushi mil gayi.",
+    "Tu jo mere gaal pe haath phere,\nMera dil pighal jaye.",
+    "Teri god mein sar rakh ke so jaoon,\nTeri ungliyon mein kho jaoon.",
+    "Aaj raat tu meri baahon mein so ja,\nKal subah tak kahin mat ja.",
+    "Tere honthon pe apni ungli phira doon,\nTeri har khamoshi ko samajh jaoon.",
+    "Tujhe itna pyaar karoon ke tu thak jaye,\nPhir bhi mera dil na bhare.",
+    "Teri raat wali khushbu mujhe pagal karti hai,\nTeri ek jhalak mujhe deewana karti hai.",
+    "Tu jo hanste hue mere kareeb aaye,\nMera dil teri taraf khinch jaye.",
+    "Tere seene ki garmi mein lipt jaoon,\nTeri yaadon mein hi mar jaoon.",
+    "Aaj raat bas pyaar ki baarish ho,\nTu aur main, aur koi na ho.",
+    "Tere honthon ka rang mere honthon pe lag jaye,\nAisa pyaar kabhi na mit paye.",
+    "Tujhe baahon mein utha ke ghoom loon,\nTeri har muskaan ko choom loon.",
+    "Teri neend mein bhi tujhe dekhta rahoon,\nTeri har saans ko ginta rahoon.",
+    "Tu jo raat ko call pe dheere se bole,\nMera dil or zor se dhadak uthe.",
+    "Tere pyaar mein raat bhar jaag loon,\nTeri yaadon mein hi so jaoon.",
+    "Tujhe apne honthon se apna naam suna doon,\nTeri har raat ko apni bana loon.",
+    "Teri kamar se lipat ke so jaoon,\nTeri khushbu mein hi kho jaoon.",
+    "Aaj raat teri baahon ka nasha kar loon,\nTere ishq mein hi mar jaoon.",
+    "Tu jo mere seene pe haath rakhe,\nMeri dhadkan teri ho jaye.",
+    "Tere labon ki garmi ko mehsoos karoon,\nTeri har saans mein bas jaoon.",
+    "Tujhe raat bhar apni aankhon mein rakhoon,\nTeri har ada ko yaad karoon.",
+    "Teri ek raat ki mehmaan nawazi chahiye,\nTeri baahon mein sone ki ijazat chahiye.",
+    "Tu jo paas aake mere kaan mein bole,\nMeri rooh tak kaamp jaye.",
+    "Tere ishq mein raat din ek kar doon,\nTeri ek muskaan pe sab kuch kurban kar doon.",
+    "Tujhe choom choom ke thak jaoon,\nPhir bhi tera pyaar na khatam ho.",
+    "Aaj raat teri god mein duniya bhool jaoon,\nTere pyaar mein hi doob jaoon.",
 ]
 
+# ✅ CONFIRMED - 20 HASHTAG SETS - HAR REEL PE ALAG - MAX 5 - BAN NAHI HOGA
 HASHTAG_SETS = [
     "#UrduShayari #LoveShayari #HinaFatima #RomanticReels #DilKiBaat",
     "#RomanticReels #Ishq #Mohabbat #HinaFatima #TrendingReels",
@@ -131,26 +169,30 @@ HASHTAG_SETS = [
     "#UrduLove #ShayariDaily #PyarMohabbat #HinaFatima #TrendingNow",
     "#HeartTouching #EmotionalShayari #LoveStory #HinaFatima #ViralVideo",
     "#ShayariStatus #RomanticStatus #DilKiBaat #HinaFatima #LoveReels",
+    "#TeriYaad #DilKiBaat #RomanticShayari #HinaFatima #ForyouPage",
+    "#LoveStory #IshqWala #UrduShayari #HinaFatima #ViralReels",
+    "#PyarKiBaat #DilSeDil #ShayariReels #HinaFatima #ExplorePage",
+    "#RomanticVibes #Tanhai #Mohabbat #HinaFatima #ReelsOfInstagram",
+    "#IshqZada #DilKaDard #LoveShayari #HinaFatima #Trending",
+    "#ShayariLover #RaatKiBaat #RomanticReels #HinaFatima #Viral",
+    "#DilKiAwaaz #TeriMohabbat #UrduPoetry #HinaFatima #ReelsVideo",
+    "#LoveQuotes #PyarMohabbat #Shayari #HinaFatima #ForYou",
+    "#RomanticStatus #DilTootGaya #ShayariVideo #HinaFatima #TrendingReels",
+    "#HinaFatima #IshqShayari #LoveReels #UrduShayari #DilKiBaat",
 ]
 
+# ✅ FOLLOW BADHANE WALE CTA - HAR REEL PE ALAG
 CTA_LINES = [
-    "Follow karo ❤️ - Roz nayi shayari ke liye",
-    "Apne pyar ko tag karo 🥰",
-    "Comment mein ❤️ likho agar dil ko lagi ho",
-    "Share karo apne special wale ke saath 💕",
-    "Follow kar lo, roz dil ki baat sunne ko milegi ✨",
-    "Like karo agar ye shayari tumhare dil ki hai 💔❤️",
-]
-
-AUTO_MUSIC_URLS = [
-    "https://cdn.pixabay.com/audio/2022/02/07/audio_1387f35422.mp3",
-    "https://cdn.pixabay.com/audio/2024/12/08/audio_c452b261ca.mp3",
-    "https://cdn.pixabay.com/audio/2022/03/15/audio_264cfa38a2.mp3",
-    "https://cdn.pixabay.com/audio/2023/03/06/audio_997bd450d6.mp3",
-    "https://cdn.pixabay.com/audio/2022/10/25/audio_5b2d4a0c1a.mp3",
-    "https://cdn.pixabay.com/audio/2023/09/18/audio_1c2b3a4d5e.mp3",
-    "https://cdn.pixabay.com/audio/2022/05/10/audio_7a8b9c0d1e.mp3",
-    "https://cdn.pixabay.com/audio/2023/11/20/audio_2b3c4d5e6f.mp3",
+    "❤️ Follow karo - Roz raat ko nayi bold shayari ke liye, miss mat karna!",
+    "🥰 Apne pyar ko tag karo + Follow karo - Roz aisi shayari ke liye",
+    "💕 Comment mein ❤️ likho + Follow karo - Agli shayari tumhare naam hogi",
+    "✨ Share karo apne special wale ke saath + Page ko Follow karo",
+    "🔥 Follow kar lo - Roz 12 reels aati hain, ek bhi miss mat karo!",
+    "❤️ Like + Follow - Agar ye shayari tumhare dil ki hai to",
+    "👉 Follow nahi kiya to agli wali bold shayari miss ho jayegi!",
+    "💔 Tag karo usko jiske liye ye shayari hai + Follow karo Hina Fatima ko",
+    "🌙 Raat ki shayari ke liye Follow karo - Roz nayi feeling",
+    "💌 Share + Follow - Apne pyar ko ye reel bhejo, wo khush ho jayega",
 ]
 
 # ✅ 20 ALAG ROMANTIC TONES - CHECKED
@@ -179,7 +221,6 @@ DHUN_LIST = [
 
 def get_shayari_for_this_slot():
     now = datetime.now()
-    # ✅ FIX: shayari ke liye minute bhi use kiya taake har :30 wali reel alag ho
     slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
     index = slot % len(REEL_SHAYARI)
     return REEL_SHAYARI[index]
@@ -244,7 +285,7 @@ def make_text_image(shayari_text):
 
 def make_local_indian_music():
     dhun = get_dhun_for_this_slot()
-    print(f"Auto Indian Dhun bana raha hoon: {dhun['name']}")
+    print(f"✅ SIRF 20 TONES WALI DHUN: {dhun['name']}")
     try:
         for f in ["background.mp3", "background.wav"]:
             if os.path.exists(f):
@@ -320,39 +361,6 @@ def make_local_indian_music():
         print(f"Local music fail: {e}")
         return None
 
-def download_music_auto():
-    if os.path.exists("background.mp3"):
-        try:
-            os.remove("background.mp3")
-        except:
-            pass
-    print("=== AUTO INDIAN ROMANTIC DHUN ===")
-    now = datetime.now()
-    slot = (now.day * 100 + now.hour * 2 + (1 if now.minute >= 30 else 0))
-    start_idx = slot % len(AUTO_MUSIC_URLS)
-    urls = AUTO_MUSIC_URLS[start_idx:] + AUTO_MUSIC_URLS[:start_idx]
-    for url in urls:
-        try:
-            print(f"Trying Auto Indian Song: {url}")
-            r = requests.get(url, timeout=15, headers={'User-Agent': 'Mozilla/5.0', 'Referer': 'https://pixabay.com/'}, allow_redirects=True)
-            print(f"  Status: {r.status_code} | Size: {len(r.content)} bytes")
-            if r.status_code != 200 or len(r.content) < 50000:
-                print("  -> FAIL, agla try kar raha hoon...")
-                continue
-            first = r.content[:10]
-            if first.startswith(b'<!DOCTYPE') or first.startswith(b'<html') or first.startswith(b'<HTML'):
-                print("  -> FAIL: HTML hai")
-                continue
-            open("background.mp3", 'wb').write(r.content)
-            print(f"✅ AUTO INDIAN MUSIC OK: {len(r.content)} bytes")
-            return "background.mp3"
-        except Exception as e:
-            print(f"  -> FAIL: {e}")
-            continue
-    # ✅ FIX: Agar download fail to local dhun zaroor banao, khali mat jao
-    print("⚠️ Download fail, ab local 20 tones wali dhun bana raha hoon...")
-    return make_local_indian_music()
-
 def get_random_reel_video():
     print("Fetching video from Pexels - AUTO...")
     if not PEXELS_KEY:
@@ -400,7 +408,6 @@ def make_final_reel(video_url, shayari_text, music_path):
     overlay = make_text_image(shayari_text)
     final_path = "final_reel.mp4"
     print(f"Adding DHUN: {music_path}")
-    # ✅ CHECKED: 0:v = video, 1:v = overlay, 2:a = music - sahi hai
     filter_complex = (
         "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[v];"
         "[v][1:v]overlay=0:0[outv];"
@@ -479,11 +486,13 @@ if __name__ == "__main__":
     shayari = get_shayari_for_this_slot()
     dhun = get_dhun_for_this_slot()
     hashtags, cta = get_hashtags_and_cta()
+    # ✅ FOLLOW BOOST - Caption ka order: Shayari -> CTA (Follow) -> Hashtags
     caption = f"{shayari}\n\n{cta}\n\n{hashtags}"
     print(f"Selected Shayari: {shayari}")
     print(f"Selected Dhun: {dhun['name']}")
     print(f"Hashtags: {hashtags}")
-    music = download_music_auto()
+    print(f"CTA: {cta}")
+    music = make_local_indian_music()
     if not music:
         print("❌ SONG NAHI BANA - Reel post nahi hogi")
         sys.exit(1)
