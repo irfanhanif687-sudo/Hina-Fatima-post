@@ -1,26 +1,17 @@
-name: Facebook Auto Post (Images)
-
+name: Auto Post Images
 on:
-  schedule:
-    - cron: '0 * * * *'
   workflow_dispatch:
-
 jobs:
   post:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests Pillow
-      - name: Run Auto Post Script
+          python-version: '3.11'
+      - run: pip install requests Pillow
+      - run: python post.py
         env:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_TOKEN: ${{ secrets.FB_TOKEN }}
-        run: python post.py
+          PEXELS_KEY: ${{ secrets.PEXELS_KEY }}
