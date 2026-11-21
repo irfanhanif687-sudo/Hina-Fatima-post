@@ -200,25 +200,22 @@ def upload_reel_facebook(video_path, caption):
     if not video_id or not upload_url:
         raise SystemExit(f"START missing video_id/upload_url: {r1.text}")
 
-    # STEP 2 - TRANSFER - FIXED: Facebook ko Offset header chahiye, file_offset nahi
+    # STEP 2 - TRANSFER - FIXED: X-Entity-Length bhi bhejna zaroori hai
     print(f"Upload TRANSFER - video_id {video_id}")
     with open(video_path, "rb") as f:
         video_bytes = f.read()
-    # Dono naam bhej rahe hain taake Facebook ko jo chahiye wo mil jaye
-    # Aur Content-Type bhi sahi kar diya
     headers = {
         "Authorization": f"OAuth {FB_TOKEN}",
         "Offset": "0",
-        "file_offset": "0",
         "Content-Type": "application/octet-stream",
         "Content-Length": str(len(video_bytes)),
+        "X-Entity-Length": str(len(video_bytes)),
     }
     r2 = requests.post(upload_url, headers=headers, data=video_bytes, timeout=300)
     print(f"TRANSFER response: {r2.status_code} - {r2.text}")
     if r2.status_code != 200:
         raise SystemExit(f"TRANSFER Failed: {r2.text}")
 
-    # STEP 3 - FINISH
     print(f"Upload FINISH - publishing...")
     r3 = requests.post(start_url, data={
         "access_token": FB_TOKEN,
