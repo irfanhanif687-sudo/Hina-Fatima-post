@@ -100,39 +100,41 @@ HOOKS = [
     "Is shayari ko apni story pe lagao, wo dekh lega 😉❤️",
 ]
 
-def make_black_bg():
-    img = Image.new("RGB", (1080, 1920), (20, 10, 30))
-    img.save("bg.jpg")
-    return "bg.jpg"
-
-def get_image():
-    if not PEXELS_KEY:
-        return make_black_bg()
+def get_pexels_video():
+    queries = ["romantic couple","couple love","romantic sunset","couple holding hands","romantic night","love couple"]
+    q = random.choice(queries)
+    print(f"Pexels video search: {q}")
     try:
-        headers = {"Authorization": PEXELS_KEY}
-        r = requests.get("https://api.pexels.com/v1/search?query=romantic%20couple%20night&per_page=15", headers=headers, timeout=20)
-        photos = r.json().get("photos", [])
-        if not photos:
-            return make_black_bg()
-        url = random.choice(photos)["src"]["large2x"]
-        open("bg.jpg","wb").write(requests.get(url, timeout=20).content)
-        test = Image.open("bg.jpg")
-        test.verify()
-        return "bg.jpg"
+        headers = {"Authorization": PEXELS_KEY} if PEXELS_KEY else {}
+        r = requests.get(f"https://api.pexels.com/videos/search?query={q}&per_page=15&orientation=portrait", headers=headers, timeout=20)
+        videos = r.json().get("videos", [])
+        print(f"Pexels videos found: {len(videos)}")
+        if not videos:
+            return None
+        v = random.choice(videos)
+        files = v.get("video_files", [])
+        best = None
+        for f in files:
+            if f.get("width", 0) >= 720 and f.get("height", 0) >= 1280:
+                best = f
+                break
+        if not best and files:
+            best = files[0]
+        url = best["link"]
+        data = requests.get(url, timeout=60).content
+        open("bg_video.mp4","wb").write(data)
+        print(f"Video downloaded: {os.path.getsize('bg_video.mp4')} bytes")
+        if os.path.getsize("bg_video.mp4") < 50000:
+            return None
+        return "bg_video.mp4"
     except Exception as e:
-        print(f" Pexels fail: {e}")
-        return make_black_bg()
+        print(f"Pexels video fail: {e}")
+        return None
 
-def make_reel_image(shayari):
-    bg = get_image()
-    try:
-        img = Image.open(bg).convert("RGB")
-    except:
-        img = Image.new("RGB", (1080, 1920), (20, 10, 30))
-    img = img.resize((1080, 1920))
-    overlay = Image.new("RGBA", img.size, (0,0,0,90))
-    img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+def make_text_overlay(shayari):
+    img = Image.new("RGBA", (1080, 1920), (0,0,0,0))
     draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 650, 1080, 1150], fill=(0,0,0,110))
     try:
         font_big = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 58)
         font_small = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 38)
@@ -144,14 +146,14 @@ def make_reel_image(shayari):
     for line in lines:
         bbox = draw.textbbox((0,0), line, font=font_big)
         w = bbox[2]-bbox[0]
-        draw.text(((1080-w)//2, y), line, font=font_big, fill=(255,255,255), stroke_width=2, stroke_fill=(0,0,0))
+        draw.text(((1080-w)//2, y), line, font=font_big, fill=(255,255,255,255), stroke_width=3, stroke_fill=(0,0,0,255))
         y += 80
     txt = "— Hina Fatima —"
     bbox2 = draw.textbbox((0,0), txt, font=font_small)
     w2 = bbox2[2]-bbox2[0]
-    draw.text(((1080-w2)//2, y+40), txt, font=font_small, fill=(255,200,220))
-    img.save("reel_frame.jpg", quality=95)
-    return "reel_frame.jpg"
+    draw.text(((1080-w2)//2, y+40), txt, font=font_small, fill=(255,200,220,255))
+    img.save("text_overlay.png")
+    return "text_overlay.png"
 
 def pick_song(now):
     slot = (now.timetuple().tm_yday * 12 + now.hour // 2) % 8
@@ -161,15 +163,33 @@ def pick_song(now):
             return s
     return None
 
-def build_video(frame, song):
+def build_video(shayari, song):
+    bg_video = get_pexels_video()
+    overlay = make_text_overlay(shayari)
+    if not bg_video:
+        print("No Pexels video, using photo fallback")
+        img = Image.new("RGB", (1080, 1920), (20, 10, 30))
+        img.save("reel_frame.jpg", quality=95)
+        for encoder in ["libx264", "mpeg4"]:
+            cmd = ["ffmpeg","-y","-loop","1","-i","reel_frame.jpg","-i",song,"-t","15",
+                   "-vf","scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
+                   "-c:v",encoder,"-pix_fmt","yuv420p","-r","30","-c:a","aac","-ar","44100","-ac","2","-movflags","+faststart","-shortest","reel.mp4"]
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            if r.returncode==0 and os.path.exists("reel.mp4") and os.path.getsize("reel.mp4")>10000:
+                return True
+        return False
+    # FIXED: overlay ko -loop 1 kiya, aur overlay filter se shortest=1 hataya - ab video 15 sec ki banegi, 1 sec ki nahi
     for encoder in ["libx264", "mpeg4"]:
         cmd = [
             "ffmpeg", "-y",
-            "-framerate", "30",
-            "-loop", "1", "-i", frame,
+            "-i", bg_video,
             "-i", song,
+            "-loop", "1", "-i", overlay,
             "-t", "15",
-            "-vf", "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
+            "-filter_complex",
+            "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1,format=yuv420p[bg];[bg][2:v]overlay=(W-w)/2:0[v]",
+            "-map", "[v]",
+            "-map", "1:a",
             "-c:v", encoder, "-pix_fmt", "yuv420p", "-r", "30",
             "-c:a", "aac", "-ar", "44100", "-ac", "2",
             "-movflags", "+faststart",
@@ -178,8 +198,9 @@ def build_video(frame, song):
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0 and os.path.exists("reel.mp4") and os.path.getsize("reel.mp4") > 10000:
-            print(f"Video OK with {encoder}")
+            print(f"Moving Video OK with {encoder} - 15 sec")
             return True
+        print(f"Moving video failed with {encoder}: {result.stderr[-800:]}")
     return False
 
 def upload_reel_facebook(video_path, caption):
@@ -191,17 +212,15 @@ def upload_reel_facebook(video_path, caption):
         "upload_phase": "start",
         "file_size": str(file_size),
     }, timeout=60)
-    print(f"START response: {r1.status_code} - {r1.text}")
+    print(f"START: {r1.status_code} - {r1.text}")
     if r1.status_code != 200:
         raise SystemExit(f"START Failed: {r1.text}")
     data1 = r1.json()
     video_id = data1.get("video_id")
     upload_url = data1.get("upload_url")
     if not video_id or not upload_url:
-        raise SystemExit(f"START missing video_id/upload_url: {r1.text}")
-
-    # STEP 2 - TRANSFER - FIXED: X-Entity-Length bhi bhejna zaroori hai
-    print(f"Upload TRANSFER - video_id {video_id}")
+        raise SystemExit(f"START missing: {r1.text}")
+    print(f"Upload TRANSFER - {video_id}")
     with open(video_path, "rb") as f:
         video_bytes = f.read()
     headers = {
@@ -212,11 +231,10 @@ def upload_reel_facebook(video_path, caption):
         "X-Entity-Length": str(len(video_bytes)),
     }
     r2 = requests.post(upload_url, headers=headers, data=video_bytes, timeout=300)
-    print(f"TRANSFER response: {r2.status_code} - {r2.text}")
+    print(f"TRANSFER: {r2.status_code} - {r2.text}")
     if r2.status_code != 200:
         raise SystemExit(f"TRANSFER Failed: {r2.text}")
-
-    print(f"Upload FINISH - publishing...")
+    print(f"Upload FINISH...")
     r3 = requests.post(start_url, data={
         "access_token": FB_TOKEN,
         "upload_phase": "finish",
@@ -224,7 +242,7 @@ def upload_reel_facebook(video_path, caption):
         "video_state": "PUBLISHED",
         "description": caption,
     }, timeout=120)
-    print(f"FINISH response: {r3.status_code} - {r3.text}")
+    print(f"FINISH: {r3.status_code} - {r3.text}")
     if r3.status_code != 200:
         raise SystemExit(f"FINISH Failed: {r3.text}")
     print("SUCCESS - Reel posted!")
@@ -241,10 +259,7 @@ def main():
     hook = HOOKS[total_slot % len(HOOKS)]
     print(f"Slot {total_slot} - Song {song} - Shayari {shayari[:20]}")
     caption = f"{shayari}\n\n{hook}\n\n❤️ Hina Fatima ❤️\n\n{tags}"
-    frame = make_reel_image(shayari)
-    if not os.path.exists(frame) or os.path.getsize(frame) < 1000:
-        raise SystemExit("Frame not created!")
-    if not build_video(frame, song):
+    if not build_video(shayari, song):
         raise SystemExit("FFmpeg failed")
     upload_reel_facebook("reel.mp4", caption)
 
