@@ -54,7 +54,6 @@ SHAYARI = [
     "Ishq mein tere itna kho gayi, Ke khud ko bhi bhool gayi.",
 ]
 
-# 30 HASHTAG SETS - SAFE, BAN WALE HATA DIYE - HAR BAAR ALAG
 HASHTAGS = [
     "#HinaFatima #Ishq #Mohabbat #RomanticShayari #Love",
     "#Shayari #UrduShayari #IshqWalaLove #Romantic #Dil",
@@ -88,7 +87,6 @@ HASHTAGS = [
     "#HinaFatimaShayari #FatimaKiShayari #HinaKaIshq #DilKaIshqShayari #RomanticHina",
 ]
 
-# ATTRACTIVE HOOK + FOLLOW CTA - HAR BAAR ALAG, LOG FOLLOW KARENGE
 HOOKS = [
     "Ye shayari kis ke liye hai? Comment mein uska naam likho ❤️",
     "Agar dil ko lagi to Follow kar lo, roz aisi shayari milegi 💕",
@@ -184,36 +182,71 @@ def build_video(frame, song):
             return True
     return False
 
+def upload_reel_facebook(video_path, caption):
+    # FIX: Facebook ka naya 3-step upload - upload_phase required error ka hal
+    # STEP 1 - START
+    file_size = os.path.getsize(video_path)
+    print(f"Upload START - file size {file_size}")
+    start_url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/video_reels"
+    r1 = requests.post(start_url, data={
+        "access_token": FB_TOKEN,
+        "upload_phase": "start",
+        "file_size": str(file_size),
+    }, timeout=60)
+    print(f"START response: {r1.status_code} - {r1.text}")
+    if r1.status_code != 200:
+        raise SystemExit(f"START Failed: {r1.text}")
+    data1 = r1.json()
+    video_id = data1.get("video_id")
+    upload_url = data1.get("upload_url")
+    if not video_id or not upload_url:
+        raise SystemExit(f"START missing video_id/upload_url: {r1.text}")
+
+    # STEP 2 - TRANSFER - Poori file ek baar mein bhejo
+    print(f"Upload TRANSFER - video_id {video_id}")
+    with open(video_path, "rb") as f:
+        video_bytes = f.read()
+    headers = {
+        "Authorization": f"OAuth {FB_TOKEN}",
+        "file_offset": "0",
+    }
+    r2 = requests.post(upload_url, headers=headers, data=video_bytes, timeout=300)
+    print(f"TRANSFER response: {r2.status_code} - {r2.text}")
+    if r2.status_code != 200:
+        raise SystemExit(f"TRANSFER Failed: {r2.text}")
+
+    # STEP 3 - FINISH + PUBLISH
+    print(f"Upload FINISH - publishing...")
+    r3 = requests.post(start_url, data={
+        "access_token": FB_TOKEN,
+        "upload_phase": "finish",
+        "video_id": video_id,
+        "video_state": "PUBLISHED",
+        "description": caption,
+    }, timeout=120)
+    print(f"FINISH response: {r3.status_code} - {r3.text}")
+    if r3.status_code != 200:
+        raise SystemExit(f"FINISH Failed: {r3.text}")
+    print("SUCCESS - Reel posted!")
+    return True
+
 def main():
     now = datetime.now()
-    # SAFE ROTATION - Har baar alag hashtag, alag shayari, alag hook
-    # Din + ghanta + minute se hisaab, taake kabhi repeat na ho
     total_slot = now.timetuple().tm_yday * 12 + now.hour // 2
     song = pick_song(now)
     if not song:
         raise SystemExit("No valid song found")
-    # Shayari bhi time se - har baar alag
     shayari = SHAYARI[total_slot % len(SHAYARI)]
-    # Hashtag bhi time se - har baar alag, 30 mein se
     tags = HASHTAGS[total_slot % len(HASHTAGS)]
-    # Hook bhi time se - har baar alag follow wali line
     hook = HOOKS[total_slot % len(HOOKS)]
-    print(f"Slot {total_slot} - Song {song} - Shayari {shayari[:20]} - Tags {tags} - Hook {hook[:20]}")
-
+    print(f"Slot {total_slot} - Song {song} - Shayari {shayari[:20]}")
     caption = f"{shayari}\n\n{hook}\n\n❤️ Hina Fatima ❤️\n\n{tags}"
-
     frame = make_reel_image(shayari)
     if not os.path.exists(frame) or os.path.getsize(frame) < 1000:
         raise SystemExit("Frame not created!")
     if not build_video(frame, song):
         raise SystemExit("FFmpeg failed")
-    url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/video_reels"
-    with open("reel.mp4","rb") as f:
-        r = requests.post(url, data={"access_token": FB_TOKEN, "description": caption}, files={"file": f}, timeout=300)
-    print(f"Facebook: {r.status_code} - {r.text}")
-    if r.status_code != 200:
-        raise SystemExit(f"Facebook Failed: {r.text}")
-    print("SUCCESS - Reel posted!")
+    upload_reel_facebook("reel.mp4", caption)
 
 if __name__ == "__main__":
     main()
